@@ -29,9 +29,9 @@ EndOfLineComment     = "-->" {InputCharacter}* {LineTerminator}?
 digit = [0-9]
 identificador = [:jletter:] [:jletterdigit:]*
 numEntero = {digit}+ 
-cadena =  "\"" [^\"\n]* "\""
 numDecimal = ({digit}+[.]{digit}*)|({digit}*[.]{digit}+)
-
+cadena =  "\"" [^\"\n]* "\""
+caracter = "'" [^\'\n] "'"
 
 
 %%
@@ -39,21 +39,21 @@ numDecimal = ({digit}+[.]{digit}*)|({digit}*[.]{digit}+)
 
 //-----> sym
 
-"importar"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._importar, yycolumn, yyline, yytext()); }
-"definir"     { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._definir, yycolumn, yyline, yytext()); }
+"importar"     { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._importar, yycolumn, yyline, yytext()); }
+"definir"      { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._definir, yycolumn, yyline, yytext()); }
 "decimal"      { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._decimal, yycolumn, yyline, yytext()); }
-"booleano"       { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._booleano, yycolumn, yyline, yytext()); }
-"texto"      { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._texto, yycolumn, yyline, yytext()); }
-"entero"      { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._entero, yycolumn, yyline, yytext()); }
-"vacio"       { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._vacio, yycolumn, yyline, yytext()); }
-"verdadero"   { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._verdadero, yycolumn, yyline, yytext()); }
-"falso"   { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._falso, yycolumn, yyline, yytext()); }
+"booleano"     { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._booleano, yycolumn, yyline, yytext()); }
+"texto"        { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._texto, yycolumn, yyline, yytext()); }
+"entero"       { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._entero, yycolumn, yyline, yytext()); }
+"vacio"        { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._vacio, yycolumn, yyline, yytext()); }
+"verdadero"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._verdadero, yycolumn, yyline, yytext()); }
+"falso"        { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._falso, yycolumn, yyline, yytext()); }
 
 ","      { System.out.println("Reconocio "+yytext()+" coma"); return new Symbol(sym.coma, yycolumn, yyline, yytext()); }
 "("    { System.out.println("Reconocio "+yytext()+" parentesis Ab"); return new Symbol(sym.parent_a, yycolumn, yyline, yytext()); }
 ")"    { System.out.println("Reconocio "+yytext()+" parentesis Cerr"); return new Symbol(sym.parent_c, yycolumn, yyline, yytext()); }
 "&&"        { System.out.println("Reconocio "+yytext()+" And"); return new Symbol(sym.and, yycolumn, yyline, yytext()); }
-"!"      { System.out.println("Reconocio "+yytext()+" Negacion"); return new Symbol(sym.negacion, yycolumn, yyline, yytext()); }
+"!"      { System.out.println("Reconocio "+yytext()+" not"); return new Symbol(sym.not, yycolumn, yyline, yytext()); }
 "||"       { System.out.println("Reconocio "+yytext()+" Or"); return new Symbol(sym.or, yycolumn, yyline, yytext()); }
 "~"     { System.out.println("Reconocio "+yytext()+" Distinto"); return new Symbol(sym.diferencia, yycolumn, yyline, yytext()); }
 ">="        { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.mayorQ, yycolumn, yyline, yytext()); }
@@ -77,6 +77,7 @@ numDecimal = ({digit}+[.]{digit}*)|({digit}*[.]{digit}+)
  {numEntero}          { System.out.println("Reconocio "+yytext()+" num"); return new Symbol(sym.numEntero, yycolumn, yyline, yytext()); }
  {numDecimal}          { System.out.println("Reconocio "+yytext()+" decimal"); return new Symbol(sym.numDecimal, yycolumn, yyline, yytext()); } 
 {cadena}             { System.out.println("Reconocio "+yytext()+" cadena"); return new Symbol(sym.cadena, yycolumn, yyline, yytext()); }
+{caracter}             { System.out.println("Reconocio "+yytext()+" caracter"); return new Symbol(sym.caracter, yycolumn, yyline, yytext()); }
 
 //------> Espacios
 [ \t\r\n\f]                  {  /* Espacios en blanco, se ignoran */}

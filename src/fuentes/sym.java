@@ -9,41 +9,42 @@ package fuentes;
 public class sym {
   /* terminals */
   public static final int numDecimal = 4;
-  public static final int ptoYcoma = 16;
-  public static final int coma = 17;
-  public static final int igual = 25;
+  public static final int ptoYcoma = 17;
+  public static final int coma = 18;
+  public static final int igual = 26;
   public static final int identificador = 5;
-  public static final int _verdadero = 13;
-  public static final int _booleano = 9;
-  public static final int diferencia = 31;
+  public static final int _verdadero = 14;
+  public static final int _booleano = 10;
+  public static final int caracter = 6;
+  public static final int diferencia = 32;
   public static final int numEntero = 3;
-  public static final int _decimal = 8;
-  public static final int menos = 19;
-  public static final int mayorQ = 30;
-  public static final int menor = 27;
+  public static final int _decimal = 9;
+  public static final int menos = 20;
+  public static final int mayorQ = 31;
+  public static final int menor = 28;
   public static final int EOF = 0;
-  public static final int mas = 18;
+  public static final int mas = 19;
   public static final int error = 1;
-  public static final int mayor = 29;
-  public static final int negacion = 34;
-  public static final int or = 33;
-  public static final int por = 20;
-  public static final int punto = 15;
-  public static final int _vacio = 11;
-  public static final int potencia = 23;
-  public static final int _falso = 14;
-  public static final int _definir = 7;
-  public static final int diferente = 26;
-  public static final int _entero = 12;
-  public static final int and = 32;
-  public static final int _texto = 10;
-  public static final int modular = 22;
-  public static final int menorQ = 28;
-  public static final int parent_c = 36;
-  public static final int _importar = 6;
-  public static final int parent_a = 35;
-  public static final int div = 21;
-  public static final int asignacion = 24;
+  public static final int mayor = 30;
+  public static final int or = 34;
+  public static final int por = 21;
+  public static final int punto = 16;
+  public static final int _vacio = 12;
+  public static final int potencia = 24;
+  public static final int _falso = 15;
+  public static final int _definir = 8;
+  public static final int diferente = 27;
+  public static final int _entero = 13;
+  public static final int not = 35;
+  public static final int and = 33;
+  public static final int _texto = 11;
+  public static final int modular = 23;
+  public static final int menorQ = 29;
+  public static final int parent_c = 37;
+  public static final int _importar = 7;
+  public static final int parent_a = 36;
+  public static final int div = 22;
+  public static final int asignacion = 25;
   public static final int cadena = 2;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -52,6 +53,7 @@ public class sym {
   "numEntero",
   "numDecimal",
   "identificador",
+  "caracter",
   "_importar",
   "_definir",
   "_decimal",
@@ -80,7 +82,7 @@ public class sym {
   "diferencia",
   "and",
   "or",
-  "negacion",
+  "not",
   "parent_a",
   "parent_c"
   };
