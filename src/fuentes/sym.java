@@ -8,21 +8,39 @@ package fuentes;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int punto = 6;
-  public static final int numero = 3;
-  public static final int ptoYcoma = 7;
+  public static final int ptoYcoma = 16;
+  public static final int definir = 7;
   public static final int cadena = 2;
-  public static final int definir = 5;
-  public static final int error = 1;
-  public static final int importar = 4;
+  public static final int numDecimal = 4;
+  public static final int _verdadero = 13;
+  public static final int decimal = 8;
+  public static final int punto = 15;
+  public static final int texto = 10;
   public static final int EOF = 0;
+  public static final int numEntero = 3;
+  public static final int vacio = 11;
+  public static final int _falso = 14;
+  public static final int entero = 12;
+  public static final int importar = 6;
+  public static final int error = 1;
+  public static final int booleano = 9;
+  public static final int identificador = 5;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
   "cadena",
-  "numero",
+  "numEntero",
+  "numDecimal",
+  "identificador",
   "importar",
   "definir",
+  "decimal",
+  "booleano",
+  "texto",
+  "vacio",
+  "entero",
+  "_verdadero",
+  "_falso",
   "punto",
   "ptoYcoma"
   };

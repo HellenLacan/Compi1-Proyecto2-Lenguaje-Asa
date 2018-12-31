@@ -3,8 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/fuentes/GeneradorDeCompiladores.java</file>
+            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/Form/VentanaPrincipal.java</file>
+            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/fuentes/parser.java</file>
             <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/fuentes/sintactico.cup</file>
+            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/fuentes/scanner.java</file>
             <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/fuentes/lexico.jflex</file>
         </group>
     </open-files>

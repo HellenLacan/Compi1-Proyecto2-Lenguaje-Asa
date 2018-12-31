@@ -28,16 +28,23 @@ action code
     Stack<String> tmp = new Stack<>(); // esto queda a  nivel implementacion unicamente ya que teoricamente es posible sin esto.
 :}
 
-terminal cadena, numero;
-terminal importar, definir;
+terminal cadena, numEntero, numDecimal,identificador;
+terminal importar, definir, decimal, booleano, texto, vacio, entero, _verdadero, _falso;
 terminal punto, ptoYcoma;
-nonterminal INICIAR, SENTENCIAS; 
-
+nonterminal INICIAR, SENTENCIAS, SENTENCIAS1; 
 
 start with INICIAR;
 
 INICIAR::= SENTENCIAS;
 
-SENTENCIAS::= importar
-              |definir
-              |;   
+SENTENCIAS::= SENTENCIAS1 
+              |;
+
+SENTENCIAS1::=  SENTENCIAS1 importar
+               |SENTENCIAS1 numEntero
+               |SENTENCIAS1 cadena
+               |SENTENCIAS1 numDecimal
+               |importar
+               |numEntero
+               |numDecimal
+               |cadena;
