@@ -5,6 +5,11 @@
  */
 package proyecto2_201325674;
 
+import fuentes.parser;
+import fuentes.scanner;
+import java.io.BufferedReader;
+import java.io.StringReader;
+
 /**
  *
  * @author Hellen
@@ -15,7 +20,16 @@ public class Proyecto2_201325674 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+      try {
+            String texto="Definir";
+            System.out.println("Inicia analisis...");
+            scanner scan = new scanner(new BufferedReader( new StringReader(texto)));
+            parser parser = new parser(scan);
+            parser.parse();
+            System.out.println("Finaliza analisis...");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
 }

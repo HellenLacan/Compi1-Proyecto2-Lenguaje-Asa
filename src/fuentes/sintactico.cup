@@ -1,0 +1,43 @@
+package fuentes;
+
+import java_cup.runtime.Symbol;
+import java.util.Stack;
+import java.util.ArrayList;
+
+//PARSER PARA EL ARCHIVO DE ESCENARIOS
+parser code
+{://Codigo visible
+    
+    public static Nodo padre;
+    public int cont = 0;
+    public void syntax_error(Symbol s){
+        System.err.println("ERROR R: ");
+        System.err.println(s);
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.err.println("ERROR N_R: ");
+        System.err.println(s);
+    }
+
+:}
+
+action code
+{://Codigo de acciones vamos a simular atrubutos heredados con variables globales
+    String heredado; //struct struct 
+    Stack<String> tmp = new Stack<>(); // esto queda a  nivel implementacion unicamente ya que teoricamente es posible sin esto.
+:}
+
+terminal cadena, numero;
+terminal importar, definir;
+terminal punto, ptoYcoma;
+nonterminal INICIAR, SENTENCIAS; 
+
+
+start with INICIAR;
+
+INICIAR::= SENTENCIAS;
+
+SENTENCIAS::= importar
+              |definir
+              |;   
