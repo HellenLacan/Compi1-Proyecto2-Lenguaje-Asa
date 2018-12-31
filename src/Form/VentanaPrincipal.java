@@ -114,6 +114,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
         File file = new File("C:\\Users\\Hellen\\Documents\\Cursos\\COMPI1_VACAS_DIC_2018\\Proyecto2_201325674\\src\\archivoPrueba.asa");
 
         String content="";

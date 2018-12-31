@@ -1,12 +1,1 @@
---> Uso de imports y defines
-90.1
-"Esto es una cadena"
-"\n"
--120.210
-20.06
--30.2
-.8
-</ Uso de imports/>
--->
-<//>
-
+Boolean a,b=-2+-2.0*(8.8*7);

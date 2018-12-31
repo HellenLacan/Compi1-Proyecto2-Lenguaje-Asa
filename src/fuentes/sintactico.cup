@@ -28,10 +28,14 @@ action code
     Stack<String> tmp = new Stack<>(); // esto queda a  nivel implementacion unicamente ya que teoricamente es posible sin esto.
 :}
 
-terminal cadena, numEntero, numDecimal,identificador;
-terminal importar, definir, decimal, booleano, texto, vacio, entero, _verdadero, _falso;
-terminal punto, ptoYcoma;
-nonterminal INICIAR, SENTENCIAS, SENTENCIAS1; 
+terminal cadena, numEntero, numDecimal, identificador;
+terminal _importar, _definir, _decimal, _booleano, _texto, _vacio, _entero, _verdadero, _falso;
+terminal punto, ptoYcoma, coma, mas, menos, por, div, modular, potencia, asignacion, igual, diferente, menor, menorQ;
+terminal mayor, mayorQ, diferencia, and, or, negacion, parent_a, parent_c;
+
+nonterminal INICIAR, SENTENCIAS, SENTENCIAS1, TIPO;
+nonterminal DECLARACION_VARIABLES, LISTA_VARIABLES, ASIGN_VARIABLES;
+nonterminal EXPR, T, F, D;
 
 start with INICIAR;
 
@@ -40,11 +44,40 @@ INICIAR::= SENTENCIAS;
 SENTENCIAS::= SENTENCIAS1 
               |;
 
-SENTENCIAS1::=  SENTENCIAS1 importar
-               |SENTENCIAS1 numEntero
-               |SENTENCIAS1 cadena
-               |SENTENCIAS1 numDecimal
-               |importar
-               |numEntero
-               |numDecimal
-               |cadena;
+SENTENCIAS1::=  SENTENCIAS1 _importar
+               |SENTENCIAS1 DECLARACION_VARIABLES
+               |_importar
+               |DECLARACION_VARIABLES;
+
+DECLARACION_VARIABLES::=TIPO LISTA_VARIABLES ASIGN_VARIABLES ptoYcoma;
+
+LISTA_VARIABLES::= LISTA_VARIABLES coma identificador 
+                  |identificador;
+
+ASIGN_VARIABLES::=asignacion EXPR
+                  |;
+
+EXPR::= EXPR mas T
+       |EXPR menos T
+       |T;
+
+T::= T div F
+    |T por F
+    |F;
+
+F::= menos D
+    |mas D
+    |D;
+
+D::= numEntero
+    |numDecimal
+    |identificador
+    |_verdadero
+    |_falso
+    |parent_a EXPR parent_c;
+
+TIPO::=  _decimal
+        |_booleano
+        |_texto
+        |_entero
+        |identificador;
