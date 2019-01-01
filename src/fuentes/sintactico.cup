@@ -31,11 +31,11 @@ action code
 terminal cadena, numEntero, numDecimal, identificador, caracter;
 terminal _importar, _definir, _decimal, _booleano, _texto, _vacio, _entero, _verdadero, _falso, _principal, _retorno;
 terminal _esVerdadero, _esFalso, _cambiarA, _valor, _noCumple, _para, _hastaQue, _mientrasQue, _romper, _continuar;
-terminal _mostrar, _dibujarAst, _dibujarExp, _dibujarTs;
+terminal _mostrar, _dibujarAst, _dibujarExp, _dibujarTs, _asa;
 terminal punto, ptoYcoma, coma, mas, menos, por, div, modular, potencia, asignacion, igual, diferente, menor, menorQ;
 terminal mayor, mayorQ, diferencia, and, or, not, parent_a, parent_c, llave_a, llave_c, dosPtos, incremento, decremento;
 
-nonterminal INICIAR, SENTENCIAS, SENTENCIAS1, TIPO;
+nonterminal INICIAR, SO, CUERPO_PRINCIPAL, SENTENCIAS, LISTA_SENTENCIAS, TIPO, IMPORTAR, DEFINIR;
 nonterminal DECLARACION_VARIABLES, LISTA_VARIABLES, ASIGN_VARIABLES, LLAMADAS_FUNC, LISTA_LLAMADA_FUNC;
 nonterminal OP_REL, EXPR_REL, EXPR_LOGICA, TIPO_EXPR, ASIGNACIONES, FUNCIONES, PRINCIPAL;
 nonterminal METODOS, LISTA_PARAMETROS, RETORNO, SENT_ES_VERDADERO, ES_VERD_CON_FALSO, CAMBIAR_A, CASOS;
@@ -51,49 +51,60 @@ precedence left por, div;
 precedence right potencia; 
 start with INICIAR;
 
-INICIAR::= SENTENCIAS;
+INICIAR::= CUERPO_PRINCIPAL;
 
-SENTENCIAS::= SENTENCIAS1 
-              |;
+CUERPO_PRINCIPAL::= CUERPO_PRINCIPAL DECLARACION_VARIABLES
+                   |CUERPO_PRINCIPAL ASIGNACIONES
+                   |CUERPO_PRINCIPAL FUNCIONES
+                   |CUERPO_PRINCIPAL METODOS
+                   |CUERPO_PRINCIPAL PRINCIPAL
+                   |CUERPO_PRINCIPAL IMPORTAR
+                   |CUERPO_PRINCIPAL DEFINIR
+                   |IMPORTAR
+                   |DEFINIR
+                   |DECLARACION_VARIABLES
+                   |ASIGNACIONES
+                   |FUNCIONES
+                   |METODOS
+                   |PRINCIPAL;
 
-SENTENCIAS1::=  SENTENCIAS1 _importar
-               |SENTENCIAS1 DECLARACION_VARIABLES
-               |SENTENCIAS1 ASIGNACIONES
-               |SENTENCIAS1 FUNCIONES
-               |SENTENCIAS1 METODOS
-               |SENTENCIAS1 PRINCIPAL
-               |SENTENCIAS1 LLAMADAS_FUNC ptoYcoma
-               |SENTENCIAS1 RETORNO
-               |SENTENCIAS1 SENT_ES_VERDADERO
-               |SENTENCIAS1 CAMBIAR_A
-               |SENTENCIAS1 PARA
-               |SENTENCIAS1 HASTA_QUE
-               |SENTENCIAS1 MIENTRAS_QUE
-               |SENTENCIAS1 ROMPER
-               |SENTENCIAS1 CONTINUAR
-               |SENTENCIAS1 MOSTRAR
-               |SENTENCIAS1 DIBUJAR_AST
-               |SENTENCIAS1 DIBUJAR_EXP
-               |SENTENCIAS1 DIBUJAR_TS
-               |DIBUJAR_EXP
-               |DIBUJAR_TS
-               |DIBUJAR_AST
-               |MOSTRAR
-               |ROMPER
-               |CONTINUAR
-               |HASTA_QUE
-               |MIENTRAS_QUE
-               |PARA
-               |SENT_ES_VERDADERO
-               |CAMBIAR_A
-               |RETORNO
-               |LLAMADAS_FUNC ptoYcoma
-               |PRINCIPAL
-               |METODOS
-               |FUNCIONES
-               |_importar
-               |ASIGNACIONES
-               |DECLARACION_VARIABLES;
+SENTENCIAS::= LISTA_SENTENCIAS
+             |;
+
+LISTA_SENTENCIAS::=  LISTA_SENTENCIAS DIBUJAR_EXP
+                    |LISTA_SENTENCIAS DIBUJAR_TS
+                    |LISTA_SENTENCIAS DIBUJAR_AST
+                    |LISTA_SENTENCIAS MOSTRAR
+                    |LISTA_SENTENCIAS ROMPER
+                    |LISTA_SENTENCIAS CONTINUAR
+                    |LISTA_SENTENCIAS HASTA_QUE
+                    |LISTA_SENTENCIAS MIENTRAS_QUE
+                    |LISTA_SENTENCIAS PARA
+                    |LISTA_SENTENCIAS SENT_ES_VERDADERO
+                    |LISTA_SENTENCIAS CAMBIAR_A
+                    |LISTA_SENTENCIAS RETORNO
+                    |LISTA_SENTENCIAS LLAMADAS_FUNC ptoYcoma
+                    |LISTA_SENTENCIAS ASIGNACIONES
+                    |LISTA_SENTENCIAS DECLARACION_VARIABLES
+                    |DIBUJAR_EXP
+                    |DIBUJAR_TS
+                    |DIBUJAR_AST
+                    |MOSTRAR
+                    |ROMPER
+                    |CONTINUAR
+                    |HASTA_QUE
+                    |MIENTRAS_QUE
+                    |PARA
+                    |SENT_ES_VERDADERO
+                    |CAMBIAR_A
+                    |RETORNO
+                    |LLAMADAS_FUNC ptoYcoma
+                    |ASIGNACIONES
+                    |DECLARACION_VARIABLES;
+
+IMPORTAR::=_importar identificador punto _asa ptoYcoma;
+
+DEFINIR::= _definir cadena ptoYcoma;
 
 DECLARACION_VARIABLES::=TIPO LISTA_VARIABLES ASIGN_VARIABLES ptoYcoma;
 
@@ -111,9 +122,9 @@ ASIGN_VARIABLES::= asignacion EXPR_ARIT
 
 ASIGNACIONES::= identificador asignacion EXPR_ARIT ptoYcoma;
 
-FUNCIONES::= TIPO identificador parent_a LISTA_PARAMETROS parent_c llave_a llave_c;
+FUNCIONES::= TIPO identificador parent_a LISTA_PARAMETROS parent_c llave_a SENTENCIAS llave_c;
 
-METODOS::= _vacio identificador parent_a LISTA_PARAMETROS parent_c llave_a llave_c;
+METODOS::= _vacio identificador parent_a LISTA_PARAMETROS parent_c llave_a SENTENCIAS llave_c;
 
 PRINCIPAL::=_vacio _principal parent_a parent_c llave_a llave_c;
 
@@ -139,7 +150,7 @@ VALORES_CASE::= identificador
                 |numEntero
                 |numDecimal;
 
-PARA::=_para parent_a VALORES_PARA identificador asignacion EXPR_ARIT ptoYcoma EXPR_LOGICA ptoYcoma ITERADOR parent_c llave_a SENTENCIAS llave_c; 
+PARA::=_para parent_a VALORES_PARA identificador asignacion EXPR_ARIT ptoYcoma EXPR_LOGICA ptoYcoma ITERADOR parent_c llave_a LISTA_SENTENCIAS llave_c; 
 
 VALORES_PARA::= _decimal
                |_entero;
@@ -174,9 +185,9 @@ EXPR_LOGICA::= EXPR_LOGICA or EXPR_LOGICA
               |EXPR_REL;
 
 EXPR_REL::= EXPR_ARIT OP_REL EXPR_ARIT
-          |EXPR_ARIT;
+           |EXPR_ARIT;
 
-OP_REL::= mayor
+OP_REL::=   mayor
            |menor
            |menorQ
            |mayorQ

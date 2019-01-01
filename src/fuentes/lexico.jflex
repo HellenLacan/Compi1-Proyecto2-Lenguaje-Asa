@@ -2,8 +2,6 @@ package fuentes;
 
 import java_cup.runtime.Symbol;
 
-//Scanner para generar C3D
-
 %%
 %{
     //Código de usuario
@@ -64,6 +62,7 @@ caracter = "'" [^\'\n] "'"
 "DibujarAST"   { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._dibujarAst, yycolumn, yyline, yytext()); }
 "DibujarEXP"   { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._dibujarExp, yycolumn, yyline, yytext()); }
 "DibujarTS"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._dibujarTs, yycolumn, yyline, yytext()); }
+"asa"          { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._asa, yycolumn, yyline, yytext()); }
 
 ","            { System.out.println("Reconocio "+yytext()+" coma"); return new Symbol(sym.coma, yycolumn, yyline, yytext()); }
 "("            { System.out.println("Reconocio "+yytext()+" parentesis Ab"); return new Symbol(sym.parent_a, yycolumn, yyline, yytext()); }
@@ -74,30 +73,30 @@ caracter = "'" [^\'\n] "'"
 "~"            { System.out.println("Reconocio "+yytext()+" Distinto"); return new Symbol(sym.diferencia, yycolumn, yyline, yytext()); }
 ">="           { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.mayorQ, yycolumn, yyline, yytext()); }
 "<="           { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.menorQ, yycolumn, yyline, yytext()); }
-">"      { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.mayor, yycolumn, yyline, yytext()); }
-"<"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.menor, yycolumn, yyline, yytext()); }
-"!="    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.diferente, yycolumn, yyline, yytext()); }
-"=="    { System.out.println("Reconocio "+yytext()+" igual"); return new Symbol(sym.igual, yycolumn, yyline, yytext()); }
-"="   { System.out.println("Reconocio "+yytext()+" asignacion"); return new Symbol(sym.asignacion, yycolumn, yyline, yytext()); }
-"^"    { System.out.println("Reconocio "+yytext()+" potencia"); return new Symbol(sym.potencia, yycolumn, yyline, yytext()); }
-"+"         { System.out.println("Reconocio "+yytext()+" mas"); return new Symbol(sym.mas, yycolumn, yyline, yytext()); }
-"-"         { System.out.println("Reconocio "+yytext()+" menos"); return new Symbol(sym.menos, yycolumn, yyline, yytext()); }
-"*"         { System.out.println("Reconocio "+yytext()+" por"); return new Symbol(sym.por, yycolumn, yyline, yytext()); }
-"/"         { System.out.println("Reconocio "+yytext()+" div"); return new Symbol(sym.div, yycolumn, yyline, yytext()); }
-"%"         { System.out.println("Reconocio "+yytext()+" modo"); return new Symbol(sym.modular, yycolumn, yyline, yytext()); }
-"."         { System.out.println("Reconocio "+yytext()+" modo"); return new Symbol(sym.punto, yycolumn, yyline, yytext()); }
-";"         { System.out.println("Reconocio "+yytext()+" ptoYcoma"); return new Symbol(sym.ptoYcoma, yycolumn, yyline, yytext()); }
-"{"         { System.out.println("Reconocio "+yytext()+" llaveA"); return new Symbol(sym.llave_a, yycolumn, yyline, yytext()); }
-"}"         { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.llave_c, yycolumn, yyline, yytext()); }
-":"         { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.dosPtos, yycolumn, yyline, yytext()); }
-"++"         { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.incremento, yycolumn, yyline, yytext()); }
-"--"         { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.decremento, yycolumn, yyline, yytext()); }
+">"            { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.mayor, yycolumn, yyline, yytext()); }
+"<"            { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.menor, yycolumn, yyline, yytext()); }
+"!="           { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.diferente, yycolumn, yyline, yytext()); }
+"=="           { System.out.println("Reconocio "+yytext()+" igual"); return new Symbol(sym.igual, yycolumn, yyline, yytext()); }
+"="            { System.out.println("Reconocio "+yytext()+" asignacion"); return new Symbol(sym.asignacion, yycolumn, yyline, yytext()); }
+"^"            { System.out.println("Reconocio "+yytext()+" potencia"); return new Symbol(sym.potencia, yycolumn, yyline, yytext()); }
+"+"            { System.out.println("Reconocio "+yytext()+" mas"); return new Symbol(sym.mas, yycolumn, yyline, yytext()); }
+"-"            { System.out.println("Reconocio "+yytext()+" menos"); return new Symbol(sym.menos, yycolumn, yyline, yytext()); }
+"*"            { System.out.println("Reconocio "+yytext()+" por"); return new Symbol(sym.por, yycolumn, yyline, yytext()); }
+"/"            { System.out.println("Reconocio "+yytext()+" div"); return new Symbol(sym.div, yycolumn, yyline, yytext()); }
+"%"            { System.out.println("Reconocio "+yytext()+" modo"); return new Symbol(sym.modular, yycolumn, yyline, yytext()); }
+"."            { System.out.println("Reconocio "+yytext()+" modo"); return new Symbol(sym.punto, yycolumn, yyline, yytext()); }
+";"            { System.out.println("Reconocio "+yytext()+" ptoYcoma"); return new Symbol(sym.ptoYcoma, yycolumn, yyline, yytext()); }
+"{"            { System.out.println("Reconocio "+yytext()+" llaveA"); return new Symbol(sym.llave_a, yycolumn, yyline, yytext()); }
+"}"            { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.llave_c, yycolumn, yyline, yytext()); }
+":"            { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.dosPtos, yycolumn, yyline, yytext()); }
+"++"           { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.incremento, yycolumn, yyline, yytext()); }
+"--"           { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.decremento, yycolumn, yyline, yytext()); }
 
 //-------> sym ER
-{identificador}       { System.out.println("Reconocio "+yytext()+" identificador"); return new Symbol(sym.identificador, yyline, yycolumn,yytext());} 
- {numEntero}          { System.out.println("Reconocio "+yytext()+" num"); return new Symbol(sym.numEntero, yycolumn, yyline, yytext()); }
+{identificador}        { System.out.println("Reconocio "+yytext()+" identificador"); return new Symbol(sym.identificador, yyline, yycolumn,yytext());} 
+ {numEntero}           { System.out.println("Reconocio "+yytext()+" num"); return new Symbol(sym.numEntero, yycolumn, yyline, yytext()); }
  {numDecimal}          { System.out.println("Reconocio "+yytext()+" decimal"); return new Symbol(sym.numDecimal, yycolumn, yyline, yytext()); } 
-{cadena}             { System.out.println("Reconocio "+yytext()+" cadena"); return new Symbol(sym.cadena, yycolumn, yyline, yytext()); }
+{cadena}               { System.out.println("Reconocio "+yytext()+" cadena"); return new Symbol(sym.cadena, yycolumn, yyline, yytext()); }
 {caracter}             { System.out.println("Reconocio "+yytext()+" caracter"); return new Symbol(sym.caracter, yycolumn, yyline, yytext()); }
 
 //------> Espacios
