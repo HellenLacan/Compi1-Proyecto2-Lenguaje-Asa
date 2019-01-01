@@ -1,5 +1,5 @@
 Boolean a,b,c = 45.8;
-Entero valor = 'a' + 3;
+Entero valorcito = 'a' + 3;
 Caracter a = 'a';
 Decimal a = 90.206 + falso;
 Texto a = 1+ verdadero;
@@ -31,8 +31,28 @@ Saludame("Hellen", "Lacan",123);
 Retorno a+b;
 Retorno ;
 
-Es_verdadero(((a>b) && (c==d) || e){
+Es_verdadero(((a>b) && (c==d)) || e){
 	
 }Es_falso{
 	
+}
+
+Cambiar_A(2+2){
+	Valor 4:
+	Iniciacalificacion();
+
+	Valor 5:
+	Iniciacalificacion(5);
+
+	No_cumple:
+	Retorno ;
+}
+
+Para(Decimal i = 15; i<10;++){
+	
+	Es_verdadero(((a>b) && (c==d)) || e){
+	
+	}Es_falso{
+	
+	}
 }

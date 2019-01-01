@@ -30,15 +30,15 @@ action code
 
 terminal cadena, numEntero, numDecimal, identificador, caracter;
 terminal _importar, _definir, _decimal, _booleano, _texto, _vacio, _entero, _verdadero, _falso, _principal, _retorno;
-terminal _esVerdadero, _esFalso;
+terminal _esVerdadero, _esFalso, _cambiarA, _valor, _noCumple, _para;
 terminal punto, ptoYcoma, coma, mas, menos, por, div, modular, potencia, asignacion, igual, diferente, menor, menorQ;
-terminal mayor, mayorQ, diferencia, and, or, not, parent_a, parent_c, llave_a, llave_c;
+terminal mayor, mayorQ, diferencia, and, or, not, parent_a, parent_c, llave_a, llave_c, dosPtos, incremento, decremento;
 
 nonterminal INICIAR, SENTENCIAS, SENTENCIAS1, TIPO;
 nonterminal DECLARACION_VARIABLES, LISTA_VARIABLES, ASIGN_VARIABLES, LLAMADAS_FUNC, LISTA_LLAMADA_FUNC;
 nonterminal OP_REL, EXPR_REL, EXPR_LOGICA, TIPO_EXPR, ASIGNACIONES, FUNCIONES, PRINCIPAL;
-nonterminal METODOS, LISTA_PARAMETROS, RETORNO, SENT_ES_VERDADERO, ES_VERD_CON_FALSO;
-nonterminal EXPR_ARIT, T, F, D;
+nonterminal METODOS, LISTA_PARAMETROS, RETORNO, SENT_ES_VERDADERO, ES_VERD_CON_FALSO, CAMBIAR_A, CASOS;
+nonterminal EXPR_ARIT, LISTA_CASOS, VALORES_CASE, NO_CUMPLE, VALORES_PARA, PARA, ITERADOR;
 
 precedence left or;
 precedence left and;
@@ -63,7 +63,11 @@ SENTENCIAS1::=  SENTENCIAS1 _importar
                |SENTENCIAS1 LLAMADAS_FUNC ptoYcoma
                |SENTENCIAS1 RETORNO
                |SENTENCIAS1 SENT_ES_VERDADERO
+               |SENTENCIAS1 CAMBIAR_A
+               |SENTENCIAS1 PARA
+               |PARA
                |SENT_ES_VERDADERO
+               |CAMBIAR_A
                |RETORNO
                |LLAMADAS_FUNC ptoYcoma
                |PRINCIPAL
@@ -103,6 +107,27 @@ SENT_ES_VERDADERO::= _esVerdadero parent_a EXPR_LOGICA parent_c llave_a SENTENCI
 ES_VERD_CON_FALSO::= _esFalso llave_a SENTENCIAS llave_c
                     |;
 
+CAMBIAR_A::= _cambiarA parent_a EXPR_ARIT parent_c llave_a CASOS NO_CUMPLE llave_c;
+
+CASOS::= CASOS LISTA_CASOS
+        |LISTA_CASOS;
+
+LISTA_CASOS::= _valor VALORES_CASE dosPtos SENTENCIAS;
+
+NO_CUMPLE::=_noCumple dosPtos SENTENCIAS
+            |;
+
+VALORES_CASE::= identificador
+                |numEntero
+                |numDecimal;
+
+PARA::=_para parent_a VALORES_PARA identificador asignacion EXPR_ARIT ptoYcoma EXPR_LOGICA ptoYcoma ITERADOR parent_c llave_a SENTENCIAS llave_c; 
+
+VALORES_PARA::= _decimal
+               |_entero;
+
+ITERADOR::= incremento
+           |decremento;
 LISTA_PARAMETROS::= LISTA_PARAMETROS coma TIPO identificador
                    |TIPO identificador
                    |;

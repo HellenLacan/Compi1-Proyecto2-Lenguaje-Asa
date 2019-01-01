@@ -52,6 +52,10 @@ caracter = "'" [^\'\n] "'"
 "Retorno"      { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._retorno, yycolumn, yyline, yytext()); }
 "Es_verdadero" { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._esVerdadero, yycolumn, yyline, yytext()); }
 "Es_falso"     { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._esFalso, yycolumn, yyline, yytext()); }
+"Cambiar_A"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._cambiarA, yycolumn, yyline, yytext()); }
+"Valor"        { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._valor, yycolumn, yyline, yytext()); }
+"No_cumple"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._noCumple, yycolumn, yyline, yytext()); }
+"Para"         { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._para, yycolumn, yyline, yytext()); }
 
 ","      { System.out.println("Reconocio "+yytext()+" coma"); return new Symbol(sym.coma, yycolumn, yyline, yytext()); }
 "("    { System.out.println("Reconocio "+yytext()+" parentesis Ab"); return new Symbol(sym.parent_a, yycolumn, yyline, yytext()); }
@@ -77,6 +81,9 @@ caracter = "'" [^\'\n] "'"
 ";"         { System.out.println("Reconocio "+yytext()+" ptoYcoma"); return new Symbol(sym.ptoYcoma, yycolumn, yyline, yytext()); }
 "{"         { System.out.println("Reconocio "+yytext()+" llaveA"); return new Symbol(sym.llave_a, yycolumn, yyline, yytext()); }
 "}"         { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.llave_c, yycolumn, yyline, yytext()); }
+":"         { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.dosPtos, yycolumn, yyline, yytext()); }
+"++"         { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.incremento, yycolumn, yyline, yytext()); }
+"--"         { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.decremento, yycolumn, yyline, yytext()); }
 
 //-------> sym ER
 {identificador}       { System.out.println("Reconocio "+yytext()+" identificador"); return new Symbol(sym.identificador, yyline, yycolumn,yytext());} 
