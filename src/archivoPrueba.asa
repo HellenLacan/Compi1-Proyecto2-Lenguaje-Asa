@@ -1,6 +1,6 @@
-Boolean a,b,c = 45.8;
+booleano a,b,c = 45.8;
 Entero valorcito = 'a' + 3;
-Caracter a = 'a';
+Booleano a = 'a';
 Decimal a = 90.206 + falso;
 Texto a = 1+ verdadero;
 Texto a = (2 > 3);
@@ -9,10 +9,11 @@ Texto a = hola("Mundo");
 Texto a = hola("Mundo", 2,5,'a',0.5);
 Texto a = 4 * factorial(4);
 a = 4;
-
-Boolean sumar(){
+Booleano sumar(){
 	
 }
+
+
 
 Vacio saludar(){
 	
@@ -75,3 +76,6 @@ Mostrar();
 Mostrar("Curso de compiladores 1/n");
 Mostrar("Hola mundo" + "Otra cadena" + 5);
 Mostrar("El resultado de la suma es: " + suma(5,2));
+DibujarAST(factorial);
+DibujarEXP(factorial(5) >= (60+5)*num);
+DibujarTS();

@@ -31,7 +31,7 @@ action code
 terminal cadena, numEntero, numDecimal, identificador, caracter;
 terminal _importar, _definir, _decimal, _booleano, _texto, _vacio, _entero, _verdadero, _falso, _principal, _retorno;
 terminal _esVerdadero, _esFalso, _cambiarA, _valor, _noCumple, _para, _hastaQue, _mientrasQue, _romper, _continuar;
-terminal _mostrar, _dibujarAst;
+terminal _mostrar, _dibujarAst, _dibujarExp, _dibujarTs;
 terminal punto, ptoYcoma, coma, mas, menos, por, div, modular, potencia, asignacion, igual, diferente, menor, menorQ;
 terminal mayor, mayorQ, diferencia, and, or, not, parent_a, parent_c, llave_a, llave_c, dosPtos, incremento, decremento;
 
@@ -40,7 +40,7 @@ nonterminal DECLARACION_VARIABLES, LISTA_VARIABLES, ASIGN_VARIABLES, LLAMADAS_FU
 nonterminal OP_REL, EXPR_REL, EXPR_LOGICA, TIPO_EXPR, ASIGNACIONES, FUNCIONES, PRINCIPAL;
 nonterminal METODOS, LISTA_PARAMETROS, RETORNO, SENT_ES_VERDADERO, ES_VERD_CON_FALSO, CAMBIAR_A, CASOS;
 nonterminal EXPR_ARIT, LISTA_CASOS, VALORES_CASE, NO_CUMPLE, VALORES_PARA, PARA, ITERADOR, HASTA_QUE, MIENTRAS_QUE;
-nonterminal ROMPER, CONTINUAR, MOSTRAR, DIBUJAR_AST;
+nonterminal ROMPER, CONTINUAR, MOSTRAR, DIBUJAR_AST, DIBUJAR_EXP, DIBUJAR_TS;
 
 precedence left or;
 precedence left and;
@@ -72,6 +72,12 @@ SENTENCIAS1::=  SENTENCIAS1 _importar
                |SENTENCIAS1 ROMPER
                |SENTENCIAS1 CONTINUAR
                |SENTENCIAS1 MOSTRAR
+               |SENTENCIAS1 DIBUJAR_AST
+               |SENTENCIAS1 DIBUJAR_EXP
+               |SENTENCIAS1 DIBUJAR_TS
+               |DIBUJAR_EXP
+               |DIBUJAR_TS
+               |DIBUJAR_AST
                |MOSTRAR
                |ROMPER
                |CONTINUAR
@@ -129,13 +135,6 @@ LISTA_CASOS::= _valor VALORES_CASE dosPtos SENTENCIAS;
 NO_CUMPLE::=_noCumple dosPtos SENTENCIAS
             |;
 
-ROMPER::= _romper ptoYcoma;
-
-CONTINUAR::=_continuar ptoYcoma;
-
-MOSTRAR::= _mostrar parent_a EXPR_ARIT parent_c ptoYcoma
-          |_mostrar parent_a parent_c ptoYcoma;
-
 VALORES_CASE::= identificador
                 |numEntero
                 |numDecimal;
@@ -155,6 +154,19 @@ MIENTRAS_QUE::= _mientrasQue parent_a EXPR_LOGICA parent_c llave_a SENTENCIAS ll
 LISTA_PARAMETROS::= LISTA_PARAMETROS coma TIPO identificador
                    |TIPO identificador
                    |;
+
+ROMPER::= _romper ptoYcoma;
+
+CONTINUAR::=_continuar ptoYcoma;
+
+MOSTRAR::= _mostrar parent_a EXPR_ARIT parent_c ptoYcoma
+          |_mostrar parent_a parent_c ptoYcoma;
+
+DIBUJAR_AST::= _dibujarAst parent_a identificador parent_c ptoYcoma;
+
+DIBUJAR_EXP::= _dibujarExp parent_a EXPR_LOGICA parent_c ptoYcoma;
+
+DIBUJAR_TS::= _dibujarTs parent_a parent_c ptoYcoma;
 
 EXPR_LOGICA::= EXPR_LOGICA or EXPR_LOGICA
               |EXPR_LOGICA and EXPR_LOGICA
@@ -190,5 +202,4 @@ EXPR_ARIT::= EXPR_ARIT mas EXPR_ARIT
 TIPO::=  _decimal
         |_booleano
         |_texto
-        |_entero
-        |identificador;
+        |_entero;

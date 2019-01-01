@@ -62,6 +62,8 @@ caracter = "'" [^\'\n] "'"
 "Continuar"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._continuar, yycolumn, yyline, yytext()); }
 "Mostrar"      { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._mostrar, yycolumn, yyline, yytext()); }
 "DibujarAST"   { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._dibujarAst, yycolumn, yyline, yytext()); }
+"DibujarEXP"   { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._dibujarExp, yycolumn, yyline, yytext()); }
+"DibujarTS"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._dibujarTs, yycolumn, yyline, yytext()); }
 
 ","            { System.out.println("Reconocio "+yytext()+" coma"); return new Symbol(sym.coma, yycolumn, yyline, yytext()); }
 "("            { System.out.println("Reconocio "+yytext()+" parentesis Ab"); return new Symbol(sym.parent_a, yycolumn, yyline, yytext()); }
