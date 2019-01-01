@@ -1,7 +1,38 @@
 Boolean a,b,c = 45.8;
-entero valor = 'a' + 3;
-caracter a = 'a';
+Entero valor = 'a' + 3;
+Caracter a = 'a';
 Decimal a = 90.206 + falso;
 Texto a = 1+ verdadero;
 Texto a = (2 > 3);
-Texto a = (2 > 3 && 5>8);
+Texto a = (2 > 3 && 5 > 8);
+Texto a = hola("Mundo");
+Texto a = hola("Mundo", 2,5,'a',0.5);
+Texto a = 4 * factorial(4);
+a = 4;
+
+Boolean sumar(){
+	
+}
+
+Vacio saludar(){
+	
+}
+
+Vacio Principal(){
+	
+}
+
+Vacio Principal(){
+	
+}
+
+Iniciacalificacion();
+Saludame("Hellen", "Lacan",123);
+Retorno a+b;
+Retorno ;
+
+Es_verdadero(((a>b) && (c==d) || e){
+	
+}Es_falso{
+	
+}
