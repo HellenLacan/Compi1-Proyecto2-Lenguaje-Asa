@@ -56,16 +56,22 @@ caracter = "'" [^\'\n] "'"
 "Valor"        { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._valor, yycolumn, yyline, yytext()); }
 "No_cumple"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._noCumple, yycolumn, yyline, yytext()); }
 "Para"         { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._para, yycolumn, yyline, yytext()); }
+"Hasta_que"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._hastaQue, yycolumn, yyline, yytext()); }
+"Mientras_que" { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._mientrasQue, yycolumn, yyline, yytext()); }
+"Romper"       { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._romper, yycolumn, yyline, yytext()); }
+"Continuar"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._continuar, yycolumn, yyline, yytext()); }
+"Mostrar"      { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._mostrar, yycolumn, yyline, yytext()); }
+"DibujarAST"   { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym._dibujarAst, yycolumn, yyline, yytext()); }
 
-","      { System.out.println("Reconocio "+yytext()+" coma"); return new Symbol(sym.coma, yycolumn, yyline, yytext()); }
-"("    { System.out.println("Reconocio "+yytext()+" parentesis Ab"); return new Symbol(sym.parent_a, yycolumn, yyline, yytext()); }
-")"    { System.out.println("Reconocio "+yytext()+" parentesis Cerr"); return new Symbol(sym.parent_c, yycolumn, yyline, yytext()); }
-"&&"        { System.out.println("Reconocio "+yytext()+" And"); return new Symbol(sym.and, yycolumn, yyline, yytext()); }
-"!"      { System.out.println("Reconocio "+yytext()+" not"); return new Symbol(sym.not, yycolumn, yyline, yytext()); }
-"||"       { System.out.println("Reconocio "+yytext()+" Or"); return new Symbol(sym.or, yycolumn, yyline, yytext()); }
-"~"     { System.out.println("Reconocio "+yytext()+" Distinto"); return new Symbol(sym.diferencia, yycolumn, yyline, yytext()); }
-">="        { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.mayorQ, yycolumn, yyline, yytext()); }
-"<="    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.menorQ, yycolumn, yyline, yytext()); }
+","            { System.out.println("Reconocio "+yytext()+" coma"); return new Symbol(sym.coma, yycolumn, yyline, yytext()); }
+"("            { System.out.println("Reconocio "+yytext()+" parentesis Ab"); return new Symbol(sym.parent_a, yycolumn, yyline, yytext()); }
+")"            { System.out.println("Reconocio "+yytext()+" parentesis Cerr"); return new Symbol(sym.parent_c, yycolumn, yyline, yytext()); }
+"&&"           { System.out.println("Reconocio "+yytext()+" And"); return new Symbol(sym.and, yycolumn, yyline, yytext()); }
+"!"            { System.out.println("Reconocio "+yytext()+" not"); return new Symbol(sym.not, yycolumn, yyline, yytext()); }
+"||"           { System.out.println("Reconocio "+yytext()+" Or"); return new Symbol(sym.or, yycolumn, yyline, yytext()); }
+"~"            { System.out.println("Reconocio "+yytext()+" Distinto"); return new Symbol(sym.diferencia, yycolumn, yyline, yytext()); }
+">="           { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.mayorQ, yycolumn, yyline, yytext()); }
+"<="           { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.menorQ, yycolumn, yyline, yytext()); }
 ">"      { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.mayor, yycolumn, yyline, yytext()); }
 "<"    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.menor, yycolumn, yyline, yytext()); }
 "!="    { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.diferente, yycolumn, yyline, yytext()); }

@@ -56,3 +56,22 @@ Para(Decimal i = 15; i<10;++){
 	
 	}
 }
+
+Hasta_que(a>b){
+	
+}
+
+Mientras_que(j || h){
+	Es_verdadero(((a>b) && (c==d)) || e){
+	
+	}Es_falso{
+	
+	}
+}
+
+Romper;
+Continuar;
+Mostrar();
+Mostrar("Curso de compiladores 1/n");
+Mostrar("Hola mundo" + "Otra cadena" + 5);
+Mostrar("El resultado de la suma es: " + suma(5,2));

@@ -30,7 +30,8 @@ action code
 
 terminal cadena, numEntero, numDecimal, identificador, caracter;
 terminal _importar, _definir, _decimal, _booleano, _texto, _vacio, _entero, _verdadero, _falso, _principal, _retorno;
-terminal _esVerdadero, _esFalso, _cambiarA, _valor, _noCumple, _para;
+terminal _esVerdadero, _esFalso, _cambiarA, _valor, _noCumple, _para, _hastaQue, _mientrasQue, _romper, _continuar;
+terminal _mostrar, _dibujarAst;
 terminal punto, ptoYcoma, coma, mas, menos, por, div, modular, potencia, asignacion, igual, diferente, menor, menorQ;
 terminal mayor, mayorQ, diferencia, and, or, not, parent_a, parent_c, llave_a, llave_c, dosPtos, incremento, decremento;
 
@@ -38,7 +39,8 @@ nonterminal INICIAR, SENTENCIAS, SENTENCIAS1, TIPO;
 nonterminal DECLARACION_VARIABLES, LISTA_VARIABLES, ASIGN_VARIABLES, LLAMADAS_FUNC, LISTA_LLAMADA_FUNC;
 nonterminal OP_REL, EXPR_REL, EXPR_LOGICA, TIPO_EXPR, ASIGNACIONES, FUNCIONES, PRINCIPAL;
 nonterminal METODOS, LISTA_PARAMETROS, RETORNO, SENT_ES_VERDADERO, ES_VERD_CON_FALSO, CAMBIAR_A, CASOS;
-nonterminal EXPR_ARIT, LISTA_CASOS, VALORES_CASE, NO_CUMPLE, VALORES_PARA, PARA, ITERADOR;
+nonterminal EXPR_ARIT, LISTA_CASOS, VALORES_CASE, NO_CUMPLE, VALORES_PARA, PARA, ITERADOR, HASTA_QUE, MIENTRAS_QUE;
+nonterminal ROMPER, CONTINUAR, MOSTRAR, DIBUJAR_AST;
 
 precedence left or;
 precedence left and;
@@ -65,6 +67,16 @@ SENTENCIAS1::=  SENTENCIAS1 _importar
                |SENTENCIAS1 SENT_ES_VERDADERO
                |SENTENCIAS1 CAMBIAR_A
                |SENTENCIAS1 PARA
+               |SENTENCIAS1 HASTA_QUE
+               |SENTENCIAS1 MIENTRAS_QUE
+               |SENTENCIAS1 ROMPER
+               |SENTENCIAS1 CONTINUAR
+               |SENTENCIAS1 MOSTRAR
+               |MOSTRAR
+               |ROMPER
+               |CONTINUAR
+               |HASTA_QUE
+               |MIENTRAS_QUE
                |PARA
                |SENT_ES_VERDADERO
                |CAMBIAR_A
@@ -117,6 +129,13 @@ LISTA_CASOS::= _valor VALORES_CASE dosPtos SENTENCIAS;
 NO_CUMPLE::=_noCumple dosPtos SENTENCIAS
             |;
 
+ROMPER::= _romper ptoYcoma;
+
+CONTINUAR::=_continuar ptoYcoma;
+
+MOSTRAR::= _mostrar parent_a EXPR_ARIT parent_c ptoYcoma
+          |_mostrar parent_a parent_c ptoYcoma;
+
 VALORES_CASE::= identificador
                 |numEntero
                 |numDecimal;
@@ -128,6 +147,11 @@ VALORES_PARA::= _decimal
 
 ITERADOR::= incremento
            |decremento;
+
+HASTA_QUE::= _hastaQue parent_a EXPR_LOGICA parent_c llave_a SENTENCIAS llave_c;
+
+MIENTRAS_QUE::= _mientrasQue parent_a EXPR_LOGICA parent_c llave_a SENTENCIAS llave_c;
+
 LISTA_PARAMETROS::= LISTA_PARAMETROS coma TIPO identificador
                    |TIPO identificador
                    |;
