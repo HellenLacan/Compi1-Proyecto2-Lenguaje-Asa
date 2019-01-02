@@ -8,16 +8,14 @@ import java.util.ArrayList;
 parser code
 {://Codigo visible
     
-    public static Nodo padre;
+    public static Nodo padre = new Nodo("PADRE");
     public int cont = 0;
     public void syntax_error(Symbol s){
-        System.err.println("ERROR R: ");
-        System.err.println(s);
+        System.out.println("Error Sintactico Recuperado -> lexema: " +s.value+ " Fila: " +s.right+ " Columna: "+s.left);       
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        System.err.println("ERROR N_R: ");
-        System.err.println(s);
+        System.out.println("Error Sintactico Panico -> Lexema: " +s.value+" Fila: "+s.right+ " Columna: "+s.left);        
     }
 
 :}
@@ -28,45 +26,81 @@ action code
     Stack<String> tmp = new Stack<>(); // esto queda a  nivel implementacion unicamente ya que teoricamente es posible sin esto.
 :}
 
-terminal cadena, numEntero, numDecimal, identificador, caracter;
-terminal _importar, _definir, _decimal, _booleano, _texto, _vacio, _entero, _verdadero, _falso, _principal, _retorno;
-terminal _esVerdadero, _esFalso, _cambiarA, _valor, _noCumple, _para, _hastaQue, _mientrasQue, _romper, _continuar;
-terminal _mostrar, _dibujarAst, _dibujarExp, _dibujarTs, _asa;
-terminal punto, ptoYcoma, coma, mas, menos, por, div, modular, potencia, asignacion, igual, diferente, menor, menorQ;
-terminal mayor, mayorQ, diferencia, and, or, not, parent_a, parent_c, llave_a, llave_c, dosPtos, incremento, decremento;
+terminal String cadena, numEntero, numDecimal, identificador, caracter;
+terminal String _importar, _definir, _decimal, _booleano, _texto, _vacio, _entero, _verdadero, _falso, _principal, _retorno;
+terminal String _esVerdadero, _esFalso, _cambiarA, _valor, _noCumple, _para, _hastaQue, _mientrasQue, _romper, _continuar;
+terminal String _mostrar, _dibujarAst, _dibujarExp, _dibujarTs, _asa, decremento;
+terminal String punto, ptoYcoma, coma, mas, menos, por, div, modular, potencia, asignacion, igual, diferente, menor, menorQ;
+terminal String mayor, mayorQ, diferencia, and, or, not, parent_a, parent_c, llave_a, llave_c, dosPtos;
 
-nonterminal INICIAR, SO, CUERPO_PRINCIPAL, SENTENCIAS, LISTA_SENTENCIAS, TIPO, IMPORTAR, DEFINIR;
-nonterminal DECLARACION_VARIABLES, LISTA_VARIABLES, ASIGN_VARIABLES, LLAMADAS_FUNC, LISTA_LLAMADA_FUNC;
-nonterminal OP_REL, EXPR_REL, EXPR_LOGICA, TIPO_EXPR, ASIGNACIONES, FUNCIONES, PRINCIPAL;
-nonterminal METODOS, LISTA_PARAMETROS, RETORNO, SENT_ES_VERDADERO, ES_VERD_CON_FALSO, CAMBIAR_A, CASOS;
-nonterminal EXPR_ARIT, LISTA_CASOS, VALORES_CASE, NO_CUMPLE, VALORES_PARA, PARA, ITERADOR, HASTA_QUE, MIENTRAS_QUE;
-nonterminal ROMPER, CONTINUAR, MOSTRAR, DIBUJAR_AST, DIBUJAR_EXP, DIBUJAR_TS;
+nonterminal Nodo INICIAR, SO, CUERPO_PRINCIPAL, SENTENCIAS, LISTA_SENTENCIAS, TIPO, IMPORTAR, DEFINIR;
+nonterminal Nodo DECLARACION_VARIABLES, LISTA_VARIABLES, ASIGN_VARIABLES, LLAMADAS_FUNC, LISTA_LLAMADA_FUNC;
+nonterminal Nodo OP_REL, EXPR_REL, EXPR_LOGICA, TIPO_EXPR, ASIGNACIONES, FUNCIONES, PRINCIPAL;
+nonterminal Nodo METODOS, LISTA_PARAMETROS, RETORNO, SENT_ES_VERDADERO, ES_VERD_CON_FALSO, CAMBIAR_A, CASOS;
+nonterminal Nodo EXPR_ARIT, LISTA_CASOS, VALORES_CASE, NO_CUMPLE, VALORES_PARA, PARA, ITERADOR, HASTA_QUE, MIENTRAS_QUE;
+nonterminal Nodo ROMPER, CONTINUAR, MOSTRAR, DIBUJAR_AST, DIBUJAR_EXP, DIBUJAR_TS;
 
+precedence left mas, menos;
+precedence left por, div, modular; 
+precedence right potencia; 
+precedence nonassoc menor, menorQ, mayorQ, menorQ, igual, diferente;
 precedence left or;
 precedence left and;
 precedence right not;
-precedence left menor, menorQ, mayorQ, menorQ, igual, diferente;
-precedence left mas, menos;
-precedence left por, div; 
-precedence right potencia; 
+
 start with INICIAR;
 
-INICIAR::= CUERPO_PRINCIPAL;
+INICIAR::= CUERPO_PRINCIPAL:cp 
+                            {: Nodo n = new Nodo("INICIAR");
+                               n.addHijo((Nodo)cp);
+                               padre.addHijo(n);
+                               padre.setIdNodo(1);
+                               padre.setNoHijos(padre.getNoHijos()+1);
+                            :}
+;
 
-CUERPO_PRINCIPAL::= CUERPO_PRINCIPAL DECLARACION_VARIABLES
+CUERPO_PRINCIPAL::= CUERPO_PRINCIPAL:cp IMPORTAR:n1
+                            {: 
+                             Nodo n = new Nodo("CUERPO_PRINCIPAL");
+                             n.addHijo(cp);
+                             n.addHijo(n1);
+                             RESULT = n;
+                            :}
+                   |CUERPO_PRINCIPAL:cp DEFINIR:n1
+                            {: 
+                             Nodo n = new Nodo("CUERPO_PRINCIPAL");
+                             n.addHijo(cp);
+                             n.addHijo(n1);
+                             RESULT = n;
+                            :}
+                   |CUERPO_PRINCIPAL:cp DECLARACION_VARIABLES:n1
+                            {: 
+                             Nodo n = new Nodo("CUERPO_PRINCIPAL");
+                             n.addHijo(cp);
+                             n.addHijo(n1);
+                             RESULT = n;
+                            :}
                    |CUERPO_PRINCIPAL ASIGNACIONES
                    |CUERPO_PRINCIPAL FUNCIONES
                    |CUERPO_PRINCIPAL METODOS
                    |CUERPO_PRINCIPAL PRINCIPAL
-                   |CUERPO_PRINCIPAL IMPORTAR
-                   |CUERPO_PRINCIPAL DEFINIR
-                   |IMPORTAR
-                   |DEFINIR
-                   |DECLARACION_VARIABLES
+                   |IMPORTAR:imp
+                            {: 
+                               RESULT = imp;
+                            :}
+                   |DEFINIR:def
+                            {: 
+                               RESULT = def;
+                            :}
+                   |DECLARACION_VARIABLES:var
+                            {: 
+                               RESULT = var;
+                            :}
                    |ASIGNACIONES
                    |FUNCIONES
                    |METODOS
-                   |PRINCIPAL;
+                   |PRINCIPAL
+                   ;
 
 SENTENCIAS::= LISTA_SENTENCIAS
              |;
@@ -102,14 +136,59 @@ LISTA_SENTENCIAS::=  LISTA_SENTENCIAS DIBUJAR_EXP
                     |ASIGNACIONES
                     |DECLARACION_VARIABLES;
 
-IMPORTAR::=_importar identificador punto _asa ptoYcoma;
+IMPORTAR::=_importar:imp identificador:id punto _asa ptoYcoma
+                           {:
+                             Nodo n = new Nodo("IMPORTAR");
+                             Nodo n1 = new Nodo(imp, impleft, impright);
+                             Nodo n2 = new Nodo(id, idleft, idright);
+                             n.addHijo(n1);
+                             n.addHijo(n2);
+                             n.setNoHijos(n.getNoHijos()+2);
+                             RESULT = n;
+                           :}
+;
 
-DEFINIR::= _definir cadena ptoYcoma;
+DEFINIR::= _definir:def cadena:cad ptoYcoma
+                           {:
+                             Nodo n = new Nodo("DEFINIR");
+                             String cadena = cad.replace("\"", "");
+                             Nodo n1 = new Nodo(def, defleft, defright);
+                             Nodo n2 = new Nodo(cadena, cadleft, cadright);
+                             n.addHijo(n1);
+                             n.addHijo(n2);
+                             n.setNoHijos(n.getNoHijos()+2);
+                             RESULT = n;
+                           :}
+;
 
-DECLARACION_VARIABLES::=TIPO LISTA_VARIABLES ASIGN_VARIABLES ptoYcoma;
+DECLARACION_VARIABLES::=TIPO:n1 LISTA_VARIABLES:n2 ASIGN_VARIABLES:n3 ptoYcoma
+                           {:
+                             Nodo n = new Nodo("DECLARACION_VARIABLES");
+                             n.addHijo(n1);
+                             n.addHijo(n2);
+                             if(n3 != null){
+                                n.addHijo(n3);
+                             }
+                             RESULT = n;
+                           :}
+;
 
-LISTA_VARIABLES::= LISTA_VARIABLES coma identificador 
-                  |identificador;
+LISTA_VARIABLES::= LISTA_VARIABLES:n1 coma identificador:id 
+                           {:
+                             Nodo n = new Nodo("LISTA_VARIABLES");
+                             n.addHijo(n1);
+                             Nodo n2 = new Nodo(id, idleft, idright);
+                             n.addHijo(n2);
+                             RESULT = n;
+                           :}
+                  |identificador:id
+                           {:
+                             Nodo n = new Nodo("LISTA_VARIABLES");
+                             Nodo n1 = new Nodo(id, idleft, idright);
+                             n.addHijo(n1);
+                             RESULT = n;
+                           :}
+;
 
 LLAMADAS_FUNC::= identificador parent_a LISTA_LLAMADA_FUNC parent_c;
 
@@ -117,8 +196,17 @@ LISTA_LLAMADA_FUNC::= LISTA_LLAMADA_FUNC coma EXPR_ARIT
                      |EXPR_ARIT
                      |;
 
-ASIGN_VARIABLES::= asignacion EXPR_ARIT
-                  |;
+ASIGN_VARIABLES::= asignacion EXPR_ARIT:exp
+                           {:
+                             Nodo n = new Nodo("EXP");
+                             n.addHijo(exp);
+                             RESULT = n;
+                           :}
+                  |
+                           {:
+                             RESULT = null;
+                           :}
+;
 
 ASIGNACIONES::= identificador asignacion EXPR_ARIT ptoYcoma;
 
@@ -155,7 +243,7 @@ PARA::=_para parent_a VALORES_PARA identificador asignacion EXPR_ARIT ptoYcoma E
 VALORES_PARA::= _decimal
                |_entero;
 
-ITERADOR::= incremento
+ITERADOR::= mas mas
            |decremento;
 
 HASTA_QUE::= _hastaQue parent_a EXPR_LOGICA parent_c llave_a SENTENCIAS llave_c;
@@ -179,38 +267,214 @@ DIBUJAR_EXP::= _dibujarExp parent_a EXPR_LOGICA parent_c ptoYcoma;
 
 DIBUJAR_TS::= _dibujarTs parent_a parent_c ptoYcoma;
 
-EXPR_LOGICA::= EXPR_LOGICA or EXPR_LOGICA
-              |EXPR_LOGICA and EXPR_LOGICA
-              |not EXPR_LOGICA
-              |EXPR_REL;
+EXPR_LOGICA::= EXPR_LOGICA:n1 or:signo EXPR_LOGICA:n3
+                           {:
+                             Nodo n = new Nodo("EXPR_LOGICA");
+                             n.addHijo(n1);
+                             Nodo n2 = new Nodo(signo, signoleft, signoright);
+                             n.addHijo(n2);
+                             n.addHijo(n3);
+                             RESULT = n;
+                           :}
+              |EXPR_LOGICA:n1 and:signo EXPR_LOGICA:n3
+                           {:
+                             Nodo n = new Nodo("EXPR_LOGICA");
+                             n.addHijo(n1);
+                             Nodo n2 = new Nodo(signo, signoleft, signoright);
+                             n.addHijo(n2);
+                             n.addHijo(n3);
+                             RESULT = n;
+                           :}
+              |not:exp EXPR_LOGICA:n2
+                           {:
+                             Nodo n = new Nodo("NEG");
+                             Nodo n1 = new Nodo(exp, expleft, expright);
+                             n.addHijo(n1);
+                             n.addHijo(n2);
+                             RESULT = n;
+                           :}
+              |EXPR_REL:exp
+                           {:
+                             RESULT = exp;
+                           :}
+;
 
-EXPR_REL::= EXPR_ARIT OP_REL EXPR_ARIT
-           |EXPR_ARIT;
+EXPR_REL::= EXPR_ARIT:n1 OP_REL:n2 EXPR_ARIT:n3
+                           {:
+                             Nodo n = new Nodo("EXPR_REL");
+                             n.addHijo(n1);
+                             n.addHijo(n2);
+                             n.addHijo(n3);
+                             RESULT = n;
+                           :}
+           |EXPR_ARIT:n
+                           {:
+                             RESULT = n;
+                           :}
+;
 
-OP_REL::=   mayor
-           |menor
-           |menorQ
-           |mayorQ
-           |igual
-           |diferente;
+OP_REL::=   mayor:op
+                           {:
+                             Nodo n = new Nodo(op, opleft, opright);
+                             RESULT = n;
+                           :}
+           |menor:op
+                           {:
+                             Nodo n = new Nodo(op, opleft, opright);
+                             RESULT = n;
+                           :}
+           |menorQ:op
+                           {:
+                             Nodo n = new Nodo(op, opleft, opright);
+                             RESULT = n;
+                           :}
+           |mayorQ:op
+                           {:
+                             Nodo n = new Nodo(op, opleft, opright);
+                             RESULT = n;
+                           :}
+           |igual:op
+                           {:
+                             Nodo n = new Nodo(op, opleft, opright);
+                             RESULT = n;
+                           :}
+           |diferente:op
+                           {:
+                             Nodo n = new Nodo(op, opleft, opright);
+                             RESULT = n;
+                           :};
 
-EXPR_ARIT::= EXPR_ARIT mas EXPR_ARIT
-            |EXPR_ARIT menos EXPR_ARIT
-            |EXPR_ARIT por EXPR_ARIT
-            |EXPR_ARIT div EXPR_ARIT
-            |EXPR_ARIT potencia EXPR_ARIT
-            |numEntero
-            |numDecimal
-            |menos EXPR_ARIT
-            |identificador
-            |_verdadero
-            |_falso
-            |caracter
-            |cadena
-            |LLAMADAS_FUNC
-            |parent_a EXPR_LOGICA parent_c;
+EXPR_ARIT::= EXPR_ARIT:n1 mas:signo EXPR_ARIT:n3
+                           {:
+                             Nodo n = new Nodo("EXPR_ARIT");
+                             n.addHijo(n1);
+                             Nodo n2 = new Nodo(signo, signoleft, signoright);
+                             n.addHijo(n2);
+                             n.addHijo(n3);
+                             RESULT = n;
+                           :}
+            |EXPR_ARIT:n1 menos:signo EXPR_ARIT:n3
+                           {:
+                             Nodo n = new Nodo("EXPR_ARIT");
+                             n.addHijo(n1);
+                             Nodo n2 = new Nodo(signo, signoleft, signoright);
+                             n.addHijo(n2);
+                             n.addHijo(n3);
+                             RESULT = n;
+                           :}
+            |EXPR_ARIT:n1 por:signo EXPR_ARIT:n3
+                           {:
+                             Nodo n = new Nodo("EXPR_ARIT");
+                             n.addHijo(n1);
+                             Nodo n2 = new Nodo(signo, signoleft, signoright);
+                             n.addHijo(n2);
+                             n.addHijo(n3);
+                             RESULT = n;
+                           :}
+            |EXPR_ARIT:n1 div:signo EXPR_ARIT:n3
+                           {:
+                             Nodo n = new Nodo("EXPR_ARIT");
+                             n.addHijo(n1);
+                             Nodo n2 = new Nodo(signo, signoleft, signoright);
+                             n.addHijo(n2);
+                             n.addHijo(n3);
+                             RESULT = n;
+                           :}
+            |EXPR_ARIT:n1 modular:signo EXPR_ARIT:n3
+                           {:
+                             Nodo n = new Nodo("EXPR_ARIT");
+                             n.addHijo(n1);
+                             Nodo n2 = new Nodo(signo, signoleft, signoright);
+                             n.addHijo(n2);
+                             n.addHijo(n3);
+                             RESULT = n;
+                           :}
+            |EXPR_ARIT:n1 potencia:signo EXPR_ARIT:n3
+                           {:
+                             Nodo n = new Nodo("EXPR_ARIT");
+                             n.addHijo(n1);
+                             Nodo n2 = new Nodo(signo, signoleft, signoright);
+                             n.addHijo(n2);
+                             n.addHijo(n3);
+                             RESULT = n;
+                           :}
+            |numEntero:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+            |numDecimal:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+            |menos:exp EXPR_ARIT:n2
+                           {:
+                             Nodo n = new Nodo("NUM_NEG");
+                             Nodo n1 = new Nodo(exp, expleft, expright);
+                             n.addHijo(n1);
+                             n.addHijo(n2);
+                             RESULT = n;
+                           :}
+            |identificador:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+            |_verdadero:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+            |_falso:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+            |caracter:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+            |cadena:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+            |LLAMADAS_FUNC:exp
+            |parent_a EXPR_LOGICA:exp parent_c
+                           {:
+                             RESULT = exp;
+                           :}
+;
 
-TIPO::=  _decimal
-        |_booleano
-        |_texto
-        |_entero;
+
+TIPO::=  _decimal:tipo
+                           {:
+                             Nodo n = new Nodo("TIPO");
+                             Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
+                             n.addHijo(n1);
+                             RESULT = n;
+                           :}
+        |_booleano:tipo
+                           {:
+                             Nodo n = new Nodo("TIPO");
+                             Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
+                             n.addHijo(n1);
+                             RESULT = n;
+                           :}
+        |_texto:tipo
+                           {:
+                             Nodo n = new Nodo("TIPO");
+                             Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
+                             n.addHijo(n1);
+                             RESULT = n;
+                           :}
+        |_entero:tipo
+                           {:
+                             Nodo n = new Nodo("TIPO");
+                             Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
+                             n.addHijo(n1);
+                             RESULT = n;
+                           :}
+;

@@ -12,30 +12,34 @@ import java.util.ArrayList;
  * @author Hellen
  */
 public class Nodo {
-    private String Etiqueta;
+    private String etiqueta;
     private ArrayList<Nodo> hijos =  new ArrayList<>();
     private String valor;
+    private int fila;
+    private int columna;
     private int idNodo;
-    private String Separador;
+    private int noHijos;
+    
+    public Nodo(String etiqueta){
+        this.etiqueta = etiqueta;
+    }
+    
+    public Nodo(String etiqueta, int fila, int columna){
+        this.etiqueta = etiqueta;
+        this.fila = fila;
+        this.columna = columna;
+    }
     
     public void addHijo(Nodo hijo){
         hijos.add(hijo);
     }
 
     public String getEtiqueta() {
-        return Etiqueta;
+        return etiqueta;
     }
 
     public void setEtiqueta(String Etiqueta) {
-        this.Etiqueta = Etiqueta;
-    }
-
-    public ArrayList<Nodo> getHijos() {
-        return hijos;
-    }
-
-    public void setHijos(ArrayList<Nodo> hijos) {
-        this.hijos = hijos;
+        this.etiqueta = Etiqueta;
     }
 
     public String getValor() {
@@ -46,6 +50,22 @@ public class Nodo {
         this.valor = valor;
     }
 
+    public int getFila() {
+        return fila;
+    }
+
+    public void setFila(int fila) {
+        this.fila = fila;
+    }
+
+    public int getColumna() {
+        return columna;
+    }
+
+    public void setColumna(int columna) {
+        this.columna = columna;
+    }
+
     public int getIdNodo() {
         return idNodo;
     }
@@ -54,12 +74,19 @@ public class Nodo {
         this.idNodo = idNodo;
     }
 
-    public String getSeparador() {
-        return Separador;
+    public int getNoHijos() {
+        return noHijos;
     }
 
-    public void setSeparador(String Separador) {
-        this.Separador = Separador;
+    public void setNoHijos(int noHijos) {
+        this.noHijos = noHijos;
     }
 
+    public ArrayList<Nodo> getHijos() {
+        return hijos;
+    }
+
+    public void setHijos(ArrayList<Nodo> hijos) {
+        this.hijos = hijos;
+    }
 }

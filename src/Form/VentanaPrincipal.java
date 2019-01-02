@@ -5,6 +5,10 @@
  */
 package Form;
 
+import ControlDot.ControlDot;
+import ControlDot.generarGrafica;
+import static ControlDot.generarGrafica.generarGrafica;
+import fuentes.Nodo;
 import fuentes.parser;
 import fuentes.scanner;
 import java.io.BufferedReader;
@@ -13,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -47,6 +52,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             scanner scan = new scanner(new BufferedReader(new StringReader(texto)));
             parser parser = new parser(scan);
             parser.parse();
+            Nodo AST = parser.padre;
+            
+            String archivoTxT = "C:\\Users\\Hellen\\Desktop" + "\\GrafoApila.txt";
+            File file1 = new File(archivoTxT);
+        
+            PrintWriter writer = new PrintWriter(file1, "UTF-8");
+
+            writer.println(ControlDot.getDot(AST));
+            writer.close();
+            generarGrafica(archivoTxT, "AST");
             System.out.println("Finaliza analisis...");
         } catch (Exception ex) {
             ex.printStackTrace();
