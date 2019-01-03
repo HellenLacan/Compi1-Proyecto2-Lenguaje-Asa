@@ -8,64 +8,65 @@ package fuentes;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int dosPtos = 58;
+  public static final int dosPtos = 59;
   public static final int _esVerdadero = 18;
   public static final int _mostrar = 28;
   public static final int numDecimal = 4;
   public static final int _dibujarTs = 31;
-  public static final int llave_c = 57;
-  public static final int ptoYcoma = 35;
-  public static final int llave_a = 56;
-  public static final int coma = 36;
-  public static final int igual = 44;
+  public static final int llave_c = 58;
+  public static final int ptoYcoma = 36;
+  public static final int llave_a = 57;
+  public static final int coma = 37;
+  public static final int igual = 45;
   public static final int _asa = 32;
   public static final int identificador = 5;
   public static final int _verdadero = 14;
   public static final int _booleano = 10;
   public static final int _romper = 26;
   public static final int caracter = 6;
-  public static final int diferencia = 50;
+  public static final int diferencia = 51;
   public static final int numEntero = 3;
   public static final int _mientrasQue = 25;
   public static final int _decimal = 9;
   public static final int _noCumple = 22;
   public static final int _retorno = 17;
-  public static final int menos = 38;
-  public static final int mayorQ = 49;
-  public static final int menor = 46;
+  public static final int menos = 39;
+  public static final int mayorQ = 50;
+  public static final int menor = 47;
   public static final int EOF = 0;
   public static final int _esFalso = 19;
-  public static final int mas = 37;
+  public static final int mas = 38;
   public static final int _para = 23;
   public static final int error = 1;
-  public static final int mayor = 48;
-  public static final int or = 52;
+  public static final int mayor = 49;
+  public static final int or = 53;
   public static final int _dibujarExp = 30;
-  public static final int por = 39;
-  public static final int punto = 34;
+  public static final int por = 40;
+  public static final int punto = 35;
   public static final int _valor = 21;
   public static final int _dibujarAst = 29;
   public static final int _principal = 16;
   public static final int _vacio = 12;
   public static final int _hastaQue = 24;
-  public static final int potencia = 42;
+  public static final int potencia = 43;
+  public static final int incremento = 34;
   public static final int _falso = 15;
   public static final int _continuar = 27;
   public static final int _definir = 8;
-  public static final int diferente = 45;
+  public static final int diferente = 46;
   public static final int _entero = 13;
-  public static final int not = 53;
-  public static final int and = 51;
+  public static final int not = 54;
+  public static final int and = 52;
   public static final int decremento = 33;
   public static final int _texto = 11;
-  public static final int menorQ = 47;
-  public static final int modular = 41;
+  public static final int menorQ = 48;
+  public static final int modular = 42;
   public static final int _cambiarA = 20;
-  public static final int parent_c = 55;
+  public static final int parent_c = 56;
   public static final int _importar = 7;
-  public static final int parent_a = 54;
-  public static final int div = 40;
-  public static final int asignacion = 43;
+  public static final int parent_a = 55;
+  public static final int div = 41;
+  public static final int asignacion = 44;
   public static final int cadena = 2;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -102,6 +103,7 @@ public class sym {
   "_dibujarTs",
   "_asa",
   "decremento",
+  "incremento",
   "punto",
   "ptoYcoma",
   "coma",

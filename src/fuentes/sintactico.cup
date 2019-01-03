@@ -29,7 +29,7 @@ action code
 terminal String cadena, numEntero, numDecimal, identificador, caracter;
 terminal String _importar, _definir, _decimal, _booleano, _texto, _vacio, _entero, _verdadero, _falso, _principal, _retorno;
 terminal String _esVerdadero, _esFalso, _cambiarA, _valor, _noCumple, _para, _hastaQue, _mientrasQue, _romper, _continuar;
-terminal String _mostrar, _dibujarAst, _dibujarExp, _dibujarTs, _asa, decremento;
+terminal String _mostrar, _dibujarAst, _dibujarExp, _dibujarTs, _asa, decremento, incremento;
 terminal String punto, ptoYcoma, coma, mas, menos, por, div, modular, potencia, asignacion, igual, diferente, menor, menorQ;
 terminal String mayor, mayorQ, diferencia, and, or, not, parent_a, parent_c, llave_a, llave_c, dosPtos;
 
@@ -54,8 +54,6 @@ INICIAR::= CUERPO_PRINCIPAL:cp
                             {: Nodo n = new Nodo("INICIAR");
                                n.addHijo((Nodo)cp);
                                padre.addHijo(n);
-                               padre.setIdNodo(1);
-                               padre.setNoHijos(padre.getNoHijos()+1);
                             :}
 ;
 
@@ -108,45 +106,56 @@ CUERPO_PRINCIPAL::= CUERPO_PRINCIPAL:cp IMPORTAR:n1
                              n.addHijo(n1);
                              RESULT = n;
                             :}
-                   |IMPORTAR:imp
-                            {: 
-                               RESULT = imp;
+                   |IMPORTAR:n1
+                            {:
+                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
-                   |DEFINIR:def
-                            {: 
-                               RESULT = def;
+                   |DEFINIR:n1
+                             {:
+                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
-                   |DECLARACION_VARIABLES:var
-                            {: 
-                               RESULT = var;
+                   |DECLARACION_VARIABLES:n1
+                            {:
+                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
-                   |ASIGNACIONES:asign
-                            {: 
-                               RESULT = asign;
+                   |ASIGNACIONES:n1
+                            {:
+                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
-                   |FUNCIONES:fun
-                            {: 
-                               RESULT = fun;
+                   |FUNCIONES:n1
+                            {:
+                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
-                   |METODOS:met
-                            {: 
-                               RESULT = met;
+                   |METODOS:n1
+                            {:
+                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
-                   |METODO_PRINCIPAL:prin
-                            {: 
-                               RESULT = prin;
+                   |METODO_PRINCIPAL:n1
+                            {:
+                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                    ;
 
-SENTENCIAS::= LISTA_SENTENCIAS:n1
+SENTENCIAS::= LISTA_SENTENCIAS:n
                             {:
-                               Nodo n = new Nodo("SENTENCIAS");
-                               n.addHijo(n1);
                                RESULT = n;
                             :}
              |
                             {:
-                               System.out.println("MMM esta intentnado pasar por aqui");
                                RESULT = null;
                             :}
 ;
@@ -258,63 +267,93 @@ LISTA_SENTENCIAS::=  LISTA_SENTENCIAS:n1 ASIGNACIONES:n2
                             :}
                     |ASIGNACIONES:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |DECLARACION_VARIABLES:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;                            
                             :}
                     |LLAMADAS_FUNC:n1 ptoYcoma
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;                            
                             :}
                     |RETORNO:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |SENT_ES_VERDADERO:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |CAMBIAR_A:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |PARA:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |HASTA_QUE:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |MIENTRAS_QUE:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |ROMPER:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |CONTINUAR:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |MOSTRAR:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |DIBUJAR_AST:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |DIBUJAR_EXP:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
                     |DIBUJAR_TS:n1
                             {:
-                                RESULT= n1;
+                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                n.addHijo(n1);
+                                RESULT= n;
                             :}
 ;
 
@@ -386,14 +425,16 @@ LLAMADAS_FUNC::= identificador:id parent_a LISTA_LLAMADA_FUNC:n2 parent_c
 
 LISTA_LLAMADA_FUNC::= LISTA_LLAMADA_FUNC:n1 coma EXPR_ARIT:n2
                             {:
-                              Nodo n = new Nodo("LISTA_PARAM_LLAMADA_FUN");
+                              Nodo n = new Nodo("LISTA_PARAM");
                               n.addHijo(n1);
                               n.addHijo(n2);
                               RESULT = n;
                             :}
                      |EXPR_ARIT:exp
                             {:
-                              RESULT = exp;
+                              Nodo n = new Nodo("LISTA_PARAM");
+                              n.addHijo(exp);
+                              RESULT = n;
                             :}
                      |
                             {:
@@ -465,39 +506,172 @@ METODO_PRINCIPAL::=_vacio:tipo _principal:id parent_a parent_c llave_a SENTENCIA
                             :}
 ;
 
-RETORNO::= _retorno ptoYcoma
-          |_retorno EXPR_ARIT ptoYcoma;
+RETORNO::= _retorno:id ptoYcoma
+                            {:
+                                Nodo n = new Nodo("RETORNO");
+                                RESULT = n;
+                            :}
+          |_retorno EXPR_ARIT:n1 ptoYcoma
+                            {:
+                                Nodo n = new Nodo("RETORNO");
+                                n.addHijo(n1);
+                                RESULT = n;
+                            :}
+;
 
-SENT_ES_VERDADERO::= _esVerdadero parent_a EXPR_LOGICA parent_c llave_a SENTENCIAS llave_c ES_VERD_CON_FALSO;
+SENT_ES_VERDADERO::= _esVerdadero:id parent_a EXPR_LOGICA:n2 parent_c llave_a SENTENCIAS:n3 llave_c ES_VERD_CON_FALSO:n4
+                            {:
+                                Nodo n = new Nodo("ES_VERDADERO");
+                                n.addHijo(n2);
+                                n.addHijo(n3);
+                                if(n4 != null){
+                                    n.addHijo(n4);
+                                }
+                                RESULT = n;
+                            :}
+;
 
-ES_VERD_CON_FALSO::= _esFalso llave_a SENTENCIAS llave_c
-                    |;
+ES_VERD_CON_FALSO::= _esFalso llave_a SENTENCIAS:n1 llave_c
+                            {:
+                                Nodo n = new Nodo("ES_FALSO");
+                                n.addHijo(n1);          
+                                RESULT = n;
+                            :}
+                    |
+                            {:
+                               RESULT = null;
+                            :}
+;
 
-CAMBIAR_A::= _cambiarA parent_a EXPR_ARIT parent_c llave_a CASOS NO_CUMPLE llave_c;
+CAMBIAR_A::= _cambiarA parent_a EXPR_ARIT:n1 parent_c llave_a CASOS:n2 NO_CUMPLE:n3 llave_c
+                            {:
+                                Nodo n = new Nodo("CAMBIAR_A");
+                                n.addHijo(n1);
+                                n.addHijo(n2);
+                                if(n3 != null){
+                                    n.addHijo(n3);
+                                }
+                                RESULT = n;
+                            :}
+;
 
-CASOS::= CASOS LISTA_CASOS
-        |LISTA_CASOS;
+CASOS::= CASOS:n1 LISTA_CASOS:n2
+                            {:
+                             Nodo n = new Nodo("LISTA_CASOS");
+                             n.addHijo(n1);
+                             n.addHijo(n2);
+                             RESULT = n;
+                            :}
 
-LISTA_CASOS::= _valor VALORES_CASE dosPtos SENTENCIAS;
+        |LISTA_CASOS:n1
+                            {:
+                                Nodo n = new Nodo("LISTA_CASOS");
+                                n.addHijo(n1);
+                                RESULT = n;
+                            :}
+;
 
-NO_CUMPLE::=_noCumple dosPtos SENTENCIAS
-            |;
+LISTA_CASOS::= _valor VALORES_CASE:n1 dosPtos SENTENCIAS:n2
+                            {:
+                                Nodo n = new Nodo("LISTA_CASOS");
+                                n.addHijo(n1);
+                                n.addHijo(n2);
+                                RESULT = n;
+                            :}
+;
 
-VALORES_CASE::= identificador
-                |numEntero
-                |numDecimal;
+NO_CUMPLE::=_noCumple dosPtos SENTENCIAS:n1
+                            {:
+                                Nodo n = new Nodo("NO_CUMPLE"); 
+                                n.addHijo(n1);
+                                RESULT = n;
+                            :}
+            |
+                            {:
+                                RESULT = null;
+                            :};
 
-PARA::=_para parent_a VALORES_PARA identificador asignacion EXPR_ARIT ptoYcoma EXPR_LOGICA ptoYcoma ITERADOR parent_c llave_a LISTA_SENTENCIAS llave_c; 
+VALORES_CASE::= identificador:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+                |numEntero:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+                |numDecimal:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+;
 
-VALORES_PARA::= _decimal
-               |_entero;
+PARA::=_para parent_a VALORES_PARA:tipo identificador:id asignacion EXPR_ARIT:valIni ptoYcoma EXPR_LOGICA:exp ptoYcoma 
+       ITERADOR:it parent_c llave_a LISTA_SENTENCIAS:sent llave_c
+                            {:
+                              Nodo n = new Nodo("PARA");
+                              Nodo nodoCondIni = new Nodo("COND_INI");
+                              nodoCondIni.addHijo(tipo);
+                              Nodo n2 = new Nodo(id, idleft, idright);
+                              nodoCondIni.addHijo(n2);
+                              nodoCondIni.addHijo(valIni);
+                              Nodo nodoCondFin = new Nodo("COND_FIN");
+                              nodoCondFin.addHijo(exp);
+                              Nodo nodoIncDec = new Nodo("PASO");
+                              Nodo nodoIncId = new Nodo(id, idleft, idright);
+                              nodoIncDec.addHijo(nodoIncId);
+                              nodoIncDec.addHijo(it);
+                              n.addHijo(nodoCondIni);
+                              n.addHijo(nodoCondFin);
+                              n.addHijo(nodoIncDec);
+                              n.addHijo(sent);
+                              RESULT = n;
+                            :}
+; 
 
-ITERADOR::= mas mas
-           |decremento;
+VALORES_PARA::= _decimal:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+               |_entero:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+;
 
-HASTA_QUE::= _hastaQue parent_a EXPR_LOGICA parent_c llave_a SENTENCIAS llave_c;
+ITERADOR::= incremento:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+           |decremento:exp
+                           {:
+                             Nodo n = new Nodo(exp, expleft, expright);
+                             RESULT = n;
+                           :}
+;
 
-MIENTRAS_QUE::= _mientrasQue parent_a EXPR_LOGICA parent_c llave_a SENTENCIAS llave_c;
+HASTA_QUE::= _hastaQue parent_a EXPR_LOGICA:n1 parent_c llave_a SENTENCIAS:n2 llave_c
+                            {:
+                              Nodo n = new Nodo("HASTA_QUE");
+                              n.addHijo(n1);
+                              n.addHijo(n2);
+                              RESULT = n;
+                            :}
+;
+
+MIENTRAS_QUE::= _mientrasQue parent_a EXPR_LOGICA:n1 parent_c llave_a SENTENCIAS:n2 llave_c
+                            {:
+                              Nodo n = new Nodo("MIENTRAS_QUE");
+                              n.addHijo(n1);
+                              n.addHijo(n2);
+                              RESULT = n;
+                            :}
+;
 
 LISTA_PARAMETROS::= LISTA_PARAMETROS:n1 coma TIPO:n2 identificador:id
                             {:
@@ -522,18 +696,56 @@ LISTA_PARAMETROS::= LISTA_PARAMETROS:n1 coma TIPO:n2 identificador:id
                             :}
 ;
 
-ROMPER::= _romper ptoYcoma;
+ROMPER::= _romper:id ptoYcoma
+                            {:
+                              Nodo n = new Nodo("ROMPER", idleft, idright);
+                              RESULT = n;
+                            :}
+;
 
-CONTINUAR::=_continuar ptoYcoma;
+CONTINUAR::=_continuar:id ptoYcoma
+                            {:
+                              Nodo n = new Nodo("CONTINUAR", idleft, idright);
+                              RESULT = n;
+                            :}
+;
 
-MOSTRAR::= _mostrar parent_a EXPR_ARIT parent_c ptoYcoma
-          |_mostrar parent_a parent_c ptoYcoma;
+MOSTRAR::= _mostrar:id parent_a EXPR_ARIT:exp parent_c ptoYcoma
+                            {:
+                              Nodo n = new Nodo("MOSTRAR", idleft, idright);
+                              n.addHijo(exp);
+                              RESULT = n;
+                            :}
+          |_mostrar:id parent_a parent_c ptoYcoma
+                            {:
+                              Nodo n = new Nodo("MOSTRAR", idleft, idright);
+                              RESULT = n;
+                            :}
+;
 
-DIBUJAR_AST::= _dibujarAst parent_a identificador parent_c ptoYcoma;
+DIBUJAR_AST::= _dibujarAst:dib parent_a identificador:id parent_c ptoYcoma
+                            {:
+                              Nodo n = new Nodo("DIBUJAR_AST", dibleft, dibright);
+                              Nodo n1 = new Nodo(id, idleft, idright);
+                              n.addHijo(n1);
+                              RESULT = n;
+                            :}
+;
 
-DIBUJAR_EXP::= _dibujarExp parent_a EXPR_LOGICA parent_c ptoYcoma;
+DIBUJAR_EXP::= _dibujarExp:dib parent_a EXPR_LOGICA:exp parent_c ptoYcoma
+                            {:
+                              Nodo n = new Nodo("DIBUJAR_EXP", dibleft, dibright);
+                              n.addHijo(exp);
+                              RESULT = n;
+                            :}
+;
 
-DIBUJAR_TS::= _dibujarTs parent_a parent_c ptoYcoma;
+DIBUJAR_TS::= _dibujarTs:dib parent_a parent_c ptoYcoma
+                            {:
+                              Nodo n = new Nodo("DIBUJAR_TS", dibleft, dibright);
+                              RESULT = n;
+                            :}
+;
 
 EXPR_LOGICA::= EXPR_LOGICA:n1 or:signo EXPR_LOGICA:n3
                            {:

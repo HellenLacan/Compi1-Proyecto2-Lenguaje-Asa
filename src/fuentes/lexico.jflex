@@ -92,6 +92,7 @@ caracter = "'" [^\'\n] "'"
     "}"            { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.llave_c, yycolumn, yyline, yytext()); }
     ":"            { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.dosPtos, yycolumn, yyline, yytext()); }
     "--"           { System.out.println("Reconocio "+yytext()+" --"); return new Symbol(sym.decremento, yycolumn, yyline, yytext()); }
+    "++"           { System.out.println("Reconocio "+yytext()+" --"); return new Symbol(sym.incremento, yycolumn, yyline, yytext()); }
 
     //Expresiones Regulares
     {identificador}        { System.out.println("Reconocio "+yytext()+" identificador"); return new Symbol(sym.identificador, yyline, yycolumn,yytext());} 
