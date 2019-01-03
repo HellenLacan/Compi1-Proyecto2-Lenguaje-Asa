@@ -1,5 +1,11 @@
+Booleano suma1(){
+	sumar(15, 20);
+	saludar("Hola Hellen", "Lacan");
+	saludar(-20, llamar("Hellen", 15+20));
 
-booleano a = 45.8;
-booleano b,c,d = (-1.8 + 2 * 3) + 4/5+(6*7-8);
-Entero x;
+}
+
+
+
+
 
