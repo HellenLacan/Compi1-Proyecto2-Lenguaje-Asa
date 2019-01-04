@@ -12,36 +12,46 @@ import java.util.ArrayList;
  * @author Hellen
  */
 public class Nodo {
+
     private String etiqueta;
     private ArrayList<Nodo> hijos =  new ArrayList<>();
     private String valor;
     private int fila;
     private int columna;
-    private int idNodo;
-    private int noHijos;
+    private String tipo;
     
     public Nodo(String etiqueta){
         this.etiqueta = etiqueta;
+        this.tipo = "NoTerm";
     }
     
     public Nodo(String etiqueta, int fila, int columna){
         this.etiqueta = etiqueta;
         this.fila = fila;
         this.columna = columna;
+        this.tipo = "Term";
     }
     
     public void addHijo(Nodo hijo){
         hijos.add(hijo);
     }
 
+        public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+    
     public String getEtiqueta() {
         return etiqueta;
     }
 
-    public void setEtiqueta(String Etiqueta) {
-        this.etiqueta = Etiqueta;
+    public void setEtiqueta(String etiqueta) {
+        this.etiqueta = etiqueta;
     }
-
+    
     public String getValor() {
         return valor;
     }
@@ -64,22 +74,6 @@ public class Nodo {
 
     public void setColumna(int columna) {
         this.columna = columna;
-    }
-
-    public int getIdNodo() {
-        return idNodo;
-    }
-
-    public void setIdNodo(int idNodo) {
-        this.idNodo = idNodo;
-    }
-
-    public int getNoHijos() {
-        return noHijos;
-    }
-
-    public void setNoHijos(int noHijos) {
-        this.noHijos = noHijos;
     }
 
     public ArrayList<Nodo> getHijos() {

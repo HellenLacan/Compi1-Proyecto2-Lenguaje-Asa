@@ -1,146 +1,28 @@
---> Uso de imports y Define
-Importar prueba1.asa;
-Importar prueba2.asa;
 Importar prueba3.asa;
-Importar prueba4.asa;
 Definir "/home/user/hellen/desktop/reportes1";
-Definir "/home/user/hellen/desktop/reportes2";
-
-</Declaracion de variables/>
 
 booleano a = verdadero;
-booleano b,c,d = (-1.8 + 2 * 3) + -(4/5+(6*7-8));
+booleano b,c,d = (-1.8 );
 Entero x;
 a,b = falso;
 
-booleano a,b,c = 45.8;
-Entero valorcito = 'a' + 3;
-Booleano a = 'a';
-Decimal a = 90.206 + falso;
-Texto a = 1+ verdadero;
-Texto a = (2 > 3);
-Texto a = (2 > 3 && 5 > 8);
-Texto a = hola("Mundo");
-Texto a = hola("Mundo", 2,5,'a',0.5);
-Texto a = 4 * factorial(4);
-a = 4;
-
-Booleano suma2(Entero a, Entero b){
-	</Uso de llamadas a funciones/>
-	sumar(15, 20);
-	saludar("Hola Hellen", "Lacan");
-	saludar(-20, llamar("Hellen", 15+20));
-	Retorno a+b;
+Booleano suma2(){
 }
 
-Vacio sumita2(){
-	Es_verdadero( verdadero || falso){
-		Iniciacalificacion();
-			Es_verdadero(((a>b) && (c==d)) || e){
-				booleano a,b,c = 45.8;
-				a = 4;
-				b = 8;
-				c = 12;
-
-			}Es_falso{
-				Texto a = (2 > 3 && 5 > 8);
-			}
-	}Es_falso{
-		Retorno ;
-	}
-	Retorno ;
+Booleano suma2(Entero a, Booleano b){
 }
 
 Vacio Principal(){
-	Cambiar_A(2+2){
-		Valor 4:
-		Iniciacalificacion();
-
-		Valor 5:
-		Iniciacalificacion(5,10,"Ale");
-		
-		Valor 6:
-
-		Valor 7:
-
-		No_cumple:
-		Retorno 2+2 ;
-	}
-
-	Para(Decimal i = 15; i<10;++){
-		Para(Decimal i = 15; i<10;++){
-
-			Es_verdadero(((a>b) && (c==d)) || e){
-		
-			}Es_falso{
-		
-			}
-		}
-	}
-}
-
-Vacio sumita3(Booleano a, Booleano b){
-	Hasta_que(a>b){
-		Es_verdadero(((a>=b) && (c==d)) || e){
-		
-		}Es_falso{
-		
-		}	
-	}
-
-	Mientras_que(j || h){
-		Es_verdadero(((a>=b) && (c==d)) || e){
-		
-		}Es_falso{
-		
-		}
-
-		Romper;
-		Continuar;
-
-	}
-
-	
 }
 
 Vacio Principal(){
-	
 }
 
-Booleano sumar(){
-	Iniciacalificacion();
-
-	Saludame("Hellen", "Lacan",123);
-
-	Hasta_que(a>b){
-		
-	}
-
-	Mientras_que(j || h){
-		Es_verdadero(((a>b) && (c==d)) || e){
-		
-		}Es_falso{
-		
-		}
-	}
+Booleano sumar(Decimal a){
 }
 
-
-
-Vacio saludar(){
-	Mostrar();
-	Mostrar("Curso de compiladores 1/n");
-	Mostrar("Hola mundo" + "Otra cadena" + 5);
-	Mostrar("El resultado de la suma es: " + suma(5,2));
-	DibujarAST(factorial);
-	DibujarEXP(factorial(5) >= (60+5)*num);
-	DibujarTS();
+Vacio sumita2(Decimal a, Entero b, Texto c, Booleano d){
 }
 
-Vacio Principal(){
-	
-}
-
-Vacio Principal(){
-	
+Vacio sumita2(Decimal a, Entero b, Texto c, Booleano d){
 }

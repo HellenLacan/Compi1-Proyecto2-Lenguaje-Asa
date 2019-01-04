@@ -52,8 +52,8 @@ start with INICIAR;
 
 INICIAR::= CUERPO_PRINCIPAL:cp 
                             {: Nodo n = new Nodo("INICIAR");
-                               n.addHijo((Nodo)cp);
-                               padre.addHijo(n);
+                               n.addHijo(cp);
+                               padre  = n;
                             :}
 ;
 
@@ -108,43 +108,43 @@ CUERPO_PRINCIPAL::= CUERPO_PRINCIPAL:cp IMPORTAR:n1
                             :}
                    |IMPORTAR:n1
                             {:
-                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                Nodo n = new Nodo("CUERPO_PRINCIPAL");
                                 n.addHijo(n1);
                                 RESULT= n;
                             :}
                    |DEFINIR:n1
                              {:
-                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                Nodo n = new Nodo("CUERPO_PRINCIPAL");
                                 n.addHijo(n1);
                                 RESULT= n;
                             :}
                    |DECLARACION_VARIABLES:n1
                             {:
-                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                Nodo n = new Nodo("CUERPO_PRINCIPAL");
                                 n.addHijo(n1);
                                 RESULT= n;
                             :}
                    |ASIGNACIONES:n1
                             {:
-                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                Nodo n = new Nodo("CUERPO_PRINCIPAL");
                                 n.addHijo(n1);
                                 RESULT= n;
                             :}
                    |FUNCIONES:n1
                             {:
-                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                Nodo n = new Nodo("CUERPO_PRINCIPAL");
                                 n.addHijo(n1);
                                 RESULT= n;
                             :}
                    |METODOS:n1
                             {:
-                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                Nodo n = new Nodo("CUERPO_PRINCIPAL");
                                 n.addHijo(n1);
                                 RESULT= n;
                             :}
                    |METODO_PRINCIPAL:n1
                             {:
-                                Nodo n = new Nodo("METODO_PRINCIPAL");
+                                Nodo n = new Nodo("CUERPO_PRINCIPAL");
                                 n.addHijo(n1);
                                 RESULT= n;
                             :}
@@ -156,7 +156,8 @@ SENTENCIAS::= LISTA_SENTENCIAS:n
                             :}
              |
                             {:
-                               RESULT = null;
+                               Nodo n = new Nodo("LISTA_SENTENCIAS");
+                               RESULT = n;
                             :}
 ;
 
@@ -364,7 +365,6 @@ IMPORTAR::=_importar:imp identificador:id punto _asa ptoYcoma
                              Nodo n2 = new Nodo(id, idleft, idright);
                              n.addHijo(n1);
                              n.addHijo(n2);
-                             n.setNoHijos(n.getNoHijos()+2);
                              RESULT = n;
                            :}
 ;
@@ -377,7 +377,6 @@ DEFINIR::= _definir:def cadena:cad ptoYcoma
                              Nodo n2 = new Nodo(cadena, cadleft, cadright);
                              n.addHijo(n1);
                              n.addHijo(n2);
-                             n.setNoHijos(n.getNoHijos()+2);
                              RESULT = n;
                            :}
 ;
@@ -470,9 +469,7 @@ FUNCIONES::= TIPO:n1 identificador:id parent_a LISTA_PARAMETROS:n3 parent_c llav
                               Nodo n2 = new Nodo(id, idleft, idright);
                               n.addHijo(n2);
                               n.addHijo(n3);
-                              if(n4 != null){
-                                 n.addHijo(n4);
-                              }
+                              n.addHijo(n4);
                               RESULT = n;
                             :}
 ;
@@ -485,9 +482,7 @@ METODOS::= _vacio:tipo identificador:id parent_a LISTA_PARAMETROS:n3 parent_c ll
                               Nodo n2 = new Nodo(id, idleft, idright);
                               n.addHijo(n2);
                               n.addHijo(n3);
-                              if(n4 != null){
-                                 n.addHijo(n4);
-                              }
+                              n.addHijo(n4);
                               RESULT = n;
                             :}
 ;
@@ -499,9 +494,7 @@ METODO_PRINCIPAL::=_vacio:tipo _principal:id parent_a parent_c llave_a SENTENCIA
                               n.addHijo(n1);
                               Nodo n2 = new Nodo(id, idleft, idright);
                               n.addHijo(n2);
-                              if(n3 != null){
-                                n.addHijo(n3);
-                              }
+                              n.addHijo(n3);
                               RESULT = n;
                             :}
 ;
@@ -692,7 +685,8 @@ LISTA_PARAMETROS::= LISTA_PARAMETROS:n1 coma TIPO:n2 identificador:id
                             :}
                    |
                             {:
-                              RESULT = null;
+                              Nodo n = new Nodo("LISTA_PARAMETROS");
+                              RESULT = n;
                             :}
 ;
 
@@ -710,7 +704,7 @@ CONTINUAR::=_continuar:id ptoYcoma
                             :}
 ;
 
-MOSTRAR::= _mostrar:id parent_a EXPR_ARIT:exp parent_c ptoYcoma
+MOSTRAR::= _mostrar:id parent_a EXPR_LOGICA:exp parent_c ptoYcoma
                             {:
                               Nodo n = new Nodo("MOSTRAR", idleft, idright);
                               n.addHijo(exp);
@@ -824,7 +818,7 @@ OP_REL::=   mayor:op
                              RESULT = n;
                            :};
 
-EXPR_ARIT::= EXPR_ARIT:n1 mas:signo EXPR_ARIT:n3
+EXPR_ARIT::=  mas:signo T:n1 EXPR_ARIT:n3
                            {:
                              Nodo n = new Nodo("EXPR_ARIT");
                              n.addHijo(n1);
@@ -833,7 +827,7 @@ EXPR_ARIT::= EXPR_ARIT:n1 mas:signo EXPR_ARIT:n3
                              n.addHijo(n3);
                              RESULT = n;
                            :}
-            |EXPR_ARIT:n1 menos:signo EXPR_ARIT:n3
+            | menos:signo T:n1 EXPR_ARIT:n3
                            {:
                              Nodo n = new Nodo("EXPR_ARIT");
                              n.addHijo(n1);
@@ -935,30 +929,22 @@ EXPR_ARIT::= EXPR_ARIT:n1 mas:signo EXPR_ARIT:n3
 
 TIPO::=  _decimal:tipo
                            {:
-                             Nodo n = new Nodo("TIPO");
-                             Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
-                             n.addHijo(n1);
+                             Nodo n = new Nodo(tipo, tipoleft, tiporight);
                              RESULT = n;
                            :}
         |_booleano:tipo
                            {:
-                             Nodo n = new Nodo("TIPO");
-                             Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
-                             n.addHijo(n1);
+                             Nodo n = new Nodo(tipo, tipoleft, tiporight);
                              RESULT = n;
                            :}
         |_texto:tipo
                            {:
-                             Nodo n = new Nodo("TIPO");
-                             Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
-                             n.addHijo(n1);
+                             Nodo n = new Nodo(tipo, tipoleft, tiporight);
                              RESULT = n;
                            :}
         |_entero:tipo
                            {:
-                             Nodo n = new Nodo("TIPO");
-                             Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
-                             n.addHijo(n1);
+                             Nodo n = new Nodo(tipo, tipoleft, tiporight);
                              RESULT = n;
                            :}
 ;

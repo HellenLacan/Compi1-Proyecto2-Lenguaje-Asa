@@ -8,6 +8,8 @@ package Form;
 import ControlDot.ControlDot;
 import ControlDot.generarGrafica;
 import static ControlDot.generarGrafica.generarGrafica;
+import Ejecucion.EjecucionLenguajeAsa;
+import Ejecucion.TablaFunciones;
 import fuentes.Nodo;
 import fuentes.parser;
 import fuentes.scanner;
@@ -63,6 +65,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             writer.close();
             generarGrafica(archivoTxT, "AST");
             System.out.println("Finaliza analisis...");
+            
+            for(Nodo item : AST.getHijos()){
+                EjecucionLenguajeAsa ejecucion = new EjecucionLenguajeAsa();
+                ejecucion.almacenarFunciones(item);
+                break;
+            }
+            TablaFunciones a = EjecucionLenguajeAsa.tsFunciones;
+            a.mostrarTabla();
+            
         } catch (Exception ex) {
             ex.printStackTrace();
         }        // TODO add your handling code here:
