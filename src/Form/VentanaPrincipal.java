@@ -9,11 +9,13 @@ import ControlDot.ControlDot;
 import ControlDot.generarGrafica;
 import static ControlDot.generarGrafica.generarGrafica;
 import Ejecucion.EjecucionLenguajeAsa;
+import EjecucionExpresiones.ExpresionAritmetica;
 import Ejecucion.TablaFunciones;
 import fuentes.Nodo;
 import fuentes.parser;
 import fuentes.scanner;
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -23,6 +25,8 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -40,7 +44,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         initComponents();
         File file = new File("C:\\Users\\Hellen\\Documents\\Cursos\\COMPI1_VACAS_DIC_2018\\Proyecto2_201325674\\src\\archivoPrueba.asa");
 
-        String content="";
+        String content = "";
 
         try {
             content = new String(Files.readAllBytes(Paths.get("C:\\Users\\Hellen\\Documents\\Cursos\\COMPI1_VACAS_DIC_2018\\Proyecto2_201325674\\src\\archivoPrueba.asa")));
@@ -55,28 +59,52 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             parser parser = new parser(scan);
             parser.parse();
             Nodo AST = parser.padre;
-            
+
             String archivoTxT = "C:\\Users\\Hellen\\Desktop" + "\\GrafoApila.txt";
             File file1 = new File(archivoTxT);
-        
+
             PrintWriter writer = new PrintWriter(file1, "UTF-8");
 
             writer.println(ControlDot.getDot(AST));
             writer.close();
             generarGrafica(archivoTxT, "AST");
             System.out.println("Finaliza analisis...");
-            
-            for(Nodo item : AST.getHijos()){
+
+            for (Nodo item : AST.getHijos()) {
                 EjecucionLenguajeAsa ejecucion = new EjecucionLenguajeAsa();
                 ejecucion.almacenarFunciones(item);
                 break;
             }
             TablaFunciones a = EjecucionLenguajeAsa.tsFunciones;
-            a.mostrarTabla();
-            
+
+            EjecucionLenguajeAsa leng = new EjecucionLenguajeAsa();
+            leng.almacenarVariablesGlobales(AST.getHijos().get(0));
+            //a.mostrarTabla();
+//            ExpresionAritmetica e = new ExpresionAritmetica();
+//            System.out.println(e.sumar("Booleano", "falso", "Texto", "hola mundo"));
+//            System.out.println(e.sumar("Booleano", "verdadero", "Decimal", "5.90"));
+//            System.out.println(e.sumar("Decimal", "90.206", "Booleano", "falso"));
+//            System.out.println(e.sumar("Entero", "15", "Booleano", "verdadero"));
+//            System.out.println(e.restar("Entero", "15", "Texto", "Holi"));
+//            System.out.println(e.restar("Entero", "15", "Booleano", "verdadero"));
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }        // TODO add your handling code here:
+    }
+
+    public ArrayList<String> letterCombinations(String digits) {
+        ArrayList<String> list = new ArrayList<String>();
+        if (digits.length() > 1) {
+            for (int i = 0; i < digits.length() - 1; i++) {
+                for (int j = 0; j < digits.length() - 1; i++) {
+                    char caracter = digits.charAt(i);
+                    char caracterj = digits.charAt(j);
+                    System.out.println(caracter + Character.toString((char) j));
+                }
+            }
+        }
+        return list;
     }
 
     /**
@@ -140,10 +168,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
+
         File file = new File("C:\\Users\\Hellen\\Documents\\Cursos\\COMPI1_VACAS_DIC_2018\\Proyecto2_201325674\\src\\archivoPrueba.asa");
 
-        String content="";
+        String content = "";
 
         try {
             content = new String(Files.readAllBytes(Paths.get("C:\\Users\\Hellen\\Documents\\Cursos\\COMPI1_VACAS_DIC_2018\\Proyecto2_201325674\\src\\archivoPrueba.asa")));

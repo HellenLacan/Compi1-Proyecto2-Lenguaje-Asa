@@ -15,12 +15,11 @@ public class Simbolo {
     private String valor;
     private String tipo;
     private String tipoObjeto; //Si es una matriz,objeto, variable primitiva, etc...
-    private String linea;
-    private String columna;
-    private String visibilidad;
+    private int linea;
+    private int columna;
     private String ambito;
 
-    public Simbolo(String nombre, String valor, String tipo, String linea, String columna, String ambito) {
+    public Simbolo(String tipo, String nombre, String valor, int linea, int columna, String ambito) {
         this.nombre = nombre;
         this.valor = valor;
         this.tipo = tipo;
@@ -28,7 +27,6 @@ public class Simbolo {
         this.columna = columna;
         this.ambito = ambito;
         this.tipoObjeto = "";
-        this.visibilidad = "";
     }
     
     public String getNombre() {
@@ -63,28 +61,20 @@ public class Simbolo {
         this.tipoObjeto = tipoObjeto;
     }
 
-    public String getLinea() {
+    public int getLinea() {
         return linea;
     }
 
-    public void setLinea(String linea) {
+    public void setLinea(int linea) {
         this.linea = linea;
     }
 
-    public String getColumna() {
+    public int getColumna() {
         return columna;
     }
 
-    public void setColumna(String columna) {
+    public void setColumna(int columna) {
         this.columna = columna;
-    }
-
-    public String getVisibilidad() {
-        return visibilidad;
-    }
-
-    public void setVisibilidad(String visibilidad) {
-        this.visibilidad = visibilidad;
     }
 
     public String getAmbito() {

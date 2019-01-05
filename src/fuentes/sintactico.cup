@@ -34,8 +34,8 @@ terminal String punto, ptoYcoma, coma, mas, menos, por, div, modular, potencia, 
 terminal String mayor, mayorQ, diferencia, and, or, not, parent_a, parent_c, llave_a, llave_c, dosPtos;
 
 nonterminal Nodo INICIAR, SO, CUERPO_PRINCIPAL, SENTENCIAS, LISTA_SENTENCIAS, TIPO, IMPORTAR, DEFINIR;
-nonterminal Nodo DECLARACION_VARIABLES, LISTA_VARIABLES, ASIGN_VARIABLES, LLAMADAS_FUNC, LISTA_LLAMADA_FUNC;
-nonterminal Nodo OP_REL, EXPR_REL, EXPR_LOGICA, TIPO_EXPR, ASIGNACIONES, FUNCIONES, METODO_PRINCIPAL;
+nonterminal Nodo DECLARACION_VARIABLES, LISTA_VARIABLES, ASIGN_VARIABLES, LLAMADAS_FUNC, LISTA_LLAMADA_FUNC, LISTA_ID_LLAMADA_FUN;
+nonterminal Nodo OP_REL, EXPR_REL, EXPR_LOGICA, TIPO_EXPR, ASIGNACIONES, FUNCIONES, METODO_PRINCIPAL,LLAMADITA_FUN, LLAMADA_VARIABLES;
 nonterminal Nodo METODOS, LISTA_PARAMETROS, RETORNO, SENT_ES_VERDADERO, ES_VERD_CON_FALSO, CAMBIAR_A, CASOS;
 nonterminal Nodo EXPR_ARIT, LISTA_CASOS, VALORES_CASE, NO_CUMPLE, VALORES_PARA, PARA, ITERADOR, HASTA_QUE, MIENTRAS_QUE;
 nonterminal Nodo ROMPER, CONTINUAR, MOSTRAR, DIBUJAR_AST, DIBUJAR_EXP, DIBUJAR_TS;
@@ -410,26 +410,59 @@ LISTA_VARIABLES::= LISTA_VARIABLES:n1 coma identificador:id
                            :}
 ;
 
-LLAMADAS_FUNC::= identificador:id parent_a LISTA_LLAMADA_FUNC:n2 parent_c
+LLAMADA_VARIABLES::= LISTA_ID_LLAMADA_FUN:n
                             {:
-                              Nodo n = new Nodo("LLAMADA_FUNCION");
-                              Nodo n1 = new Nodo(id, idleft, idright);
-                              n.addHijo(n1);
-                              if(n2 != null){
-                                n.addHijo(n2);
-                              }
                               RESULT = n;
                             :}
 ;
 
-LISTA_LLAMADA_FUNC::= LISTA_LLAMADA_FUNC:n1 coma EXPR_ARIT:n2
+LLAMADAS_FUNC::= identificador:id LISTA_ID_LLAMADA_FUN:n2 parent_a LISTA_LLAMADA_FUNC:n3 parent_c
+                            {:
+                              Nodo n = new Nodo("LLAMADA_FUNCION");
+                              Nodo n1 = new Nodo(id, idleft, idright);
+                              n.addHijo(n1);
+                              n.addHijo(n2);
+                              n.addHijo(n3);
+                              RESULT = n;
+                            :}
+;
+
+LISTA_ID_LLAMADA_FUN::= LLAMADITA_FUN:n
+                            {:
+                              RESULT = n;
+                            :}
+                        |
+                            {:
+                              Nodo n = new Nodo("LISTA_ID");
+                              RESULT = n;
+                            :}
+;
+
+LLAMADITA_FUN::= LLAMADITA_FUN:n1 punto identificador:id
+                            {:
+                              Nodo n = new Nodo("LISTA_ID");
+                              Nodo n2 = new Nodo(id, idleft, idright);
+                              n.addHijo(n1);
+                              n.addHijo(n2);
+                              RESULT = n;
+                            :}
+                |punto identificador:id
+                            {:
+                              Nodo n = new Nodo("LISTA_ID");
+                              Nodo n1 = new Nodo(id, idleft, idright);
+                              n.addHijo(n1);
+                              RESULT = n;
+                            :}
+;
+
+LISTA_LLAMADA_FUNC::= LISTA_LLAMADA_FUNC:n1 coma EXPR_LOGICA:n2
                             {:
                               Nodo n = new Nodo("LISTA_PARAM");
                               n.addHijo(n1);
                               n.addHijo(n2);
                               RESULT = n;
                             :}
-                     |EXPR_ARIT:exp
+                     |EXPR_LOGICA:exp
                             {:
                               Nodo n = new Nodo("LISTA_PARAM");
                               n.addHijo(exp);
@@ -437,14 +470,13 @@ LISTA_LLAMADA_FUNC::= LISTA_LLAMADA_FUNC:n1 coma EXPR_ARIT:n2
                             :}
                      |
                             {:
-                              RESULT = null;
+                              Nodo n = new Nodo("LISTA_PARAM");
+                              RESULT = n;
                             :}
 ;
 
-ASIGN_VARIABLES::= asignacion EXPR_ARIT:exp
+ASIGN_VARIABLES::= asignacion EXPR_LOGICA:n
                            {:
-                             Nodo n = new Nodo("EXP");
-                             n.addHijo(exp);
                              RESULT = n;
                            :}
                   |
@@ -818,7 +850,7 @@ OP_REL::=   mayor:op
                              RESULT = n;
                            :};
 
-EXPR_ARIT::=  mas:signo T:n1 EXPR_ARIT:n3
+EXPR_ARIT::= EXPR_ARIT:n1  mas:signo EXPR_ARIT:n3
                            {:
                              Nodo n = new Nodo("EXPR_ARIT");
                              n.addHijo(n1);
@@ -827,7 +859,7 @@ EXPR_ARIT::=  mas:signo T:n1 EXPR_ARIT:n3
                              n.addHijo(n3);
                              RESULT = n;
                            :}
-            | menos:signo T:n1 EXPR_ARIT:n3
+            |EXPR_ARIT:n1 menos:signo EXPR_ARIT:n3
                            {:
                              Nodo n = new Nodo("EXPR_ARIT");
                              n.addHijo(n1);
@@ -874,46 +906,47 @@ EXPR_ARIT::=  mas:signo T:n1 EXPR_ARIT:n3
                            :}
             |numEntero:exp
                            {:
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expleft, expright, "entero");
                              RESULT = n;
                            :}
             |numDecimal:exp
                            {:
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expleft, expright, "decimal");
                              RESULT = n;
                            :}
             |menos:exp EXPR_ARIT:n2
                            {:
                              Nodo n = new Nodo("NUM_NEG");
-                             Nodo n1 = new Nodo(exp, expleft, expright);
+                             Nodo n1 = new Nodo(exp, expleft, expright, n2.getTipoVar());
                              n.addHijo(n1);
                              n.addHijo(n2);
                              RESULT = n;
                            :}
-            |identificador:exp
+            |identificador:exp LLAMADA_VARIABLES:n2
                            {:
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expleft, expright, "identificador");
+                             n.addHijo(n2);
                              RESULT = n;
                            :}
-            |_verdadero:exp
+            |_verdadero:exp 
                            {:
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expleft, expright, "booleano");
                              RESULT = n;
                            :}
             |_falso:exp
                            {:
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expleft, expright, "booleano");
                              RESULT = n;
                            :}
             |caracter:exp
                            {:
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expleft, expright, "cadena");
                              RESULT = n;
                            :}
             |cadena:exp
                            {:
                              String cadena = exp.replace("\"", "");
-                             Nodo n = new Nodo(cadena, expleft, expright);
+                             Nodo n = new Nodo(cadena, expleft, expright, "cadena");
                              RESULT = n;
                            :}
             |LLAMADAS_FUNC:exp
@@ -927,24 +960,25 @@ EXPR_ARIT::=  mas:signo T:n1 EXPR_ARIT:n3
 ;
 
 
-TIPO::=  _decimal:tipo
+TIPO::= _entero:tipo
                            {:
-                             Nodo n = new Nodo(tipo, tipoleft, tiporight);
+                             Nodo n = new Nodo(tipo, tipoleft, tiporight,"entero");
+                             RESULT = n;
+                           :}
+
+        |_decimal:tipo
+                           {:
+                             Nodo n = new Nodo(tipo, tipoleft, tiporight,"decimal");
                              RESULT = n;
                            :}
         |_booleano:tipo
                            {:
-                             Nodo n = new Nodo(tipo, tipoleft, tiporight);
+                             Nodo n = new Nodo(tipo, tipoleft, tiporight,"booleano");
                              RESULT = n;
                            :}
         |_texto:tipo
                            {:
-                             Nodo n = new Nodo(tipo, tipoleft, tiporight);
-                             RESULT = n;
-                           :}
-        |_entero:tipo
-                           {:
-                             Nodo n = new Nodo(tipo, tipoleft, tiporight);
+                             Nodo n = new Nodo(tipo, tipoleft, tiporight,"texto");
                              RESULT = n;
                            :}
 ;

@@ -14,7 +14,11 @@ import java.util.Hashtable;
 public class TablaSimbolo {
     public String nivel;
     public String tipo;
-    Hashtable<String,Simbolo> t = new Hashtable<String,Simbolo>();
+    Hashtable<String,Simbolo> tabla = new Hashtable<String,Simbolo>();
+    
+    public TablaSimbolo(){
+            
+    }
     
     public TablaSimbolo(String nivel, String tipo){
             

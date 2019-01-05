@@ -1,28 +1,10 @@
-Importar prueba3.asa;
-Definir "/home/user/hellen/desktop/reportes1";
 
-booleano a = verdadero;
-booleano b,c,d = (-1.8 );
-Entero x;
-a,b = falso;
+Entero a = (2+8)^2;
+Texto a = verdadero + 5.90;
+Texto b = 90.206 * falso;
+Texto c = 1 + verdadero ; 
+Texto d = falso + "hola mundo";
+Texto e = "hola mundo " + verdadero;
+Texto e = "La suma de 5 + 3 es: " + 8;
+Texto e = 3.1416 + "es el valor de pi";
 
-Booleano suma2(){
-}
-
-Booleano suma2(Entero a, Booleano b){
-}
-
-Vacio Principal(){
-}
-
-Vacio Principal(){
-}
-
-Booleano sumar(Decimal a){
-}
-
-Vacio sumita2(Decimal a, Entero b, Texto c, Booleano d){
-}
-
-Vacio sumita2(Decimal a, Entero b, Texto c, Booleano d){
-}
