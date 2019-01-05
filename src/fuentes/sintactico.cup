@@ -946,7 +946,7 @@ EXPR_ARIT::= EXPR_ARIT:n1  mas:signo EXPR_ARIT:n3
             |cadena:exp
                            {:
                              String cadena = exp.replace("\"", "");
-                             Nodo n = new Nodo(cadena, expleft, expright, "cadena");
+                             Nodo n = new Nodo(cadena, expleft, expright, "texto");
                              RESULT = n;
                            :}
             |LLAMADAS_FUNC:exp

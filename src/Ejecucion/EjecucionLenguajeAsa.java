@@ -17,7 +17,7 @@ import java.util.Stack;
 public class EjecucionLenguajeAsa {
 
     Stack<TablaSimbolo> pilaSimbolos = new Stack<TablaSimbolo>();
-    public TablaSimbolo tsGlobal = new TablaSimbolo();  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
+    public static TablaSimbolo tsGlobal = new TablaSimbolo();  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
     public static TablaFunciones tsFunciones = new TablaFunciones(); //Tabla para almacenar funciones, metodos y principal
     public Nodo AST;
 
@@ -42,27 +42,110 @@ public class EjecucionLenguajeAsa {
     }
 
     public void agregarVariablesGlobales(Nodo nodo) {
-        String tipo = "";
-        String nombre = "";
-        Object expresion = null;
-        int linea = 0;
-        int columna = 0;
+        String tipo = nodo.getHijos().get(0).getEtiqueta();
+        String nombre = nodo.getHijos().get(1).getHijos().get(0).getEtiqueta();
+        int linea = nodo.getHijos().get(1).getHijos().get(0).getFila();
+        int columna = nodo.getHijos().get(1).getHijos().get(0).getColumna();
+        String expresion = "";
 
-        tipo = nodo.getHijos().get(0).getEtiqueta();
-        nombre = nodo.getHijos().get(1).getEtiqueta();
-
-        if (nodo.getHijos().get(2).getHijos().size() > 0) {
-            expresion = evaluarExpresion(nodo.getHijos().get(2));
+        //Si la variable viene declara sin valor -> Entero a;
+        if (nodo.getHijos().size() == 2) {
+            if (!tsGlobal.existeSimbolo(nombre)) {
+                Simbolo simb = new Simbolo(tipo, nombre, "", linea, columna, "");
+                tsGlobal.insertar(nombre, simb);
+            } else {
+                System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente");
+            }
         } else {
+            //Si la variable viene con expresiones en el valor = 10+10; 
+            if (nodo.getHijos().get(2).getHijos().size() > 0) {
+                //Si la variable no existe la agrega, sino error semantico por repetida
+                if (!tsGlobal.existeSimbolo(nombre)) {
+                    expresion = evaluarExpresion(nodo.getHijos().get(2));
+                    agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
+                } else {
+                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente");
+                }
+                //Si la variable viene solo con un terminal como  valor Entero = a;
+            } else {
+                if (!tsGlobal.existeSimbolo(nombre)) {
+                    expresion = evaluarExpresion(nodo.getHijos().get(2));
+                    agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
+                } else {
+                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente");
+                }
+            }
 
         }
 
-        Simbolo simb = new Simbolo(tipo, nombre, "", linea, columna, "");
-        tsGlobal.insertar(nombre, simb);
     }
 
-    public void asignacionAVariablesGlobales(Nodo n) {
+    public void asignacionAVariablesGlobales(Nodo nodo) {
+        String nombre = nodo.getHijos().get(0).getHijos().get(0).getEtiqueta();
+        int linea = nodo.getHijos().get(0).getHijos().get(0).getFila();
+        int columna = nodo.getHijos().get(0).getHijos().get(0).getColumna();
+        String expresion = "";
 
+        //Si la variable viene con expresiones en el valor = 10+10; 
+        if (nodo.getHijos().get(1).getHijos().size() > 0) {
+            //Si la variable no existe la agrega, sino error semantico por repetida
+            if (tsGlobal.existeSimbolo(nombre)) {
+                expresion = evaluarExpresion(nodo.getHijos().get(1));
+                actualizarVariableGlobal(nombre, expresion);
+                //agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
+            } else {
+                System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada ");
+            }
+            //Si la variable viene solo con un terminal como  valor Entero = a;
+        } else {
+            if (tsGlobal.existeSimbolo(nombre)) {
+                expresion = evaluarExpresion(nodo.getHijos().get(1));
+                actualizarVariableGlobal(nombre, expresion);
+            } else {
+                System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada ");
+            }
+        }
+    }
+
+    //Este metodo asigna expresion a una declaracion de variable global
+    public void agregarAsignacionAVars(String expresion, String tipo, String nombre, int linea, int columna) {
+        if (!expresion.equals("error tipos Incompatibles") && !expresion.equals("null") && !expresion.equals("error")) {
+            String[] num1 = expresion.toString().split("@");
+            String valor = num1[0];
+            String tipoValor = num1[1];
+
+            if (tipoValor.equalsIgnoreCase(tipo)) {
+                Simbolo simb = new Simbolo(tipo, nombre, valor, linea, columna, "ambitoGlobal");
+                //Como key de una variable tomo el Tipo+id
+                tsGlobal.insertar(nombre, simb);
+            } else {
+                System.out.println("Error semantico, el valor de la expresion es de tipo " + tipoValor
+                        + " y la variable " + nombre + " es de tipo " + tipo);
+            }
+
+        }
+    }
+
+    public void actualizarVariableGlobal(String nombre, String expresion) {
+        String[] num1 = expresion.toString().split("@");
+        String valor = num1[0];
+        String tipoValor = num1[1];
+
+        Simbolo simb = tsGlobal.retornarSimbolo(nombre);
+
+        if (tipoValor.equalsIgnoreCase(simb.getTipo())) {
+            simb.setValor(valor);
+            System.out.println("Variable -> " + simb.getNombre() + " actualizada");
+        } else {
+            if (tipoValor.equalsIgnoreCase("Entero") && simb.getTipo().equalsIgnoreCase("Decimal")) {
+                simb.setValor(valor);
+                System.out.println("Variable -> " + simb.getNombre() + " actualizada");
+            } else {
+                System.out.println("Error semantico, no se puede asignar ya que " + simb.getNombre() + " es de tipo " + simb.getTipo()
+                        + " y esta intentando asignarle un tipo " + tipoValor);
+            }
+
+        }
     }
 
     public String evaluarExpresion(Nodo n) {
@@ -83,16 +166,16 @@ public class EjecucionLenguajeAsa {
                             signo += n.getHijos().get(1).getEtiqueta();
                             n3 += evaluarExpresion(n.getHijos().get(2));
 
-                            String[] num1 = n1.split(",");
+                            String[] num1 = n1.split("@");
                             String n1Val = num1[0];
                             String n1Tipo = num1[1];
 
-                            String[] num2 = n3.split(",");
+                            String[] num2 = n3.split("@");
                             String n2Val = num2[0];
                             String n2Tipo = num2[1];
 
                             Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
-                            System.out.println(n1Val + signo + n2Val + "= " + resultado);
+                            //System.out.println(n1Val + signo + n2Val + "= " + resultado);
                             return resultado.toString();
 
                     }
@@ -132,7 +215,7 @@ public class EjecucionLenguajeAsa {
                     break;
             }
         } else {
-            String term = n.getEtiqueta() + "," + n.getTipoVar();
+            String term = n.getEtiqueta() + "@" + n.getTipoVar();
             return term;
         }
 

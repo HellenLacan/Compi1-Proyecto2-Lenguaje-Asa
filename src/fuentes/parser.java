@@ -2956,7 +2956,7 @@ class CUP$parser$actions {
 		int n2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Nodo n2 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                             Nodo n = new Nodo(exp, expleft, expright, "id");
+                             Nodo n = new Nodo(exp, expleft, expright, "identificador");
                              n.addHijo(n2);
                              RESULT = n;
                            
@@ -3018,7 +3018,7 @@ class CUP$parser$actions {
 		String exp = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
                              String cadena = exp.replace("\"", "");
-                             Nodo n = new Nodo(cadena, expleft, expright, "cadena");
+                             Nodo n = new Nodo(cadena, expleft, expright, "texto");
                              RESULT = n;
                            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("EXPR_ARIT",30, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

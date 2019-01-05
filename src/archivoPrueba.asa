@@ -1,10 +1,17 @@
-
-Entero a = (2+8)^2;
-Texto a = verdadero + 5.90;
-Texto b = 90.206 * falso;
-Texto c = 1 + verdadero ; 
-Texto d = falso + "hola mundo";
+</Ejemplos de Variables globales/>
+Texto a = ("Usac facultad Ing. en Ciencias y Sistemas " + ":D");
+Texto a = falso + "hola mundo";       --> Esta no tendria que ser agregada porque esta repetida
+Decimal b = verdadero + 5.90;
+Entero c = 90.206 * falso;            --> Esta tendria que dar error semantico por tipos
+Booleano d = 1 + verdadero ;          --> Esta deberia dar erro por tipos;
 Texto e = "hola mundo " + verdadero;
-Texto e = "La suma de 5 + 3 es: " + 8;
-Texto e = 3.1416 + "es el valor de pi";
+Texto f = "La suma de 5 + 3 es: " + 8;
+Texto g = 3.1416 + "es el valor de pi";
+Texto e ;                             --> No la deberia agregar ya que es variable repetida
+Booleano i = falso;
 
+</Ejemplos de asignaciones a variables globales/>
+a = "Hola mundo";
+f =16;
+b = 10;
+i = 1;

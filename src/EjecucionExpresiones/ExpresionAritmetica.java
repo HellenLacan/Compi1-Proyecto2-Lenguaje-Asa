@@ -25,7 +25,7 @@ public class ExpresionAritmetica {
             }
 
             resultado = n1 + n2;
-            return resultado + ",entero";
+            return resultado + "@entero";
 
         } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Decimal")) {
             int n1 = 0;
@@ -38,9 +38,9 @@ public class ExpresionAritmetica {
             n2 = Double.parseDouble(num2);
 
             resultado = n1 + n2;
-            return resultado + ",decimal";
+            return resultado + "@decimal";
 
-        } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Cadena")) {
+        } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Texto")) {
             int n1 = 0;
             String resultado = "";
             if (num1.equalsIgnoreCase("verdadero")) {
@@ -51,7 +51,7 @@ public class ExpresionAritmetica {
             } else {
                 resultado = "1 " + num2;
             }
-            return resultado + ",cadena";
+            return resultado + "@texto";
 
         } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Entero")) {
             int n1 = 0;
@@ -64,7 +64,7 @@ public class ExpresionAritmetica {
             n2 = Integer.parseInt(num2);
 
             resultado = n1 + n2;
-            return resultado+ ",entero";
+            return resultado+ "@entero";
 
         } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Booleano")) {
             double n1 = 0;
@@ -78,7 +78,7 @@ public class ExpresionAritmetica {
             n1 = Double.parseDouble(num1);
 
             resultado = n1 + n2;
-            return resultado + ",decimal";
+            return resultado + "@decimal";
 
         } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Decimal")) {
 
@@ -90,16 +90,16 @@ public class ExpresionAritmetica {
             n2 = Double.parseDouble(num2);
 
             resultado = n1 + n2;
-            return resultado + ",decimal";
+            return resultado + "@decimal";
 
-        } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Cadena")) {
+        } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Texto")) {
             double n1 = 0;
             String resultado = "";
 
             n1 = Double.parseDouble(num1);
 
             resultado = n1 + " " + num2;
-            return resultado + ",cadena";
+            return resultado + "@texto";
 
         } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Entero")) {
             double n1 = 0;
@@ -109,9 +109,9 @@ public class ExpresionAritmetica {
             n1 = Double.parseDouble(num1);
             n2 = Double.parseDouble(num2);
             resultado = n1 + n2;
-            return resultado + ",decimal";
+            return resultado + "@decimal";
 
-        } else if (tipo1.equalsIgnoreCase("Cadena") && tipo2.equalsIgnoreCase("Booleano")) {
+        } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Booleano")) {
             int n2 = 0;
             String resultado = "";
             if (num2.equalsIgnoreCase("verdadero")) {
@@ -119,20 +119,20 @@ public class ExpresionAritmetica {
             }
             
             resultado = num1 + " " + n2;
-            return resultado + ",cadena";
+            return resultado + "@texto";
 
-        } else if (tipo1.equalsIgnoreCase("Cadena") && tipo2.equalsIgnoreCase("Decimal")) {
+        } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Decimal")) {
             double n2 = 0;
             String resultado = "";
 
             n2 = Double.parseDouble(num2);
             resultado = num1 + " " + n2;
-            return resultado + ",cadena";
+            return resultado + "@texto";
 
-        } else if (tipo1.equalsIgnoreCase("Cadena") && tipo2.equalsIgnoreCase("texto")) {
-            return num1 + " " + num2 + ",cadena";
-        } else if (tipo1.equalsIgnoreCase("Cadena") && tipo2.equalsIgnoreCase("Entero")) {
-            return num1 + " " + num2 + ",cadena";
+        } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Texto")) {
+            return num1 + " " + num2 + "@texto";
+        } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Entero")) {
+            return num1 + " " + num2 + "@texto";
         } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Booleano")) {
             int n1 = 0;
             int n2 = 0;
@@ -144,7 +144,7 @@ public class ExpresionAritmetica {
             n1 = Integer.parseInt(num1);
 
             resultado = n1 + n2;
-            return resultado + ",entero";
+            return resultado + "@entero";
         } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Decimal")) {
             double n1 = 0;
             double n2 = 0;
@@ -154,12 +154,12 @@ public class ExpresionAritmetica {
             n2 = Double.parseDouble(num2);
 
             resultado = n1 + n2;
-            return resultado + ",decimal";
-        } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Cadena")) {
+            return resultado + "@decimal";
+        } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Texto")) {
             String resultado = "";
 
             resultado = num1 + " " + num2;
-            return resultado + ",cadena";
+            return resultado + "@texto";
         } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Entero")) {
             int n1 = 0;
             int n2 = 0;
@@ -169,7 +169,7 @@ public class ExpresionAritmetica {
             n2 = Integer.parseInt(num2);
 
             resultado = n1 + n2;
-            return resultado + ",entero";
+            return resultado + "@entero";
         }
         
         return "error";
@@ -177,7 +177,7 @@ public class ExpresionAritmetica {
 
     public Object restar(String tipo1, String num1, String tipo2, String num2) {
         if (sonTiposIncompatibles(tipo1, tipo2)) {
-            return "error";
+            return "error tipos Incompatibles";
         } else {
             if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Booleano")) {
                 int n1 = 0;
@@ -192,7 +192,7 @@ public class ExpresionAritmetica {
                 }
 
                 resultado = n1 - n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
 
             } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Decimal")) {
                 int n1 = 0;
@@ -205,7 +205,7 @@ public class ExpresionAritmetica {
                 n2 = Double.parseDouble(num2);
 
                 resultado = n1 - n2;
-                return resultado + ",decimal";
+                return resultado + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
@@ -218,7 +218,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 - n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Booleano")) {
                 double n1 = 0;
@@ -232,7 +232,7 @@ public class ExpresionAritmetica {
                 n1 = Double.parseDouble(num1);
 
                 resultado = n1 - n2;
-                return resultado + ",decimal";
+                return resultado + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Decimal")) {
 
@@ -244,7 +244,7 @@ public class ExpresionAritmetica {
                 n2 = Double.parseDouble(num2);
 
                 resultado = n1 - n2;
-                return resultado + ",decimal";
+                return resultado + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Entero")) {
                 double n1 = 0;
@@ -254,7 +254,7 @@ public class ExpresionAritmetica {
                 n1 = Double.parseDouble(num1);
                 n2 = Double.parseDouble(num2);
                 resultado = n1 - n2;
-                return resultado + ",decimal";
+                return resultado + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Booleano")) {
                 int n1 = 0;
@@ -267,7 +267,7 @@ public class ExpresionAritmetica {
                 n1 = Integer.parseInt(num1);
 
                 resultado = n1 - n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Decimal")) {
                 double n1 = 0;
                 double n2 = 0;
@@ -277,7 +277,7 @@ public class ExpresionAritmetica {
                 n2 = Double.parseDouble(num2);
 
                 resultado = n1 - n2;
-                return resultado + ",decimal";
+                return resultado + "@decimal";
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
                 int n2 = 0;
@@ -287,7 +287,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 - n2;
-                return resultado+ ",entero";
+                return resultado+ "@entero";
             }
         }
         return "error";
@@ -295,7 +295,7 @@ public class ExpresionAritmetica {
 
     public Object multiplicar(String tipo1, String num1, String tipo2, String num2) {
         if (sonTiposIncompatibles(tipo1, tipo2)) {
-            return "error";
+            return "error tipos Incompatibles";
         } else {
             if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Booleano")) {
                 int n1 = 0;
@@ -310,7 +310,7 @@ public class ExpresionAritmetica {
                 }
 
                 resultado = n1 * n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
 
             } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Decimal")) {
                 int n1 = 0;
@@ -324,7 +324,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 * n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
@@ -337,7 +337,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 * n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Booleano")) {
                 double n1 = 0;
@@ -352,7 +352,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 * n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Decimal")) {
 
@@ -365,7 +365,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 * n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Entero")) {
                 double n1 = 0;
@@ -376,7 +376,7 @@ public class ExpresionAritmetica {
                 n2 = Double.parseDouble(num2);
                 resultado = n1 * n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Booleano")) {
                 int n1 = 0;
@@ -389,7 +389,7 @@ public class ExpresionAritmetica {
                 n1 = Integer.parseInt(num1);
 
                 resultado = n1 * n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Decimal")) {
                 double n1 = 0;
                 double n2 = 0;
@@ -400,7 +400,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 * n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
                 int n2 = 0;
@@ -410,7 +410,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 * n2;
-                return resultado+ ",entero";
+                return resultado+ "@entero";
             }
         }
         return "error";
@@ -418,7 +418,7 @@ public class ExpresionAritmetica {
     
     public Object dividir(String tipo1, String num1, String tipo2, String num2) {
         if (sonTiposIncompatibles(tipo1, tipo2)) {
-            return "error";
+            return "error tipos Incompatibles";
         } else {
             if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Booleano")) {
                 int n1 = 0;
@@ -433,7 +433,7 @@ public class ExpresionAritmetica {
                 }
 
                 resultado = n1 / n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
 
             } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Decimal")) {
                 int n1 = 0;
@@ -447,7 +447,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 / n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
@@ -460,7 +460,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 / n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Booleano")) {
                 double n1 = 0;
@@ -475,7 +475,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 / n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Decimal")) {
 
@@ -488,7 +488,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 / n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Entero")) {
                 double n1 = 0;
@@ -499,7 +499,7 @@ public class ExpresionAritmetica {
                 n2 = Double.parseDouble(num2);
                 resultado = n1 / n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Booleano")) {
                 int n1 = 0;
@@ -512,7 +512,7 @@ public class ExpresionAritmetica {
                 n1 = Integer.parseInt(num1);
 
                 resultado = n1 / n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Decimal")) {
                 double n1 = 0;
                 double n2 = 0;
@@ -523,7 +523,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 / n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
                 int n2 = 0;
@@ -533,7 +533,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 / n2;
-                return resultado+ ",entero";
+                return resultado+ "@entero";
             }
         }
         return "error";
@@ -541,7 +541,7 @@ public class ExpresionAritmetica {
 
     public Object modular(String tipo1, String num1, String tipo2, String num2) {
         if (sonTiposIncompatibles(tipo1, tipo2)) {
-            return "error";
+            return "error tipos Incompatibles";
         } else {
             if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Booleano")) {
                 int n1 = 0;
@@ -556,7 +556,7 @@ public class ExpresionAritmetica {
                 }
 
                 resultado = n1 % n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
 
             } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Decimal")) {
                 int n1 = 0;
@@ -570,7 +570,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 % n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
@@ -583,7 +583,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 % n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Booleano")) {
                 double n1 = 0;
@@ -598,7 +598,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 % n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Decimal")) {
 
@@ -611,7 +611,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 % n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Entero")) {
                 double n1 = 0;
@@ -622,7 +622,7 @@ public class ExpresionAritmetica {
                 n2 = Double.parseDouble(num2);
                 resultado = n1 % n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Booleano")) {
                 int n1 = 0;
@@ -635,7 +635,7 @@ public class ExpresionAritmetica {
                 n1 = Integer.parseInt(num1);
 
                 resultado = n1 % n2;
-                return resultado + ",entero";
+                return resultado + "@entero";
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Decimal")) {
                 double n1 = 0;
                 double n2 = 0;
@@ -646,7 +646,7 @@ public class ExpresionAritmetica {
 
                 resultado = n1 % n2;
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
                 int n2 = 0;
@@ -656,7 +656,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 % n2;
-                return resultado+ ",entero";
+                return resultado+ "@entero";
             }
         }
         return "error";
@@ -664,7 +664,7 @@ public class ExpresionAritmetica {
 
     public Object potencia(String tipo1, String num1, String tipo2, String num2) {
         if (sonTiposIncompatibles(tipo1, tipo2)) {
-            return "error";
+            return "error tipos Incompatibles";
         } else {
             if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Booleano")) {
                 int n1 = 0;
@@ -679,7 +679,7 @@ public class ExpresionAritmetica {
                 }
 
                 resultado = (int) Math.pow(n1, n2);
-                return resultado + ",entero";
+                return resultado + "@entero";
 
             } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Decimal")) {
                 int n1 = 0;
@@ -693,7 +693,7 @@ public class ExpresionAritmetica {
 
                 resultado = Math.pow(n1, n2);
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
@@ -706,7 +706,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = (int) Math.pow(n1, n2);
-                return resultado + ",entero";
+                return resultado + "@entero";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Booleano")) {
                 double n1 = 0;
@@ -721,10 +721,10 @@ public class ExpresionAritmetica {
 
                 resultado = Math.pow(n1, n2);
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Decimal")) {
-
+                    
                 double n1 = 0;
                 double n2 = 0;
                 double resultado = 0;
@@ -734,7 +734,7 @@ public class ExpresionAritmetica {
 
                 resultado = Math.pow(n1, n2);
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Entero")) {
                 double n1 = 0;
@@ -745,7 +745,7 @@ public class ExpresionAritmetica {
                 n2 = Double.parseDouble(num2);
                 resultado = Math.pow(n1, n2);
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Booleano")) {
                 int n1 = 0;
@@ -757,7 +757,7 @@ public class ExpresionAritmetica {
 
                 n1 = Integer.parseInt(num1);
                 resultado = (int) Math.pow(n1, n2);
-                return resultado + ",entero";
+                return resultado + "@entero";
                 
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Decimal")) {
                 double n1 = 0;
@@ -769,7 +769,7 @@ public class ExpresionAritmetica {
 
                 resultado = Math.pow(n1, n2);
                 String res = String.format("%.2f", resultado);
-                return res + ",decimal";
+                return res + "@decimal";
                 
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
@@ -780,28 +780,26 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = (int) Math.pow(n1, n2);
-                return resultado+ ",entero";
+                return resultado+ "@entero";
             }
         }
         return "error";
     }
 
-    
-
     public boolean sonTiposIncompatibles(String tipo1, String tipo2) {
-        if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Cadena")) {
+        if (tipo1.equalsIgnoreCase("Booleano") && tipo2.equalsIgnoreCase("Texto")) {
             return true;
-        } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Cadena")) {
+        } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Texto")) {
             return true;
-        } else if (tipo1.equalsIgnoreCase("Cadena") && tipo2.equalsIgnoreCase("Booleano")) {
+        } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Booleano")) {
             return true;
-        } else if (tipo1.equalsIgnoreCase("Cadena") && tipo2.equalsIgnoreCase("Decimal")) {
+        } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Decimal")) {
             return true;
-        } else if (tipo1.equalsIgnoreCase("Cadena") && tipo2.equalsIgnoreCase("texto")) {
+        } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("texto")) {
             return true;
-        } else if (tipo1.equalsIgnoreCase("Cadena") && tipo2.equalsIgnoreCase("Entero")) {
+        } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Entero")) {
             return true;
-        } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Cadena")) {
+        } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Texto")) {
             return true;
         }
         return false;
