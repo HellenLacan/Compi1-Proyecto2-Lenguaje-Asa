@@ -1,13 +1,5 @@
 </Ejemplos de Variables globales/>
-Texto a,z = ("A" + "B");
-Decimal j;
-Booleano b = falso;
-Texto a = falso + "hola mundo";       --> Esta no tendria que ser agregada porque esta repetida
-Decimal x = verdadero + 5.90;
-Entero c = 90.506 * verdadero;            --> Esta tendria que ser casteada de decimal a entero
-Entero h = 90+20;
 
-a = "Hola mundo";
-h = 355.5;
-b = 1;
-j = 15 *1.25;
+Entero a = 5>3;
+Entero b = 5<3;
+Entero c = 45 >= 8;

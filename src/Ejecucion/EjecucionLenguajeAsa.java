@@ -222,7 +222,7 @@ public class EjecucionLenguajeAsa {
                         + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
             } else {
                 System.out.println("Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoValor
-                        + " y la variable destino " + nombre + " es de tipo " + simb.getTipo()+ " linea:" + linea + " columna: " + columna);
+                        + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
             }
         }
     }
@@ -254,7 +254,6 @@ public class EjecucionLenguajeAsa {
                             String n2Tipo = num2[1];
 
                             Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
-                            //System.out.println(n1Val + signo + n2Val + "= " + resultado);
                             return resultado.toString();
 
                     }
@@ -270,7 +269,16 @@ public class EjecucionLenguajeAsa {
                             n1 += evaluarExpresion(n.getHijos().get(0));
                             signo += n.getHijos().get(1).getEtiqueta();
                             n3 += evaluarExpresion(n.getHijos().get(2));
-                            System.out.println(n1 + signo + n3);
+
+                            String[] num1 = n1.split("@");
+                            String n1Val = num1[0];
+                            String n1Tipo = num1[1];
+
+                            String[] num2 = n3.split("@");
+                            String n2Val = num2[0];
+                            String n2Tipo = num2[1];
+
+                            Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
                             break;
                     }
                     break;
@@ -286,7 +294,21 @@ public class EjecucionLenguajeAsa {
                             n1 += evaluarExpresion(n.getHijos().get(0));
                             signo += n.getHijos().get(1).getEtiqueta();
                             n3 += evaluarExpresion(n.getHijos().get(2));
-                            System.out.println(n1 + signo + n3);
+
+                            String[] num1 = n1.split("@");
+                            String n1Val = num1[0];
+                            String n1Tipo = num1[1];
+
+                            String[] num2 = n3.split("@");
+                            String n2Val = num2[0];
+                            String n2Tipo = num2[1];
+                            if (verificarExprLogicaValida(n1Tipo, n2Tipo)) {
+                                String res = evaluarExpresionLogica(signo, n1Tipo, n1Val, n2Tipo, n2Val);
+                                return res+"@booleano";
+                            } else {
+                                System.out.println("15@ERROR");
+                            }
+//                            Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
                             break;
                     }
                     break;
@@ -297,8 +319,103 @@ public class EjecucionLenguajeAsa {
             String term = n.getEtiqueta() + "@" + n.getTipoVar();
             return term;
         }
-
         return null;
+    }
+
+    //primreo evaluo y luego opero
+    private String evaluarExpresionLogica(String op, String tipo1, String val1, String tipo2, String val2) {
+        String resultado = "";
+        if (tipo1.equalsIgnoreCase("Decimal") || tipo1.equalsIgnoreCase("Entero")
+                && tipo2.equalsIgnoreCase("Decimal") || tipo2.equalsIgnoreCase("Entero")) {
+            
+            resultado = operarExpresionLogica(op, val1, val2);
+            
+            return resultado;
+        } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Texto")) {
+            int ascii1 = 0;
+            int ascii2 = 0;
+            for (int x = 0; x < val1.length(); x++) {
+                ascii1 += val1.codePointAt(x);
+            }
+
+            for (int x = 0; x < val2.length(); x++) {
+                ascii2 += val2.codePointAt(x);
+            }
+            //System.out.println("guardar en bitacora cual es mayor que la otra");
+            resultado = operarExpresionLogica(op, Integer.toString(ascii1), Integer.toString(ascii2)); 
+            
+            return resultado ;
+        }
+        return "";
+    }
+
+    private String operarExpresionLogica(String op, String val1, String val2) {
+        if (op.equalsIgnoreCase("==")) {
+            Double num1 = Double.parseDouble(val1);
+            Double num2 = Double.parseDouble(val2);
+
+            if (num1 == num2) {
+                return "verdadero";
+            } else {
+                return "falso";
+            }
+        } else if (op.equalsIgnoreCase("!=")) {
+            Double num1 = Double.parseDouble(val1);
+            Double num2 = Double.parseDouble(val2);
+
+            if (num1 != num2) {
+                return "verdadero";
+            } else {
+                return "falso";
+            }
+        } else if (op.equalsIgnoreCase("<")) {
+            Double num1 = Double.parseDouble(val1);
+            Double num2 = Double.parseDouble(val2);
+
+            if (num1 < num2) {
+                return "verdadero";
+            } else {
+                return "falso";
+            }
+        } else if (op.equalsIgnoreCase(">")) {
+            Double num1 = Double.parseDouble(val1);
+            Double num2 = Double.parseDouble(val2);
+
+            if (num1 > num2) {
+                return "verdadero";
+            } else {
+                return "falso";
+            }
+        } else if (op.equalsIgnoreCase("<=")) {
+            Double num1 = Double.parseDouble(val1);
+            Double num2 = Double.parseDouble(val2);
+
+            if (num1 <= num2) {
+                return "verdadero";
+            } else {
+                return "falso";
+            }
+        } else if (op.equalsIgnoreCase(">=")) {
+            Double num1 = Double.parseDouble(val1);
+            Double num2 = Double.parseDouble(val2);
+
+            if (num1 >= num2) {
+                return "verdadero";
+            } else {
+                return "falso";
+            }
+        }
+        return "error";
+    }
+
+    private boolean verificarExprLogicaValida(String tipo1, String tipo2) {
+        if (tipo1.equalsIgnoreCase("Decimal") || tipo1.equalsIgnoreCase("Entero")
+                && tipo2.equalsIgnoreCase("Decimal") || tipo2.equalsIgnoreCase("Entero")) {
+            return true;
+        } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Texto")) {
+            return true;
+        }
+        return false;
     }
 
     public Object realizarOperacionAritmeticas(String tipoOp, String tipo1, String num1, String tipo2, String num2) {
@@ -445,4 +562,5 @@ public class EjecucionLenguajeAsa {
         }
         return false;
     }
+
 }
