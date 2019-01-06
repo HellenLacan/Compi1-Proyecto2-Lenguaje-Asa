@@ -5,6 +5,7 @@
  */
 package Ejecucion;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 /**
@@ -38,6 +39,18 @@ public class TablaSimbolo {
             return true;
         }
         return false;
+    }
+
+    public void mostrarTS() {
+        Enumeration e = tabla.keys();
+        Object clave;
+        Simbolo valor;
+        while (e.hasMoreElements()) {
+            clave = e.nextElement();
+            valor = tabla.get(clave);
+            System.out.println("Tipo: " + valor.getTipo() + " id: " + valor.getNombre() + " valor: " + valor.getValor()
+                              +" Fila: " + valor.getLinea() + " Columna: " + valor.getColumna());
+        }
     }
 
 }

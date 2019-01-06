@@ -381,14 +381,14 @@ DEFINIR::= _definir:def cadena:cad ptoYcoma
                            :}
 ;
 
-DECLARACION_VARIABLES::=TIPO:n1 LISTA_VARIABLES:n2 ASIGN_VARIABLES:n3 ptoYcoma
+DECLARACION_VARIABLES::=TIPO:n1 LISTA_VARIABLES:n2 ASIGN_VARIABLES:asign ptoYcoma
                            {:
                              Nodo n = new Nodo("DECLARACION_VARIABLES");
                              n.addHijo(n1);
                              n.addHijo(n2);
-                             if(n3 != null){
-                                n.addHijo(n3);
-                             }
+                             Nodo n3 = new Nodo("EXPR");
+                             n3.addHijo(asign);
+                             n.addHijo(n3);
                              RESULT = n;
                            :}
 ;

@@ -1012,7 +1012,7 @@ public class scanner implements java_cup.runtime.Scanner {
             // fall through
           case 75: break;
           case 12: 
-            { System.out.println("Reconocio "+yytext()+" asignacion"); return new Symbol(sym.asignacion, yycolumn, yyline, yytext());
+            { return new Symbol(sym.asignacion, yycolumn, yyline, yytext());
             } 
             // fall through
           case 76: break;

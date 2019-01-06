@@ -1634,16 +1634,16 @@ class CUP$parser$actions {
 		int n2left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		Nodo n2 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		int n3left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
-		int n3right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
-		Nodo n3 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		int asignleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int asignright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Nodo asign = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
                              Nodo n = new Nodo("DECLARACION_VARIABLES");
                              n.addHijo(n1);
                              n.addHijo(n2);
-                             if(n3 != null){
-                                n.addHijo(n3);
-                             }
+                             Nodo n3 = new Nodo("EXPR");
+                             n3.addHijo(asign);
+                             n.addHijo(n3);
                              RESULT = n;
                            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("DECLARACION_VARIABLES",8, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

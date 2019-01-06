@@ -79,7 +79,7 @@ caracter = "'" [^\'\n] "'"
     "<"            { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.menor, yycolumn, yyline, yytext()); }
     "!="           { System.out.println("Reconocio "+yytext()+" Reservada"); return new Symbol(sym.diferente, yycolumn, yyline, yytext()); }
     "=="           { System.out.println("Reconocio "+yytext()+" igual"); return new Symbol(sym.igual, yycolumn, yyline, yytext()); }
-    "="            { System.out.println("Reconocio "+yytext()+" asignacion"); return new Symbol(sym.asignacion, yycolumn, yyline, yytext()); }
+    "="            { return new Symbol(sym.asignacion, yycolumn, yyline, yytext()); }
     "^"            { System.out.println("Reconocio "+yytext()+" potencia"); return new Symbol(sym.potencia, yycolumn, yyline, yytext()); }
     "+"            { System.out.println("Reconocio "+yytext()+" mas"); return new Symbol(sym.mas, yycolumn, yyline, yytext()); }
     "-"            { System.out.println("Reconocio "+yytext()+" menos"); return new Symbol(sym.menos, yycolumn, yyline, yytext()); }

@@ -79,14 +79,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
             EjecucionLenguajeAsa leng = new EjecucionLenguajeAsa();
             leng.almacenarVariablesGlobales(AST.getHijos().get(0));
-            //a.mostrarTabla();
-//            ExpresionAritmetica e = new ExpresionAritmetica();
-//            System.out.println(e.sumar("Booleano", "falso", "Texto", "hola mundo"));
-//            System.out.println(e.sumar("Booleano", "verdadero", "Decimal", "5.90"));
-//            System.out.println(e.sumar("Decimal", "90.206", "Booleano", "falso"));
-//            System.out.println(e.sumar("Entero", "15", "Booleano", "verdadero"));
-//            System.out.println(e.restar("Entero", "15", "Texto", "Holi"));
-//            System.out.println(e.restar("Entero", "15", "Booleano", "verdadero"));
+            System.out.println("Variables en tabla de simbolos global :D");
+            EjecucionLenguajeAsa.tsGlobal.mostrarTS();
 
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -16,7 +16,7 @@ import java.util.Stack;
  */
 public class EjecucionLenguajeAsa {
 
-    Stack<TablaSimbolo> pilaSimbolos = new Stack<TablaSimbolo>();
+    Stack<TablaSimbolo> pilaSimbolos = new Stack<>();
     public static TablaSimbolo tsGlobal = new TablaSimbolo();  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
     public static TablaFunciones tsFunciones = new TablaFunciones(); //Tabla para almacenar funciones, metodos y principal
     public Nodo AST;
@@ -32,7 +32,11 @@ public class EjecucionLenguajeAsa {
                 }
                 break;
             case "DECLARACION_VARIABLES":
-                agregarVariablesGlobales(nodo);
+                if (nodo.getHijos().get(1).getEtiqueta().equalsIgnoreCase("LISTA_VARIABLES")) {
+                    Nodo tipo = nodo.getHijos().get(0);
+                    Nodo exp = nodo.getHijos().get(2);
+                    recorrerListaVarsGlobales(tipo, nodo.getHijos().get(1), exp);
+                }
                 break;
             case "ASIGNACIONES":
                 asignacionAVariablesGlobales(nodo);
@@ -41,43 +45,53 @@ public class EjecucionLenguajeAsa {
         }
     }
 
-    public void agregarVariablesGlobales(Nodo nodo) {
-        String tipo = nodo.getHijos().get(0).getEtiqueta();
-        String nombre = nodo.getHijos().get(1).getHijos().get(0).getEtiqueta();
-        int linea = nodo.getHijos().get(1).getHijos().get(0).getFila();
-        int columna = nodo.getHijos().get(1).getHijos().get(0).getColumna();
+    public void recorrerListaVarsGlobales(Nodo tipo, Nodo nodo, Nodo exp) {
+        switch (nodo.getHijos().size()) {
+            case 1:
+                agregarVariablesGlobales(tipo, nodo.getHijos().get(0), exp);
+                break;
+            case 2:
+                recorrerListaVarsGlobales(tipo, nodo.getHijos().get(0), exp);
+                agregarVariablesGlobales(tipo, nodo.getHijos().get(1), exp);
+                break;
+        }
+    }
+
+    public void agregarVariablesGlobales(Nodo t, Nodo id, Nodo nodo) {
+        String tipo = t.getEtiqueta();
+        String nombre = id.getEtiqueta();
+        int linea = id.getFila();
+        int columna = id.getColumna();
         String expresion = "";
 
-        //Si la variable viene declara sin valor -> Entero a;
-        if (nodo.getHijos().size() == 2) {
+        if (nodo.getHijos().get(0) != null) {
+            //Si la variable viene con expresiones en el valor = 10+10; 
+            if (nodo.getHijos().get(0).getHijos().size() > 0) {
+                if (!tsGlobal.existeSimbolo(nombre)) {
+                    expresion = evaluarExpresion(nodo.getHijos().get(0));
+                    agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
+                } else {
+                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente" +
+                                       " linea:" + linea + " columna: " + columna);
+                }
+                //Si la variable viene solo con un terminal en la expresion en el valor = 10, valor = falso; 
+            } else {
+                if (!tsGlobal.existeSimbolo(nombre)) {
+                    expresion = evaluarExpresion(nodo.getHijos().get(0));
+                    agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
+                } else {
+                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente" +
+                                       " linea:" + linea + " columna: " + columna);                }
+            }
+            //Si la variable viene solo con un terminal como  valor Entero = a;
+        } else {
             if (!tsGlobal.existeSimbolo(nombre)) {
                 Simbolo simb = new Simbolo(tipo, nombre, "", linea, columna, "");
                 tsGlobal.insertar(nombre, simb);
             } else {
-                System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente");
-            }
-        } else {
-            //Si la variable viene con expresiones en el valor = 10+10; 
-            if (nodo.getHijos().get(2).getHijos().size() > 0) {
-                //Si la variable no existe la agrega, sino error semantico por repetida
-                if (!tsGlobal.existeSimbolo(nombre)) {
-                    expresion = evaluarExpresion(nodo.getHijos().get(2));
-                    agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
-                } else {
-                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente");
-                }
-                //Si la variable viene solo con un terminal como  valor Entero = a;
-            } else {
-                if (!tsGlobal.existeSimbolo(nombre)) {
-                    expresion = evaluarExpresion(nodo.getHijos().get(2));
-                    agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
-                } else {
-                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente");
-                }
-            }
-
+                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente" +
+                                       " linea:" + linea + " columna: " + columna);            }
         }
-
     }
 
     public void asignacionAVariablesGlobales(Nodo nodo) {
@@ -127,7 +141,7 @@ public class EjecucionLenguajeAsa {
     }
 
     public void actualizarVariableGlobal(String nombre, String expresion) {
-        String[] num1 = expresion.toString().split("@");
+        String[] num1 = expresion.split("@");
         String valor = num1[0];
         String tipoValor = num1[1];
 
