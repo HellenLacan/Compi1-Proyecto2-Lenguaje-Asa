@@ -71,8 +71,8 @@ public class EjecucionLenguajeAsa {
                     expresion = evaluarExpresion(nodo.getHijos().get(0));
                     agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
                 } else {
-                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente" +
-                                       " linea:" + linea + " columna: " + columna);
+                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
+                            + " linea:" + linea + " columna: " + columna);
                 }
                 //Si la variable viene solo con un terminal en la expresion en el valor = 10, valor = falso; 
             } else {
@@ -80,8 +80,9 @@ public class EjecucionLenguajeAsa {
                     expresion = evaluarExpresion(nodo.getHijos().get(0));
                     agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
                 } else {
-                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente" +
-                                       " linea:" + linea + " columna: " + columna);                }
+                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
+                            + " linea:" + linea + " columna: " + columna);
+                }
             }
             //Si la variable viene solo con un terminal como  valor Entero = a;
         } else {
@@ -89,8 +90,9 @@ public class EjecucionLenguajeAsa {
                 Simbolo simb = new Simbolo(tipo, nombre, "", linea, columna, "");
                 tsGlobal.insertar(nombre, simb);
             } else {
-                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente" +
-                                       " linea:" + linea + " columna: " + columna);            }
+                System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
+                        + " linea:" + linea + " columna: " + columna);
+            }
         }
     }
 
@@ -105,18 +107,20 @@ public class EjecucionLenguajeAsa {
             //Si la variable no existe la agrega, sino error semantico por repetida
             if (tsGlobal.existeSimbolo(nombre)) {
                 expresion = evaluarExpresion(nodo.getHijos().get(1));
-                actualizarVariableGlobal(nombre, expresion);
+                actualizarVariableGlobal(nombre, expresion, linea, columna);
                 //agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
             } else {
-                System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada ");
+                System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada "
+                        + " linea:" + linea + " columna: " + columna);
             }
             //Si la variable viene solo con un terminal como  valor Entero = a;
         } else {
             if (tsGlobal.existeSimbolo(nombre)) {
                 expresion = evaluarExpresion(nodo.getHijos().get(1));
-                actualizarVariableGlobal(nombre, expresion);
+                actualizarVariableGlobal(nombre, expresion, linea, columna);
             } else {
-                System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada ");
+                System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada "
+                        + " linea:" + linea + " columna: " + columna);
             }
         }
     }
@@ -127,20 +131,80 @@ public class EjecucionLenguajeAsa {
             String[] num1 = expresion.toString().split("@");
             String valor = num1[0];
             String tipoValor = num1[1];
-
             if (tipoValor.equalsIgnoreCase(tipo)) {
                 Simbolo simb = new Simbolo(tipo, nombre, valor, linea, columna, "ambitoGlobal");
                 //Como key de una variable tomo el Tipo+id
                 tsGlobal.insertar(nombre, simb);
             } else {
-                System.out.println("Error semantico, el valor de la expresion es de tipo " + tipoValor
-                        + " y la variable " + nombre + " es de tipo " + tipo);
+                if (verificarCasteo(tipo, tipoValor)) {
+                    String nuevoValor = castearImplicitamente(tipo, tipoValor, valor);
+                    Simbolo simb = new Simbolo(tipo, nombre, nuevoValor, linea, columna, "ambitoGlobal");
+                    //Como key de una variable tomo el Tipo+id
+                    tsGlobal.insertar(nombre, simb);
+                    System.out.println("casteada, implicitamente el valor de la expresion es de tipo " + tipoValor
+                            + " y la variable destino " + nombre + " es de tipo " + tipo + " linea:" + linea + " columna: " + columna);
+                } else {
+                    System.out.println("Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoValor
+                            + " y la variable destino " + nombre + " es de tipo " + tipo + " linea:" + linea + " columna: " + columna);
+                }
             }
-
         }
     }
 
-    public void actualizarVariableGlobal(String nombre, String expresion) {
+    public boolean verificarCasteo(String varTipoDestino, String varTipoResult) {
+        if (varTipoDestino.equalsIgnoreCase("Texto")
+                && (varTipoResult.equalsIgnoreCase("Decimal") || (varTipoResult.equalsIgnoreCase("Booleano")) || (varTipoResult.equalsIgnoreCase("Entero")))) {
+            return true;
+        } else if (varTipoDestino.equalsIgnoreCase("Decimal")
+                && (varTipoResult.equalsIgnoreCase("Booleano") || (varTipoResult.equalsIgnoreCase("Entero")))) {
+            return true;
+        } else if (varTipoDestino.equalsIgnoreCase("Entero")
+                && (varTipoResult.equalsIgnoreCase("Decimal") || (varTipoResult.equalsIgnoreCase("Booleano")))) {
+            return true;
+        }
+        return false;
+    }
+
+    public String castearImplicitamente(String varTipoDestino, String varTipoResult, String valor) {
+        if (varTipoDestino.equalsIgnoreCase("Texto")) {
+            if ((varTipoResult.equalsIgnoreCase("Decimal") || varTipoResult.equalsIgnoreCase("Entero"))) {
+                return valor;
+            } else if (varTipoResult.equalsIgnoreCase("Booleano")) {
+                if (valor.equalsIgnoreCase("falso")) {
+                    return "0";
+                } else {
+                    return "1";
+                }
+            }
+        } else if (varTipoDestino.equalsIgnoreCase("Decimal")) {
+            if (varTipoResult.equalsIgnoreCase("Entero")) {
+                int n = Integer.parseInt(valor);
+                double num = (double) n; // d = 3.0
+                return String.valueOf(num);
+            } else if (varTipoResult.equalsIgnoreCase("Booleano")) {
+                if (valor.equalsIgnoreCase("falso")) {
+                    return "0";
+                } else {
+                    return "1";
+                }
+            }
+        } else if (varTipoDestino.equalsIgnoreCase("Entero")) {
+            if (varTipoResult.equalsIgnoreCase("Decimal")) {
+                Double n = Double.parseDouble(valor.replace(",", "."));
+                int num = n.intValue();
+                return String.valueOf(num);
+            } else if (varTipoResult.equalsIgnoreCase("Booleano")) {
+                if (valor.equalsIgnoreCase("falso")) {
+                    return "0";
+                } else {
+                    return "1";
+                }
+            }
+        }
+        return "";
+    }
+
+    public void actualizarVariableGlobal(String nombre, String expresion, int linea, int columna) {
         String[] num1 = expresion.split("@");
         String valor = num1[0];
         String tipoValor = num1[1];
@@ -151,14 +215,15 @@ public class EjecucionLenguajeAsa {
             simb.setValor(valor);
             System.out.println("Variable -> " + simb.getNombre() + " actualizada");
         } else {
-            if (tipoValor.equalsIgnoreCase("Entero") && simb.getTipo().equalsIgnoreCase("Decimal")) {
-                simb.setValor(valor);
-                System.out.println("Variable -> " + simb.getNombre() + " actualizada");
+            if (verificarCasteo(simb.getTipo(), tipoValor)) {
+                String nuevoValor = castearImplicitamente(simb.getTipo(), tipoValor, valor);
+                simb.setValor(nuevoValor);
+                System.out.println("casteada, implicitamente el valor de la expresion es de tipo " + tipoValor
+                        + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
             } else {
-                System.out.println("Error semantico, no se puede asignar ya que " + simb.getNombre() + " es de tipo " + simb.getTipo()
-                        + " y esta intentando asignarle un tipo " + tipoValor);
+                System.out.println("Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoValor
+                        + " y la variable destino " + nombre + " es de tipo " + simb.getTipo()+ " linea:" + linea + " columna: " + columna);
             }
-
         }
     }
 

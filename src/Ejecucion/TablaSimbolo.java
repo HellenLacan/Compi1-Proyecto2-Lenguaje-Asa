@@ -27,6 +27,12 @@ public class TablaSimbolo {
     }
 
     public void insertar(String nombre, Simbolo simbolo) {
+        //Ya que el resultado de las operaciones devuelve 0,0
+        if(simbolo.getTipo().equalsIgnoreCase("Decimal")){
+            if(simbolo.getValor() != null){
+                simbolo.setValor(simbolo.getValor().replace(",", "."));
+            }
+        }
         tabla.put(nombre, simbolo);
     }
 
