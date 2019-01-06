@@ -8,6 +8,7 @@ package Ejecucion;
 import EjecucionExpresiones.ExpresionAritmetica;
 import Ejecucion.PalabraReservada.Reservada;
 import fuentes.Nodo;
+import java.util.Objects;
 import java.util.Stack;
 
 /**
@@ -127,7 +128,7 @@ public class EjecucionLenguajeAsa {
 
     //Este metodo asigna expresion a una declaracion de variable global
     public void agregarAsignacionAVars(String expresion, String tipo, String nombre, int linea, int columna) {
-        if (!expresion.equals("error tipos Incompatibles") && !expresion.equals("null") && !expresion.equals("error")) {
+        if (!expresion.equals("error tipos Incompatibles") && !expresion.equals("null") && !expresion.equals("@error") && !expresion.equals("error")) {
             String[] num1 = expresion.toString().split("@");
             String valor = num1[0];
             String tipoValor = num1[1];
@@ -148,6 +149,8 @@ public class EjecucionLenguajeAsa {
                             + " y la variable destino " + nombre + " es de tipo " + tipo + " linea:" + linea + " columna: " + columna);
                 }
             }
+        } else {
+            System.out.println("Error semantico al operar expresion" + " linea:" + linea + " columna: " + columna);
         }
     }
 
@@ -211,20 +214,25 @@ public class EjecucionLenguajeAsa {
 
         Simbolo simb = tsGlobal.retornarSimbolo(nombre);
 
-        if (tipoValor.equalsIgnoreCase(simb.getTipo())) {
-            simb.setValor(valor);
-            System.out.println("Variable -> " + simb.getNombre() + " actualizada");
-        } else {
-            if (verificarCasteo(simb.getTipo(), tipoValor)) {
-                String nuevoValor = castearImplicitamente(simb.getTipo(), tipoValor, valor);
-                simb.setValor(nuevoValor);
-                System.out.println("casteada, implicitamente el valor de la expresion es de tipo " + tipoValor
-                        + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
+        if (!expresion.equalsIgnoreCase("error")) {
+            if (tipoValor.equalsIgnoreCase(simb.getTipo())) {
+                simb.setValor(valor);
+                System.out.println("Variable -> " + simb.getNombre() + " actualizada");
             } else {
-                System.out.println("Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoValor
-                        + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
+                if (verificarCasteo(simb.getTipo(), tipoValor)) {
+                    String nuevoValor = castearImplicitamente(simb.getTipo(), tipoValor, valor);
+                    simb.setValor(nuevoValor);
+                    System.out.println("casteada, implicitamente el valor de la expresion es de tipo " + tipoValor
+                            + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
+                } else {
+                    System.out.println("Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoValor
+                            + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
+                }
             }
+        } else {
+            System.out.println("Error semantico al operar expresion" + " linea:" + linea + " columna: " + columna);
         }
+
     }
 
     public String evaluarExpresion(Nodo n) {
@@ -278,8 +286,14 @@ public class EjecucionLenguajeAsa {
                             String n2Val = num2[0];
                             String n2Tipo = num2[1];
 
-                            Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
-                            break;
+                            String resultado = "";
+                            if (n1Tipo.equalsIgnoreCase("booleano") && n2Tipo.equalsIgnoreCase("booleano")) {
+                                resultado = operarExprLogica(n1Val, n2Val, signo);
+                                return resultado + "@booleano";
+                            } else {
+                                return resultado + "@error";
+                            }
+                        //Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
                     }
                     break;
                 case "EXPR_REL":
@@ -303,8 +317,8 @@ public class EjecucionLenguajeAsa {
                             String n2Val = num2[0];
                             String n2Tipo = num2[1];
                             if (verificarExprLogicaValida(n1Tipo, n2Tipo)) {
-                                String res = evaluarExpresionLogica(signo, n1Tipo, n1Val, n2Tipo, n2Val);
-                                return res+"@booleano";
+                                String res = evaluarExpresionRelacional(signo, n1Tipo, n1Val, n2Tipo, n2Val);
+                                return res + "@booleano";
                             } else {
                                 System.out.println("15@ERROR");
                             }
@@ -322,14 +336,48 @@ public class EjecucionLenguajeAsa {
         return null;
     }
 
+    private String operarExprLogica(String val1, String val2, String op) {
+        Boolean a = false;
+        Boolean b = false;
+
+        if (val1.equalsIgnoreCase("verdadero")) {
+            a = true;
+        }
+
+        if (val2.equalsIgnoreCase("verdadero")) {
+            b = true;
+        }
+
+        if (op.equalsIgnoreCase("&&")) {
+            if (a && b) {
+                return "verdadero";
+            } else {
+                return "falso";
+            }
+        } else if (op.equalsIgnoreCase("||") || (op.equalsIgnoreCase("|"))) {
+            if (a || b) {
+                return "verdadero";
+            } else {
+                return "falso";
+            }
+        } else if (op.equalsIgnoreCase("!")) {
+            if (!a) {
+                return "verdadero";
+            } else {
+                return "falso";
+            }
+        }
+        return "error";
+    }
+
     //primreo evaluo y luego opero
-    private String evaluarExpresionLogica(String op, String tipo1, String val1, String tipo2, String val2) {
+    private String evaluarExpresionRelacional(String op, String tipo1, String val1, String tipo2, String val2) {
         String resultado = "";
         if (tipo1.equalsIgnoreCase("Decimal") || tipo1.equalsIgnoreCase("Entero")
                 && tipo2.equalsIgnoreCase("Decimal") || tipo2.equalsIgnoreCase("Entero")) {
-            
-            resultado = operarExpresionLogica(op, val1, val2);
-            
+
+            resultado = operarExpresionRelacional(op, val1, val2);
+
             return resultado;
         } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Texto")) {
             int ascii1 = 0;
@@ -342,19 +390,19 @@ public class EjecucionLenguajeAsa {
                 ascii2 += val2.codePointAt(x);
             }
             //System.out.println("guardar en bitacora cual es mayor que la otra");
-            resultado = operarExpresionLogica(op, Integer.toString(ascii1), Integer.toString(ascii2)); 
-            
-            return resultado ;
+            resultado = operarExpresionRelacional(op, Integer.toString(ascii1), Integer.toString(ascii2));
+
+            return resultado;
         }
         return "";
     }
 
-    private String operarExpresionLogica(String op, String val1, String val2) {
+    private String operarExpresionRelacional(String op, String val1, String val2) {
         if (op.equalsIgnoreCase("==")) {
             Double num1 = Double.parseDouble(val1);
             Double num2 = Double.parseDouble(val2);
 
-            if (num1 == num2) {
+            if (Objects.equals(num1, num2)) {
                 return "verdadero";
             } else {
                 return "falso";

@@ -1,5 +1,39 @@
 </Ejemplos de Variables globales/>
 
-Entero a = 5>3;
-Entero b = 5<3;
-Entero c = 45 >= 8;
+Decimal j;
+Booleano b = falso;
+Texto a,z = ("A" + "B");
+Decimal b = verdadero + 5.90;
+Entero c = 90.506 * verdadero;         --> Esta tendria que ser casteada de decimal a entero
+Booleano d = 1 + verdadero ;          --> Esta deberia dar erro por tipos;
+Texto e = "hola mundo " + verdadero;
+Texto f = "La suma de 5 + 3 es: " + 8;
+Texto g = 3.1416 + "es el valor de pi";
+Texto e ;                             --> No la deberia agregar ya que es variable repetida
+Booleano i = falso;
+Decimal x = verdadero + 5.90;
+Entero h = 90+20;
+
+</Ejemplos de variables globales con operadores relacionales y logicos/>
+Booleano palabraMayor = "Agua" > "Aguacate";
+Booleano palabraIgual = "Aguacate" == "Agua";
+Entero numMayor = 5>3;
+Entero numMenor = 5<3;
+Entero numMayorIgual = 45 >= 8;
+Entero esAnd = 5>3 && 4<10;
+Entero esDif = "hola" != "hola";
+Entero c = "hola" || "hola";             --> Expresiones no validas
+Entero ji = (45 == 45) && (20 != 50);
+Booleano xD = verdadero && falso;
+Entero opAnd = verdadero && falso;
+Booleano rel = (verdadero && falso) || (5 == 5);
+
+</Ejemplos de asignaciones a variables globales/>
+a = "Hola mundo";
+f =16;
+b = 10;
+i = 1;
+a = "Hola mundo";
+h = 355.5;
+b = 1;
+j = 15 *1.25;
