@@ -243,35 +243,76 @@ public class EjecucionLenguajeAsa {
             switch (n.getEtiqueta()) {
                 case "EXPR_ARIT":
                     switch (n.getHijos().size()) {
-                        case 1:
-                            break;
-                        case 2:
-                            break;
                         case 3:
 
                             n1 += evaluarExpresion(n.getHijos().get(0));
                             signo += n.getHijos().get(1).getEtiqueta();
                             n3 += evaluarExpresion(n.getHijos().get(2));
 
-                            String[] num1 = n1.split("@");
-                            String n1Val = num1[0];
-                            String n1Tipo = num1[1];
+                            if (!n1.equalsIgnoreCase("error") && !n3.equalsIgnoreCase("error")) {
+                                String[] num1 = n1.split("@");
+                                String n1Val = num1[0];
+                                String n1Tipo = num1[1];
 
-                            String[] num2 = n3.split("@");
-                            String n2Val = num2[0];
-                            String n2Tipo = num2[1];
+                                String[] num2 = n3.split("@");
+                                String n2Val = num2[0];
+                                String n2Tipo = num2[1];
 
-                            Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
-                            return resultado.toString();
+                                if (n1Tipo.equalsIgnoreCase("identificador") || n2Tipo.equalsIgnoreCase("identificador")) {
+                                    String val;
+                                    String tipo;
+                                    if (tsGlobal.existeSimbolo(n1Val)) {
+                                        val = tsGlobal.retornarSimbolo(n1Val).getValor();
+                                        tipo = tsGlobal.retornarSimbolo(n1Val).getTipo();
+                                        n1Val = val;
+                                        n1Tipo = tipo;
+                                    } else {
+                                        System.out.println("Bitacora La variable " + n1Val + " no esta declarada"
+                                                + "linea: " + n.getHijos().get(0).getFila() + " columna:" + n.getHijos().get(0).getColumna());
+                                        return "error";
+                                    }
+
+                                    if (tsGlobal.existeSimbolo(n2Val)) {
+                                        val = tsGlobal.retornarSimbolo(n2Val).getValor();
+                                        tipo = tsGlobal.retornarSimbolo(n2Val).getTipo();
+                                        n2Val = val;
+                                        n2Tipo = tipo;
+                                    } else {
+                                        System.out.println("Bitacora La variable " + n2Val + " no esta declarada"
+                                                + "linea: " + n.getHijos().get(2).getFila() + " columna:" + n.getHijos().get(2).getColumna());
+                                        return "error";
+                                    }
+                                }
+
+                                Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
+                                return resultado.toString();
+                            } else {
+                                return "error";
+                            }
 
                     }
                     break;
+                case "NUM_NEG":
+                    n1 += evaluarExpresion(n.getHijos().get(1));
+                    String[] num = n1.split("@");
+                    String val = num[0];
+                    String tipo = num[1];
+                    if (tipo.equalsIgnoreCase("Decimal") || tipo.equalsIgnoreCase("Entero")) {
+                        String numerin = val.replace(",", ".");
+                        Double numCast = Double.parseDouble(numerin);
+                        Double res = numCast * -1;
+                        String r = String.valueOf(res);
+                        return String.valueOf(r.replace(",", ".") + "@decimal");
+                    } else {
+                        return "error";
+                    }
 
                 case "EXPR_LOGICA":
                     switch (n.getHijos().size()) {
                         case 1:
                             break;
                         case 2:
+
                             break;
                         case 3:
                             n1 += evaluarExpresion(n.getHijos().get(0));
@@ -330,8 +371,24 @@ public class EjecucionLenguajeAsa {
                     break;
             }
         } else {
-            String term = n.getEtiqueta() + "@" + n.getTipoVar();
-            return term;
+            if (n.getTipoVar().equalsIgnoreCase("Identificador")) {
+                String id = n.getEtiqueta();
+                if (tsGlobal.existeSimbolo(id)) {
+                    String val = tsGlobal.retornarSimbolo(id).getValor();
+                    String tipo = tsGlobal.retornarSimbolo(id).getTipo();
+                    String term = val + "@" + tipo;
+                    return term;
+                } else {
+                    System.out.println("Bitacora La variable " + id + " no esta declarada"
+                            + "linea: " + n.getFila() + " columna: " + n.getColumna());
+
+                    return "error";
+                }
+            } else {
+                String term = n.getEtiqueta() + "@" + n.getTipoVar();
+                return term;
+            }
+
         }
         return null;
     }
@@ -610,5 +667,4 @@ public class EjecucionLenguajeAsa {
         }
         return false;
     }
-
 }
