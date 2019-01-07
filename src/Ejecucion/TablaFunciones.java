@@ -23,8 +23,8 @@ public class TablaFunciones {
         tabla.put(key, funcion);
     }
 
-    public Funcion retornarFuncion() {
-        return null;
+    public Funcion retornarFuncion(String key) {
+        return tabla.get(key);
     }
 
     public boolean existeFuncion(String key) {
@@ -34,12 +34,15 @@ public class TablaFunciones {
         return false;
     }
 
-    public void mostrarTabla() {
-        java.util.Enumeration claves = tabla.keys();
-        while (claves.hasMoreElements()) {
-            Object clave = claves.nextElement();
-            Object valor = tabla.get(clave);
-            System.out.println("Clave: " + clave.toString() + ", Funcion:  " + valor.toString());
+    public void mostrarTS() {
+        Enumeration e = tabla.keys();
+        Object clave;
+        Funcion valor;
+        while (e.hasMoreElements()) {
+            clave = e.nextElement();
+            valor = tabla.get(clave);
+            System.out.println("Tipo: " + valor.getTipo() + " id: " + valor.getNombre()
+                    + " Fila: " + valor.getFila() + " Columna: " + valor.getColumna() + " No param: " + valor.getNoParametros());
         }
     }
 }

@@ -40,8 +40,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     /**
      * Creates new form VentanaPrincipal
      */
+    String a = "Ale";
+    double b = 20;
+
+    public void mostrar() {
+        System.out.println(a + b + 15);
+    }
+
     public VentanaPrincipal() {
         initComponents();
+        mostrar();
+        System.out.println("m" + a);
         File file = new File("C:\\Users\\Hellen\\Documents\\Cursos\\COMPI1_VACAS_DIC_2018\\Proyecto2_201325674\\src\\archivoPrueba.asa");
 
         String content = "";
@@ -55,32 +64,47 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         try {
             String texto = content;
             System.out.println("Inicia analisis...");
-            scanner scan = new scanner(new BufferedReader(new StringReader(texto)));
-            parser parser = new parser(scan);
-            parser.parse();
-            Nodo AST = parser.padre;
 
-            String archivoTxT = "C:\\Users\\Hellen\\Desktop" + "\\GrafoApila.txt";
-            File file1 = new File(archivoTxT);
+            if (!"".equals(texto)) {
+                scanner scan = new scanner(new BufferedReader(new StringReader(texto)));
+                parser parser = new parser(scan);
+                parser.parse();
+                Nodo AST = parser.padre;
 
-            PrintWriter writer = new PrintWriter(file1, "UTF-8");
+                String archivoTxT = "C:\\Users\\Hellen\\Desktop" + "\\GrafoApila.txt";
+                File file1 = new File(archivoTxT);
 
-            writer.println(ControlDot.getDot(AST));
-            writer.close();
-            generarGrafica(archivoTxT, "AST");
-            System.out.println("Finaliza analisis...");
+                PrintWriter writer = new PrintWriter(file1, "UTF-8");
 
-            for (Nodo item : AST.getHijos()) {
-                EjecucionLenguajeAsa ejecucion = new EjecucionLenguajeAsa();
-                ejecucion.almacenarFunciones(item);
-                break;
+                writer.println(ControlDot.getDot(AST));
+                writer.close();
+                generarGrafica(archivoTxT, "AST");
+                System.out.println("Finaliza analisis...");
+
+                for (Nodo item : AST.getHijos()) {
+                    EjecucionLenguajeAsa ejecucion = new EjecucionLenguajeAsa();
+                    ejecucion.almacenarFunciones(item);
+                    break;
+                }
+                TablaFunciones a = EjecucionLenguajeAsa.tsFunciones;
+
+                EjecucionLenguajeAsa leng = new EjecucionLenguajeAsa();
+                leng.almacenarVariablesGlobales(AST.getHijos().get(0));
+                leng.almacenarFunciones(AST);
+
+                System.out.println("**************************Variables en tabla de simbolos global :D***********************************");
+                EjecucionLenguajeAsa.tsGlobal.mostrarTS();
+
+                System.out.println("**************************Funciones en tabla de Funciones global :D***********************************");
+                EjecucionLenguajeAsa.tsFunciones.mostrarTS();
+
+                if (EjecucionLenguajeAsa.tsFunciones.existeFuncion("vacio_principal")) {
+                    System.out.println("El metodo principal si esta");
+                    txtConsola.setText(EjecucionLenguajeAsa.ejecutarMain());
+                } else {
+                    System.out.println("El metodo principal no esta declarado aun");
+                }
             }
-            TablaFunciones a = EjecucionLenguajeAsa.tsFunciones;
-
-            EjecucionLenguajeAsa leng = new EjecucionLenguajeAsa();
-            leng.almacenarVariablesGlobales(AST.getHijos().get(0));
-            System.out.println("Variables en tabla de simbolos global :D");
-            EjecucionLenguajeAsa.tsGlobal.mostrarTS();
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -114,6 +138,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtConsola = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -130,6 +156,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jLabel1.setText("jLabel1");
 
+        txtConsola.setColumns(20);
+        txtConsola.setRows(5);
+        jScrollPane2.setViewportView(txtConsola);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -137,14 +167,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(97, 97, 97)
                         .addComponent(jButton1)
                         .addGap(102, 102, 102)
-                        .addComponent(jLabel1)))
-                .addContainerGap(260, Short.MAX_VALUE))
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -155,7 +187,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jLabel1))
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addGap(48, 48, 48)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
@@ -224,6 +258,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextArea txtConsola;
     // End of variables declaration//GEN-END:variables
 }

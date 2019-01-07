@@ -1,11 +1,12 @@
 </Ejemplos de Variables globales/>
 
-Entero x = 8;
-Entero y = 4;
-Entero a = x + y;
-Decimal j = x + a;
-Booleano b = falso;
-Booleano b1= b + verdadero;
-
-
-
+Texto nombre1 = "Hellen Lacan ";
+Texto nombre3 = "Ale Hdz";
+nombre3 = "Valor modificado var nombre3 " ;
+Vacio Principal(){
+	Texto nombre2 = "Cda Morales ";
+	Texto nombre1 = "Alexandra";
+	Mostrar(nombre2);
+	Mostrar(nombre3 + " " + "tiene 24 anios." );
+	Mostrar(nombre4);
+}

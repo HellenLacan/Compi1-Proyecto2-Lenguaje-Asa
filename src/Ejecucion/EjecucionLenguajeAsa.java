@@ -17,8 +17,10 @@ import java.util.Stack;
  */
 public class EjecucionLenguajeAsa {
 
-    Stack<TablaSimbolo> pilaSimbolos = new Stack<>();
+    public static Stack<TablaSimbolo> pilaSimbolos = new Stack<>();
+    public static Stack<TablaSimbolo> pilaSimbolosAux = new Stack<>();
     public static TablaSimbolo tsGlobal = new TablaSimbolo();  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
+    public static TablaSimbolo tsMain = new TablaSimbolo();  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
     public static TablaFunciones tsFunciones = new TablaFunciones(); //Tabla para almacenar funciones, metodos y principal
     public Nodo AST;
 
@@ -36,218 +38,99 @@ public class EjecucionLenguajeAsa {
                 if (nodo.getHijos().get(1).getEtiqueta().equalsIgnoreCase("LISTA_VARIABLES")) {
                     Nodo tipo = nodo.getHijos().get(0);
                     Nodo exp = nodo.getHijos().get(2);
-                    recorrerListaVarsGlobales(tipo, nodo.getHijos().get(1), exp);
+                    DeclaracionVar.recorrerListaVars(tipo, nodo.getHijos().get(1), exp, "ambitoGlobal");
                 }
                 break;
             case "ASIGNACIONES":
-                asignacionAVariablesGlobales(nodo);
+                AsignacionVars.asignacionAVariables(nodo, tsGlobal, "ambitoGlobal");
                 break;
             default:
         }
     }
 
-    public void recorrerListaVarsGlobales(Nodo tipo, Nodo nodo, Nodo exp) {
-        switch (nodo.getHijos().size()) {
-            case 1:
-                agregarVariablesGlobales(tipo, nodo.getHijos().get(0), exp);
+    public void almacenarFunciones(Nodo nodo) {
+        switch (nodo.getEtiqueta()) {
+            case "CUERPO_PRINCIPAL":
+                for (Nodo item : nodo.getHijos()) {
+                    almacenarFunciones(item);
+                }
                 break;
-            case 2:
-                recorrerListaVarsGlobales(tipo, nodo.getHijos().get(0), exp);
-                agregarVariablesGlobales(tipo, nodo.getHijos().get(1), exp);
+            case "FUNCION":
+                agregarFunciones(nodo);
                 break;
+            case "METODO":
+                agregarFunciones(nodo);
+                break;
+            case "METODO_PRINCIPAL":
+                agregarFunciones(nodo);
+                break;
+            default:
         }
     }
 
-    public void agregarVariablesGlobales(Nodo t, Nodo id, Nodo nodo) {
-        String tipo = t.getEtiqueta();
-        String nombre = id.getEtiqueta();
-        int linea = id.getFila();
-        int columna = id.getColumna();
-        String expresion = "";
+    public static String ejecutarMain() {
+        String consola = "";
 
-        if (nodo.getHijos().get(0) != null) {
-            //Si la variable viene con expresiones en el valor = 10+10; 
-            if (nodo.getHijos().get(0).getHijos().size() > 0) {
-                if (!tsGlobal.existeSimbolo(nombre)) {
-                    expresion = evaluarExpresion(nodo.getHijos().get(0));
-                    agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
-                } else {
-                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
-                            + " linea:" + linea + " columna: " + columna);
-                }
-                //Si la variable viene solo con un terminal en la expresion en el valor = 10, valor = falso; 
-            } else {
-                if (!tsGlobal.existeSimbolo(nombre)) {
-                    expresion = evaluarExpresion(nodo.getHijos().get(0));
-                    agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
-                } else {
-                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
-                            + " linea:" + linea + " columna: " + columna);
-                }
-            }
-            //Si la variable viene solo con un terminal como  valor Entero = a;
+        if (tsFunciones.existeFuncion("vacio_principal")) {
+            Funcion sentencias = tsFunciones.retornarFuncion("vacio_principal");
+            consola = ejecutarSentenciasMain(sentencias.getCuerpo(), consola, "ambitoMain");
+            System.out.println("Consolita");
+            System.out.println(consola);
         } else {
-            if (!tsGlobal.existeSimbolo(nombre)) {
-                Simbolo simb = new Simbolo(tipo, nombre, "", linea, columna, "");
-                tsGlobal.insertar(nombre, simb);
-            } else {
-                System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
-                        + " linea:" + linea + " columna: " + columna);
-            }
+            System.out.println("El metodo principal no esta declarado aun");
         }
+        return consola;
     }
 
-    public void asignacionAVariablesGlobales(Nodo nodo) {
-        String nombre = nodo.getHijos().get(0).getHijos().get(0).getEtiqueta();
-        int linea = nodo.getHijos().get(0).getHijos().get(0).getFila();
-        int columna = nodo.getHijos().get(0).getHijos().get(0).getColumna();
-        String expresion = "";
+    public static String ejecutarSentenciasMain(Nodo nodo, String consola, String ambito) {
+        switch (nodo.getEtiqueta()) {
+            case "LISTA_SENTENCIAS":
 
-        //Si la variable viene con expresiones en el valor = 10+10; 
-        if (nodo.getHijos().get(1).getHijos().size() > 0) {
-            //Si la variable no existe la agrega, sino error semantico por repetida
-            if (tsGlobal.existeSimbolo(nombre)) {
-                expresion = evaluarExpresion(nodo.getHijos().get(1));
-                actualizarVariableGlobal(nombre, expresion, linea, columna);
-                //agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
-            } else {
-                System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada "
-                        + " linea:" + linea + " columna: " + columna);
-            }
-            //Si la variable viene solo con un terminal como  valor Entero = a;
-        } else {
-            if (tsGlobal.existeSimbolo(nombre)) {
-                expresion = evaluarExpresion(nodo.getHijos().get(1));
-                actualizarVariableGlobal(nombre, expresion, linea, columna);
-            } else {
-                System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada "
-                        + " linea:" + linea + " columna: " + columna);
-            }
-        }
-    }
-
-    //Este metodo asigna expresion a una declaracion de variable global
-    public void agregarAsignacionAVars(String expresion, String tipo, String nombre, int linea, int columna) {
-        if (!expresion.equals("error tipos Incompatibles") && !expresion.equals("null") && !expresion.equals("@error") && !expresion.equals("error")) {
-            String[] num1 = expresion.toString().split("@");
-            String valor = num1[0];
-            String tipoValor = num1[1];
-            if (tipoValor.equalsIgnoreCase(tipo)) {
-                Simbolo simb = new Simbolo(tipo, nombre, valor, linea, columna, "ambitoGlobal");
-                //Como key de una variable tomo el Tipo+id
-                tsGlobal.insertar(nombre, simb);
-            } else {
-                if (verificarCasteo(tipo, tipoValor)) {
-                    String nuevoValor = castearImplicitamente(tipo, tipoValor, valor);
-                    Simbolo simb = new Simbolo(tipo, nombre, nuevoValor, linea, columna, "ambitoGlobal");
-                    //Como key de una variable tomo el Tipo+id
-                    tsGlobal.insertar(nombre, simb);
-                    System.out.println("casteada, implicitamente el valor de la expresion es de tipo " + tipoValor
-                            + " y la variable destino " + nombre + " es de tipo " + tipo + " linea:" + linea + " columna: " + columna);
-                } else {
-                    System.out.println("Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoValor
-                            + " y la variable destino " + nombre + " es de tipo " + tipo + " linea:" + linea + " columna: " + columna);
+                switch (nodo.getHijos().size()) {
+                    case 1:
+                        consola += ejecutarSentenciasMain(nodo.getHijos().get(0), consola, ambito);
+                        return consola;
+                    case 2:
+                        consola += ejecutarSentenciasMain(nodo.getHijos().get(0), consola, ambito);
+                        consola += ejecutarSentenciasMain(nodo.getHijos().get(1), consola, ambito);
+                        return consola;
                 }
-            }
-        } else {
-            System.out.println("Error semantico al operar expresion" + " linea:" + linea + " columna: " + columna);
+                break;
+            case "DECLARACION_VARIABLES":
+                Nodo tipo = nodo.getHijos().get(0);
+                Nodo exp = nodo.getHijos().get(2);
+                DeclaracionVar.recorrerListaVars(tipo, nodo.getHijos().get(1), exp, ambito);
+                break;
+            case "MOSTRAR":
+                String imprimir = evaluarExpresion(nodo.getHijos().get(0), ambito);
+                String[] num1 = imprimir.split("@");
+                String val = num1[0];
+                consola = "> " + val + "\n";
+                return consola;
         }
+        return consola;
     }
 
-    public boolean verificarCasteo(String varTipoDestino, String varTipoResult) {
-        if (varTipoDestino.equalsIgnoreCase("Texto")
-                && (varTipoResult.equalsIgnoreCase("Decimal") || (varTipoResult.equalsIgnoreCase("Booleano")) || (varTipoResult.equalsIgnoreCase("Entero")))) {
-            return true;
-        } else if (varTipoDestino.equalsIgnoreCase("Decimal")
-                && (varTipoResult.equalsIgnoreCase("Booleano") || (varTipoResult.equalsIgnoreCase("Entero")))) {
-            return true;
-        } else if (varTipoDestino.equalsIgnoreCase("Entero")
-                && (varTipoResult.equalsIgnoreCase("Decimal") || (varTipoResult.equalsIgnoreCase("Booleano")))) {
-            return true;
-        }
-        return false;
-    }
-
-    public String castearImplicitamente(String varTipoDestino, String varTipoResult, String valor) {
-        if (varTipoDestino.equalsIgnoreCase("Texto")) {
-            if ((varTipoResult.equalsIgnoreCase("Decimal") || varTipoResult.equalsIgnoreCase("Entero"))) {
-                return valor;
-            } else if (varTipoResult.equalsIgnoreCase("Booleano")) {
-                if (valor.equalsIgnoreCase("falso")) {
-                    return "0";
-                } else {
-                    return "1";
-                }
-            }
-        } else if (varTipoDestino.equalsIgnoreCase("Decimal")) {
-            if (varTipoResult.equalsIgnoreCase("Entero")) {
-                int n = Integer.parseInt(valor);
-                double num = (double) n; // d = 3.0
-                return String.valueOf(num);
-            } else if (varTipoResult.equalsIgnoreCase("Booleano")) {
-                if (valor.equalsIgnoreCase("falso")) {
-                    return "0";
-                } else {
-                    return "1";
-                }
-            }
-        } else if (varTipoDestino.equalsIgnoreCase("Entero")) {
-            if (varTipoResult.equalsIgnoreCase("Decimal")) {
-                Double n = Double.parseDouble(valor.replace(",", "."));
-                int num = n.intValue();
-                return String.valueOf(num);
-            } else if (varTipoResult.equalsIgnoreCase("Booleano")) {
-                if (valor.equalsIgnoreCase("falso")) {
-                    return "0";
-                } else {
-                    return "1";
-                }
-            }
-        }
-        return "";
-    }
-
-    public void actualizarVariableGlobal(String nombre, String expresion, int linea, int columna) {
-        String[] num1 = expresion.split("@");
-        String valor = num1[0];
-        String tipoValor = num1[1];
-
-        Simbolo simb = tsGlobal.retornarSimbolo(nombre);
-
-        if (!expresion.equalsIgnoreCase("error")) {
-            if (tipoValor.equalsIgnoreCase(simb.getTipo())) {
-                simb.setValor(valor);
-                System.out.println("Variable -> " + simb.getNombre() + " actualizada");
-            } else {
-                if (verificarCasteo(simb.getTipo(), tipoValor)) {
-                    String nuevoValor = castearImplicitamente(simb.getTipo(), tipoValor, valor);
-                    simb.setValor(nuevoValor);
-                    System.out.println("casteada, implicitamente el valor de la expresion es de tipo " + tipoValor
-                            + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
-                } else {
-                    System.out.println("Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoValor
-                            + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
-                }
-            }
-        } else {
-            System.out.println("Error semantico al operar expresion" + " linea:" + linea + " columna: " + columna);
-        }
-
-    }
-
-    public String evaluarExpresion(Nodo n) {
+    //Tipo es para ver si esta con globales o locales
+    public static String evaluarExpresion(Nodo n, String tipoAmbito) {
+        TablaSimbolo ts = null;
         String n1 = "";
         String signo = "";
         String n3 = "";
+
+        if (tipoAmbito.equalsIgnoreCase("ambitoGlobal")) {
+            ts = EjecucionLenguajeAsa.tsGlobal;
+        }
+
         if (n.getTipo().equalsIgnoreCase("NoTerm")) {
             switch (n.getEtiqueta()) {
                 case "EXPR_ARIT":
                     switch (n.getHijos().size()) {
                         case 3:
 
-                            n1 += evaluarExpresion(n.getHijos().get(0));
+                            n1 += evaluarExpresion(n.getHijos().get(0), tipoAmbito);
                             signo += n.getHijos().get(1).getEtiqueta();
-                            n3 += evaluarExpresion(n.getHijos().get(2));
+                            n3 += evaluarExpresion(n.getHijos().get(2), tipoAmbito);
 
                             if (!n1.equalsIgnoreCase("error") && !n3.equalsIgnoreCase("error")) {
                                 String[] num1 = n1.split("@");
@@ -261,9 +144,9 @@ public class EjecucionLenguajeAsa {
                                 if (n1Tipo.equalsIgnoreCase("identificador") || n2Tipo.equalsIgnoreCase("identificador")) {
                                     String val;
                                     String tipo;
-                                    if (tsGlobal.existeSimbolo(n1Val)) {
-                                        val = tsGlobal.retornarSimbolo(n1Val).getValor();
-                                        tipo = tsGlobal.retornarSimbolo(n1Val).getTipo();
+                                    if (ts.existeSimbolo(n1Val)) {
+                                        val = ts.retornarSimbolo(n1Val).getValor();
+                                        tipo = ts.retornarSimbolo(n1Val).getTipo();
                                         n1Val = val;
                                         n1Tipo = tipo;
                                     } else {
@@ -272,9 +155,9 @@ public class EjecucionLenguajeAsa {
                                         return "error";
                                     }
 
-                                    if (tsGlobal.existeSimbolo(n2Val)) {
-                                        val = tsGlobal.retornarSimbolo(n2Val).getValor();
-                                        tipo = tsGlobal.retornarSimbolo(n2Val).getTipo();
+                                    if (ts.existeSimbolo(n2Val)) {
+                                        val = ts.retornarSimbolo(n2Val).getValor();
+                                        tipo = ts.retornarSimbolo(n2Val).getTipo();
                                         n2Val = val;
                                         n2Tipo = tipo;
                                     } else {
@@ -293,7 +176,7 @@ public class EjecucionLenguajeAsa {
                     }
                     break;
                 case "NUM_NEG":
-                    n1 += evaluarExpresion(n.getHijos().get(1));
+                    n1 += evaluarExpresion(n.getHijos().get(1), tipoAmbito);
                     String[] num = n1.split("@");
                     String val = num[0];
                     String tipo = num[1];
@@ -315,9 +198,9 @@ public class EjecucionLenguajeAsa {
 
                             break;
                         case 3:
-                            n1 += evaluarExpresion(n.getHijos().get(0));
+                            n1 += evaluarExpresion(n.getHijos().get(0), tipoAmbito);
                             signo += n.getHijos().get(1).getEtiqueta();
-                            n3 += evaluarExpresion(n.getHijos().get(2));
+                            n3 += evaluarExpresion(n.getHijos().get(2), tipoAmbito);
 
                             String[] num1 = n1.split("@");
                             String n1Val = num1[0];
@@ -346,9 +229,9 @@ public class EjecucionLenguajeAsa {
                             break;
                         case 3:
 
-                            n1 += evaluarExpresion(n.getHijos().get(0));
+                            n1 += evaluarExpresion(n.getHijos().get(0), tipoAmbito);
                             signo += n.getHijos().get(1).getEtiqueta();
-                            n3 += evaluarExpresion(n.getHijos().get(2));
+                            n3 += evaluarExpresion(n.getHijos().get(2), tipoAmbito);
 
                             String[] num1 = n1.split("@");
                             String n1Val = num1[0];
@@ -373,16 +256,64 @@ public class EjecucionLenguajeAsa {
         } else {
             if (n.getTipoVar().equalsIgnoreCase("Identificador")) {
                 String id = n.getEtiqueta();
-                if (tsGlobal.existeSimbolo(id)) {
-                    String val = tsGlobal.retornarSimbolo(id).getValor();
-                    String tipo = tsGlobal.retornarSimbolo(id).getTipo();
-                    String term = val + "@" + tipo;
-                    return term;
-                } else {
-                    System.out.println("Bitacora La variable " + id + " no esta declarada"
-                            + "linea: " + n.getFila() + " columna: " + n.getColumna());
+                if (tipoAmbito.equalsIgnoreCase("ambitoGlobal")) {
+                    if (ts.existeSimbolo(id)) {
+                        String val = ts.retornarSimbolo(id).getValor();
+                        String tipo = ts.retornarSimbolo(id).getTipo();
+                        String term = val + "@" + tipo;
+                        return term;
+                    } else {
+                        System.out.println("Bitacora La variable " + id + " no esta declarada"
+                                + "linea: " + n.getFila() + " columna: " + n.getColumna());
 
-                    return "error";
+                        return "error";
+                    }
+                } else {
+
+                    if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
+                        if (!pilaSimbolos.empty()) {
+                            boolean cond = true;
+                            if (pilaSimbolos.size() == 1) {
+                                ts = pilaSimbolos.peek();
+                            }
+
+                            if (ts.existeSimbolo(id)) {
+                                String val = ts.retornarSimbolo(id).getValor();
+                                String tipo = ts.retornarSimbolo(id).getTipo();
+                                String term = val + "@" + tipo;
+                                return term;
+                            } else if (tsGlobal.existeSimbolo(id)) {
+                                ts = tsGlobal;
+                                String val = ts.retornarSimbolo(id).getValor();
+                                String tipo = ts.retornarSimbolo(id).getTipo();
+                                String term = val + "@" + tipo;
+                                return term;
+                            } else {
+                                System.out.println("Bitacora La variable " + id + " no esta declarada"
+                                        + "linea: " + n.getFila() + " columna: " + n.getColumna());
+
+                                return "error";
+                            }
+
+                        }
+                    }
+
+//                    if (pilaSimbolos.empty()) {
+//                        //Me toca buscar primero en metodo main xD
+//                        if (tsGlobal.existeSimbolo(id)) {
+//                            String val = tsGlobal.retornarSimbolo(id).getValor();
+//                            String tipo = tsGlobal.retornarSimbolo(id).getTipo();
+//                            String term = val + "@" + tipo;
+//                            return term;
+//                        } else {
+//                            System.out.println("Bitacora La variable " + id + " no esta declarada"
+//                                    + "linea: " + n.getFila() + " columna: " + n.getColumna());
+//
+//                            return "error";
+//                        }
+//                    } else {
+//
+//                    }
                 }
             } else {
                 String term = n.getEtiqueta() + "@" + n.getTipoVar();
@@ -393,7 +324,7 @@ public class EjecucionLenguajeAsa {
         return null;
     }
 
-    private String operarExprLogica(String val1, String val2, String op) {
+    private static String operarExprLogica(String val1, String val2, String op) {
         Boolean a = false;
         Boolean b = false;
 
@@ -428,7 +359,7 @@ public class EjecucionLenguajeAsa {
     }
 
     //primreo evaluo y luego opero
-    private String evaluarExpresionRelacional(String op, String tipo1, String val1, String tipo2, String val2) {
+    private static String evaluarExpresionRelacional(String op, String tipo1, String val1, String tipo2, String val2) {
         String resultado = "";
         if (tipo1.equalsIgnoreCase("Decimal") || tipo1.equalsIgnoreCase("Entero")
                 && tipo2.equalsIgnoreCase("Decimal") || tipo2.equalsIgnoreCase("Entero")) {
@@ -454,7 +385,7 @@ public class EjecucionLenguajeAsa {
         return "";
     }
 
-    private String operarExpresionRelacional(String op, String val1, String val2) {
+    private static String operarExpresionRelacional(String op, String val1, String val2) {
         if (op.equalsIgnoreCase("==")) {
             Double num1 = Double.parseDouble(val1);
             Double num2 = Double.parseDouble(val2);
@@ -513,7 +444,7 @@ public class EjecucionLenguajeAsa {
         return "error";
     }
 
-    private boolean verificarExprLogicaValida(String tipo1, String tipo2) {
+    public static boolean verificarExprLogicaValida(String tipo1, String tipo2) {
         if (tipo1.equalsIgnoreCase("Decimal") || tipo1.equalsIgnoreCase("Entero")
                 && tipo2.equalsIgnoreCase("Decimal") || tipo2.equalsIgnoreCase("Entero")) {
             return true;
@@ -523,7 +454,7 @@ public class EjecucionLenguajeAsa {
         return false;
     }
 
-    public Object realizarOperacionAritmeticas(String tipoOp, String tipo1, String num1, String tipo2, String num2) {
+    public static Object realizarOperacionAritmeticas(String tipoOp, String tipo1, String num1, String tipo2, String num2) {
         ExpresionAritmetica exp = new ExpresionAritmetica();
         if (tipoOp.equalsIgnoreCase("+")) {
             return exp.sumar(tipo1, num1, tipo2, num2);
@@ -539,26 +470,6 @@ public class EjecucionLenguajeAsa {
             return exp.dividir(tipo1, num1, tipo2, num2);
         }
         return null;
-    }
-
-    public void almacenarFunciones(Nodo nodo) {
-        switch (nodo.getEtiqueta()) {
-            case "CUERPO_PRINCIPAL":
-                for (Nodo item : nodo.getHijos()) {
-                    almacenarFunciones(item);
-                }
-                break;
-            case "FUNCION":
-                agregarFunciones(nodo);
-                break;
-            case "METODO":
-                agregarFunciones(nodo);
-                break;
-            case "METODO_PRINCIPAL":
-                agregarFunciones(nodo);
-                break;
-            default:
-        }
     }
 
     public void agregarFunciones(Nodo nodo) {
@@ -609,7 +520,8 @@ public class EjecucionLenguajeAsa {
             agregarParametros(nodo.getHijos().get(2), miFuncion);
             tsFunciones.insertar(key, miFuncion);
         } else {
-            System.out.println("Error semantico Metodo principal ya fue declarado anteriormente");
+            System.out.println("Error semantico Metodo principal ya fue declarado anteriormente"
+                    + " fila: " + fila + " columna: " + columna);
         }
     }
 

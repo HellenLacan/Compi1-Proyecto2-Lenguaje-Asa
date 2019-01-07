@@ -14,13 +14,13 @@ import java.util.ArrayList;
  */
 public class Funcion {
     
-    String nombre;
-    String tipo;
-    int fila;
-    int columna;
+    private String nombre;
+    private String tipo;
+    private int fila;
+    private int columna;
     private ArrayList<Parametro> parametros =  new ArrayList<>();
-    Nodo cuerpo;
-    String key;
+    private Nodo cuerpo;
+    private String key;
     int noParametros;
 
     public Funcion(String nombre, String tipo, int fila, int columna, Nodo cuerpo) {
@@ -45,6 +45,62 @@ public class Funcion {
     
     public int getNoParametros() {
         return parametros.size();
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public int getFila() {
+        return fila;
+    }
+
+    public void setFila(int fila) {
+        this.fila = fila;
+    }
+
+    public int getColumna() {
+        return columna;
+    }
+
+    public void setColumna(int columna) {
+        this.columna = columna;
+    }
+
+    public Nodo getCuerpo() {
+        return cuerpo;
+    }
+
+    public void setCuerpo(Nodo cuerpo) {
+        this.cuerpo = cuerpo;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public ArrayList<Parametro> getParametros() {
+        return parametros;
+    }
+
+    public void setParametros(ArrayList<Parametro> parametros) {
+        this.parametros = parametros;
     }
     
     

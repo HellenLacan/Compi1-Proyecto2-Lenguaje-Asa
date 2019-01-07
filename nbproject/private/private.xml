@@ -3,15 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/Ejecucion/Simbolo.java</file>
+            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/Ejecucion/DeclaracionVar.java</file>
             <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/Form/VentanaPrincipal.java</file>
-            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/EjecucionExpresiones/ExpresionAritmetica.java</file>
-            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/fuentes/sintactico.cup</file>
             <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/fuentes/Nodo.java</file>
-            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/fuentes/lexico.jflex</file>
             <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/Ejecucion/EjecucionLenguajeAsa.java</file>
-            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/EjecucionExpresiones/ExpresionRelacional.java</file>
+            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/Ejecucion/TablaSimbolo.java</file>
             <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/Ejecucion/TablaFunciones.java</file>
+            <file>file:/C:/Users/Hellen/Documents/Cursos/COMPI1_VACAS_DIC_2018/Proyecto2_201325674/src/Ejecucion/AsignacionVars.java</file>
         </group>
     </open-files>
 </project-private>

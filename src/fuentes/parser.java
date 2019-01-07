@@ -1960,7 +1960,7 @@ class CUP$parser$actions {
                               Nodo n = new Nodo("METODO_PRINCIPAL");
                               Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
                               n.addHijo(n1);
-                              Nodo n2 = new Nodo(id, idleft, idright);
+                              Nodo n2 = new Nodo(id, idright, idleft);
                               n.addHijo(n2);
                               n.addHijo(n3);
                               RESULT = n;

@@ -130,9 +130,9 @@ public class ExpresionAritmetica {
             return resultado + "@texto";
 
         } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Texto")) {
-            return num1 + " " + num2 + "@texto";
+            return num1 + num2 + "@texto";
         } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Entero")) {
-            return num1 + " " + num2 + "@texto";
+            return num1 + num2 + "@texto";
         } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Booleano")) {
             int n1 = 0;
             int n2 = 0;
