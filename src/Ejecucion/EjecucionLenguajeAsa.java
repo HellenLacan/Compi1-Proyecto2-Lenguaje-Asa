@@ -5,9 +5,12 @@
  */
 package Ejecucion;
 
+import static Ejecucion.AsignacionVars.actualizarVariableGlobal;
 import EjecucionExpresiones.ExpresionAritmetica;
 import Ejecucion.PalabraReservada.Reservada;
 import fuentes.Nodo;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -19,8 +22,8 @@ public class EjecucionLenguajeAsa {
 
     public static Stack<TablaSimbolo> pilaSimbolos = new Stack<>();
     public static Stack<TablaSimbolo> pilaSimbolosAux = new Stack<>();
-    public static TablaSimbolo tsGlobal = new TablaSimbolo();  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
-    public static TablaSimbolo tsMain = new TablaSimbolo();  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
+    public static TablaSimbolo tsGlobal = new TablaSimbolo("ambitoGlobal");  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
+    //public static TablaSimbolo tsMain = new TablaSimbolo("");  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
     public static TablaFunciones tsFunciones = new TablaFunciones(); //Tabla para almacenar funciones, metodos y principal
     public Nodo AST;
 
@@ -42,7 +45,7 @@ public class EjecucionLenguajeAsa {
                 }
                 break;
             case "ASIGNACIONES":
-                AsignacionVars.asignacionAVariables(nodo, tsGlobal, "ambitoGlobal");
+                AsignacionVars.asignacionAVariables(nodo, "ambitoGlobal");
                 break;
             default:
         }
@@ -85,30 +88,150 @@ public class EjecucionLenguajeAsa {
     public static String ejecutarSentenciasMain(Nodo nodo, String consola, String ambito) {
         switch (nodo.getEtiqueta()) {
             case "LISTA_SENTENCIAS":
-
                 switch (nodo.getHijos().size()) {
                     case 1:
                         consola += ejecutarSentenciasMain(nodo.getHijos().get(0), consola, ambito);
                         return consola;
                     case 2:
-                        consola += ejecutarSentenciasMain(nodo.getHijos().get(0), consola, ambito);
-                        consola += ejecutarSentenciasMain(nodo.getHijos().get(1), consola, ambito);
+                        consola = ejecutarSentenciasMain(nodo.getHijos().get(0), consola, ambito);
+                        consola = ejecutarSentenciasMain(nodo.getHijos().get(1), consola, ambito);
                         return consola;
                 }
                 break;
+
             case "DECLARACION_VARIABLES":
                 Nodo tipo = nodo.getHijos().get(0);
                 Nodo exp = nodo.getHijos().get(2);
                 DeclaracionVar.recorrerListaVars(tipo, nodo.getHijos().get(1), exp, ambito);
                 break;
+
+            case "ASIGNACIONES":
+                AsignacionVars.asignacionAVariables(nodo, ambito);
+
+                break;
             case "MOSTRAR":
-                String imprimir = evaluarExpresion(nodo.getHijos().get(0), ambito);
+                String imprimir = "";
+                imprimir = evaluarExpresion(nodo.getHijos().get(0), ambito);
                 String[] num1 = imprimir.split("@");
                 String val = num1[0];
-                consola = "> " + val + "\n";
+                consola += "> " + val + "\n";
                 return consola;
+
+            case "LLAMADA_FUNCION":
+                String key = "";
+                String paramsEnviados = "";
+                Funcion miFuncion = null;
+                String paramsEnviadosOrigin = "";
+
+                if (nodo.getHijos().get(2).getHijos().size() != 0) {
+                    paramsEnviados = obtenerVarsParam(nodo.getHijos().get(2));
+                    String[] params = paramsEnviados.split(",");
+
+                    //Obtengo el tipo de las variables que van como parametros al llamar una funcion
+                    List<Simbolo> vars = new ArrayList<Simbolo>();
+                    for (String item : params) {
+                        vars.add(obtenerTipo(ambito, item));
+                    }
+
+                    //Generando la llave de los parametros
+                    for (Simbolo item : vars) {
+                        paramsEnviadosOrigin += item.getTipo().toLowerCase();
+                    }
+
+                    key = nodo.getHijos().get(0).getEtiqueta() + "_" + paramsEnviadosOrigin;
+
+                    if (tsFunciones.existeFuncion(key)) {
+                        miFuncion = tsFunciones.retornarFuncion(key);
+
+                        TablaSimbolo tsFuncion = new TablaSimbolo(nodo.getHijos().get(0).getEtiqueta(), "");
+                        int i = 0;
+                        for (Simbolo item : vars) {
+                            //Simbolo simb = new Simbolo(tipo, nombre, valor, linea, columna, ambito);
+                            Parametro paramRecibido = miFuncion.getParametros().get(i);
+                            item.setNombre(paramRecibido.getNombre());
+                            tsFuncion.insertar(item.getNombre(), item);
+                            i++;
+                        }
+
+                        //La cima de la pila sera ahora mi funcion actual
+                        pilaSimbolos.push(tsFuncion);
+                        consola = ejecutarSentenciasMain(miFuncion.getCuerpo(), consola, nodo.getHijos().get(0).getEtiqueta());
+                        //Quito el ambito de la funcion actual, quedandome solo el main
+                        pilaSimbolos.pop();
+                        return consola;
+                    } else {
+                        System.out.println("Funcion o parametros invalidos");
+                        return consola;
+
+                    }
+                } else {
+                    key = nodo.getHijos().get(0).getEtiqueta() + "_" + paramsEnviadosOrigin;
+
+                    if (tsFunciones.existeFuncion(key)) {
+                        miFuncion = tsFunciones.retornarFuncion(key);
+                        //La cima de la pila sera ahora mi funcion actual
+                        TablaSimbolo tsFuncion = new TablaSimbolo(nodo.getHijos().get(0).getEtiqueta(), "");
+                        pilaSimbolos.push(tsFuncion);
+                        consola = ejecutarSentenciasMain(miFuncion.getCuerpo(), consola, nodo.getHijos().get(0).getEtiqueta());
+                        //Quito el ambito de la funcion actual, quedandome solo el main
+                        pilaSimbolos.pop();
+                        return consola;
+                    }
+
+                }
+
+            case "ES_VERDADERO":
+                //String Condicion = evaluarExpresion(nodo.getHijos().get(1), "esVerdadero");
+                break;
         }
-        return consola;
+        return "";
+    }
+
+    public static Simbolo obtenerTipo(String tipoAmbito, String id) {
+        TablaSimbolo ts = null;
+        Simbolo var = null;
+        if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
+            if (EjecucionLenguajeAsa.pilaSimbolos.empty()) {
+                ts = tsGlobal;
+                if (ts.existeSimbolo(id)) {
+                    var = ts.retornarSimbolo(id);
+                } else {
+                    System.out.println("Error semantico no existe var");
+                }
+            } else {
+                if (EjecucionLenguajeAsa.pilaSimbolos.size() > 0) {
+                    ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
+                    if (ts.existeSimbolo(id)) {
+                        var = ts.retornarSimbolo(id);
+                    } else {
+                        System.out.println("Error semantico no existe var");
+                    }
+                } else {
+
+                }
+            }
+        }
+        return var;
+    }
+
+    public static String obtenerVarsParam(Nodo nodo) {
+        String parametros = "";
+        switch (nodo.getEtiqueta()) {
+            case "LISTA_PARAM":
+                switch (nodo.getHijos().size()) {
+                    case 1:
+                        String id = nodo.getHijos().get(0).getEtiqueta();
+                        return id;
+                    case 2:
+                        parametros += obtenerVarsParam(nodo.getHijos().get(0));
+                        id = nodo.getHijos().get(1).getEtiqueta();
+                        parametros += "," + id.toLowerCase();
+                        break;
+                }
+                break;
+            default:
+        }
+        return parametros;
     }
 
     //Tipo es para ver si esta con globales o locales
@@ -256,65 +379,85 @@ public class EjecucionLenguajeAsa {
         } else {
             if (n.getTipoVar().equalsIgnoreCase("Identificador")) {
                 String id = n.getEtiqueta();
-                if (tipoAmbito.equalsIgnoreCase("ambitoGlobal")) {
+
+//                if (tipoAmbito.equalsIgnoreCase("ambitoGlobal")) {
+//                    if (ts.existeSimbolo(id)) {
+//                        String val = ts.retornarSimbolo(id).getValor();
+//                        String tipo = ts.retornarSimbolo(id).getTipo();
+//                        String term = val + "@" + tipo;
+//                        return term;
+//                    } else {
+//                        System.out.println("Bitacora La variable " + id + " no esta declarada"
+//                                + "linea: " + n.getFila() + " columna: " + n.getColumna());
+//
+//                        return "error";
+//                    }
+//                }
+                if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
+                    if (!pilaSimbolos.empty()) {
+                        boolean cond = true;
+                        if (pilaSimbolos.size() == 1) {
+                            ts = pilaSimbolos.peek();
+                        }
+
+                        if (ts.existeSimbolo(id)) {
+                            String val = ts.retornarSimbolo(id).getValor();
+                            String tipo = ts.retornarSimbolo(id).getTipo();
+                            String term = val + "@" + tipo;
+                            return term;
+                        } else if (tsGlobal.existeSimbolo(id)) {
+                            ts = tsGlobal;
+                            String val = ts.retornarSimbolo(id).getValor();
+                            String tipo = ts.retornarSimbolo(id).getTipo();
+                            String term = val + "@" + tipo;
+                            return term;
+                        } else {
+                            System.out.println("Bitacora La variable " + id + " no esta declarada"
+                                    + "linea: " + n.getFila() + " columna: " + n.getColumna());
+
+                            return "error";
+                        }
+
+                    } else {
+                        ts = tsGlobal;
+                        if (ts.existeSimbolo(id)) {
+                            String val = ts.retornarSimbolo(id).getValor();
+                            String tipo = ts.retornarSimbolo(id).getTipo();
+                            String term = val + "@" + tipo;
+                            return term;
+                        } else {
+                            System.out.println("Bitacora La variable " + id + " no esta declarada"
+                                    + "linea: " + n.getFila() + " columna: " + n.getColumna());
+
+                            return "error";
+                        }
+                    }
+                    //Se va al ambito actual, la cima de la pila
+                } else {
+                    //Si no esta en la cima, busca en las variables globales
+                    ts = pilaSimbolos.peek();
                     if (ts.existeSimbolo(id)) {
                         String val = ts.retornarSimbolo(id).getValor();
                         String tipo = ts.retornarSimbolo(id).getTipo();
                         String term = val + "@" + tipo;
                         return term;
                     } else {
-                        System.out.println("Bitacora La variable " + id + " no esta declarada"
-                                + "linea: " + n.getFila() + " columna: " + n.getColumna());
+                        ts = tsGlobal;
+                        if (ts.existeSimbolo(id)) {
+                            String val = ts.retornarSimbolo(id).getValor();
+                            String tipo = ts.retornarSimbolo(id).getTipo();
+                            String term = val + "@" + tipo;
+                            return term;
+                        } else {
+                            System.out.println("Bitacora La variable " + id + " no esta declarada"
+                                    + "linea: " + n.getFila() + " columna: " + n.getColumna());
 
-                        return "error";
-                    }
-                } else {
-
-                    if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
-                        if (!pilaSimbolos.empty()) {
-                            boolean cond = true;
-                            if (pilaSimbolos.size() == 1) {
-                                ts = pilaSimbolos.peek();
-                            }
-
-                            if (ts.existeSimbolo(id)) {
-                                String val = ts.retornarSimbolo(id).getValor();
-                                String tipo = ts.retornarSimbolo(id).getTipo();
-                                String term = val + "@" + tipo;
-                                return term;
-                            } else if (tsGlobal.existeSimbolo(id)) {
-                                ts = tsGlobal;
-                                String val = ts.retornarSimbolo(id).getValor();
-                                String tipo = ts.retornarSimbolo(id).getTipo();
-                                String term = val + "@" + tipo;
-                                return term;
-                            } else {
-                                System.out.println("Bitacora La variable " + id + " no esta declarada"
-                                        + "linea: " + n.getFila() + " columna: " + n.getColumna());
-
-                                return "error";
-                            }
-
+                            return "error";
                         }
-                    }
 
-//                    if (pilaSimbolos.empty()) {
-//                        //Me toca buscar primero en metodo main xD
-//                        if (tsGlobal.existeSimbolo(id)) {
-//                            String val = tsGlobal.retornarSimbolo(id).getValor();
-//                            String tipo = tsGlobal.retornarSimbolo(id).getTipo();
-//                            String term = val + "@" + tipo;
-//                            return term;
-//                        } else {
-//                            System.out.println("Bitacora La variable " + id + " no esta declarada"
-//                                    + "linea: " + n.getFila() + " columna: " + n.getColumna());
-//
-//                            return "error";
-//                        }
-//                    } else {
-//
-//                    }
+                    }
                 }
+
             } else {
                 String term = n.getEtiqueta() + "@" + n.getTipoVar();
                 return term;
@@ -486,7 +629,7 @@ public class EjecucionLenguajeAsa {
             parametros = obtenerParametros(nodo.getHijos().get(2));
         }
 
-        key = tipo.toLowerCase() + "_" + id.toLowerCase() + "_" + parametros;
+        key = id.toLowerCase() + "_" + parametros;
 
         if (id.equalsIgnoreCase("Principal")) {
             agregarMetodoPrincipal(nodo);
@@ -525,7 +668,7 @@ public class EjecucionLenguajeAsa {
         }
     }
 
-    public String obtenerParametros(Nodo nodo) {
+    public static String obtenerParametros(Nodo nodo) {
         String parametros = "";
         switch (nodo.getEtiqueta()) {
             case "LISTA_PARAMETROS":

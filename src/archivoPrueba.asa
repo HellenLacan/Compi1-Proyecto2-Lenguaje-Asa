@@ -1,12 +1,24 @@
-</Ejemplos de Variables globales/>
+Entero suEdad = 25;
 
-Texto nombre1 = "Hellen Lacan ";
-Texto nombre3 = "Ale Hdz";
-nombre3 = "Valor modificado var nombre3 " ;
 Vacio Principal(){
-	Texto nombre2 = "Cda Morales ";
-	Texto nombre1 = "Alexandra";
-	Mostrar(nombre2);
-	Mostrar(nombre3 + " " + "tiene 24 anios." );
-	Mostrar(nombre4);
+	Entero a = 10;
+	Entero b = 15;
+	Entero miEdad = 24;
+	sumita3(a, b);		-->Mando a llamar a la funcion sumita3 
+	mostrar("Hola tengo " + miEdad +" años y mi amor candi crush " + suEdad);
+	sumita4();
 }
+
+Vacio sumita3(Entero x, Entero y){
+	Entero b = 20;
+	Entero num1 = 15;
+	mostrar(b);
+	mostrar(c);			-->Tiene que mostrar error ya que no esta declarada
+	mostrar(num1);
+}
+
+Vacio sumita4(){
+	Texto m = "Hola mundo";
+	mostrar(m);
+}
+

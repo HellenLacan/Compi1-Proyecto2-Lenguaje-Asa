@@ -1746,8 +1746,7 @@ class CUP$parser$actions {
             {
               Nodo RESULT =null;
 		
-                              Nodo n = new Nodo("LISTA_ID");
-                              RESULT = n;
+                              RESULT = null;
                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("LISTA_ID_LLAMADA_FUN",13, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }

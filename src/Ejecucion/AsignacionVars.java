@@ -14,8 +14,9 @@ import fuentes.Nodo;
  */
 public class AsignacionVars {
 
-    //Metodo cuando viene una asignacion a variables
-    public static void asignacionAVariables(Nodo nodo, TablaSimbolo ts, String tipoAmbito) {
+    //Metodo cuando viene una asignacion a variablesowe
+    public static void asignacionAVariables(Nodo nodo, String tipoAmbito) {
+        TablaSimbolo ts = null;
         String nombre = nodo.getHijos().get(0).getHijos().get(0).getEtiqueta();
         int linea = nodo.getHijos().get(0).getHijos().get(0).getFila();
         int columna = nodo.getHijos().get(0).getHijos().get(0).getColumna();
@@ -25,11 +26,41 @@ public class AsignacionVars {
             ts = EjecucionLenguajeAsa.tsGlobal;
         } else if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
             if (EjecucionLenguajeAsa.pilaSimbolos.empty()) {
-                TablaSimbolo tsMain = new TablaSimbolo();
+                TablaSimbolo tsMain = new TablaSimbolo("ambitoMain");
                 ts = tsMain;
+            } else {
+                if (EjecucionLenguajeAsa.pilaSimbolos.size() == 1) {
+                    ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
+                } else {
+                    boolean cond = true;
+                    while (cond) {
+                        if (EjecucionLenguajeAsa.pilaSimbolos.peek().existeSimbolo(tipoAmbito)) {
+                            ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
+                            break;
+                        } else if (EjecucionLenguajeAsa.pilaSimbolos.empty()) {
+                            cond = false;
+                            break;
+                        } else {
+                            EjecucionLenguajeAsa.pilaSimbolosAux.push(EjecucionLenguajeAsa.pilaSimbolos.peek());
+                        }
+                    }
+
+                    if (cond == false) {
+                        ts = EjecucionLenguajeAsa.tsGlobal;
+                    }
+
+                }
             }
         }
 
+//        if (tipoAmbito.equalsIgnoreCase("ambitoGlobal")) {
+//            ts = EjecucionLenguajeAsa.tsGlobal;
+//        } else if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
+//            if (EjecucionLenguajeAsa.pilaSimbolos.empty()) {
+//                TablaSimbolo tsMain = new TablaSimbolo("ambitoMain");
+//                ts = tsMain;
+//            }
+//        }
         //Si la variable viene con expresiones en el valor = 10+10; 
         if (nodo.getHijos().get(1).getHijos().size() > 0) {
             //Si la variable no existe la agrega, sino error semantico por repetida
@@ -60,11 +91,13 @@ public class AsignacionVars {
             ts = EjecucionLenguajeAsa.tsGlobal;
         } else if (ambito.equalsIgnoreCase("ambitoMain")) {
             if (EjecucionLenguajeAsa.pilaSimbolos.empty()) {
-                TablaSimbolo tsMain = new TablaSimbolo();
+                TablaSimbolo tsMain = new TablaSimbolo("ambitoMain");
                 ts = tsMain;
-            }else if(EjecucionLenguajeAsa.pilaSimbolos.size() == 1){
-              ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
+            } else if (EjecucionLenguajeAsa.pilaSimbolos.size() == 1) {
+                ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
             }
+        } else {
+            ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
         }
 
         if (!expresion.equals("error tipos Incompatibles") && !expresion.equals("null") && !expresion.equals("@error") && !expresion.equals("error")) {
@@ -106,12 +139,42 @@ public class AsignacionVars {
         String tipoValor = num1[1];
         TablaSimbolo ts = null;
 
+//        if (tipoAmbito.equalsIgnoreCase("ambitoGlobal")) {
+//            ts = EjecucionLenguajeAsa.tsGlobal;
+//        } else if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
+//            if (EjecucionLenguajeAsa.pilaSimbolos.empty()) {
+//                TablaSimbolo tsMain = new TablaSimbolo("ambitoMain");
+//                ts = tsMain;
+//            }
+//        }
         if (tipoAmbito.equalsIgnoreCase("ambitoGlobal")) {
             ts = EjecucionLenguajeAsa.tsGlobal;
         } else if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
             if (EjecucionLenguajeAsa.pilaSimbolos.empty()) {
-                TablaSimbolo tsMain = new TablaSimbolo();
+                TablaSimbolo tsMain = new TablaSimbolo("ambitoMain");
                 ts = tsMain;
+            } else {
+                if (EjecucionLenguajeAsa.pilaSimbolos.size() == 1) {
+                    ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
+                } else {
+                    boolean cond = true;
+                    while (cond) {
+                        if (EjecucionLenguajeAsa.pilaSimbolos.peek().existeSimbolo(tipoAmbito)) {
+                            ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
+                            break;
+                        } else if (EjecucionLenguajeAsa.pilaSimbolos.empty()) {
+                            cond = false;
+                            break;
+                        } else {
+                            EjecucionLenguajeAsa.pilaSimbolosAux.push(EjecucionLenguajeAsa.pilaSimbolos.peek());
+                        }
+                    }
+
+                    if (cond == false) {
+                        ts = EjecucionLenguajeAsa.tsGlobal;
+                    }
+
+                }
             }
         }
 

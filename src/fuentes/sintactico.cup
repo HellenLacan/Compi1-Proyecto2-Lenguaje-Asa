@@ -433,8 +433,7 @@ LISTA_ID_LLAMADA_FUN::= LLAMADITA_FUN:n
                             :}
                         |
                             {:
-                              Nodo n = new Nodo("LISTA_ID");
-                              RESULT = n;
+                              RESULT = null;
                             :}
 ;
 

@@ -37,11 +37,13 @@ public class DeclaracionVar {
             ts = EjecucionLenguajeAsa.tsGlobal;
         } else if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
             if (EjecucionLenguajeAsa.pilaSimbolos.empty()) {
-                TablaSimbolo tsMain = new TablaSimbolo();
+                TablaSimbolo tsMain = new TablaSimbolo("ambitoMain");
                 ts = tsMain;
-            }else if(EjecucionLenguajeAsa.pilaSimbolos.size() == 1){
-              ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
+            } else if (EjecucionLenguajeAsa.pilaSimbolos.size() == 1) {
+                ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
             }
+        } else {
+            ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
         }
 
         if (nodo.getHijos().get(0) != null) {

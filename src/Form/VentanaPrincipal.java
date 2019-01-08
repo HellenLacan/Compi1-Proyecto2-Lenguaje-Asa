@@ -11,6 +11,7 @@ import static ControlDot.generarGrafica.generarGrafica;
 import Ejecucion.EjecucionLenguajeAsa;
 import EjecucionExpresiones.ExpresionAritmetica;
 import Ejecucion.TablaFunciones;
+import Ejecucion.TablaSimbolo;
 import fuentes.Nodo;
 import fuentes.parser;
 import fuentes.scanner;
@@ -101,6 +102,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 if (EjecucionLenguajeAsa.tsFunciones.existeFuncion("vacio_principal")) {
                     System.out.println("El metodo principal si esta");
                     txtConsola.setText(EjecucionLenguajeAsa.ejecutarMain());
+                    TablaSimbolo t = EjecucionLenguajeAsa.pilaSimbolos.peek();
+                    System.out.println("m");
                 } else {
                     System.out.println("El metodo principal no esta declarado aun");
                 }

@@ -14,22 +14,22 @@ import java.util.Hashtable;
  */
 public class TablaSimbolo {
 
-    public String nivel;
+    public String ambito;
     public String tipo;
     Hashtable<String, Simbolo> tabla = new Hashtable<String, Simbolo>();
 
-    public TablaSimbolo() {
-
+    public TablaSimbolo(String ambito) {
+        this.ambito = ambito;
     }
 
-    public TablaSimbolo(String nivel, String tipo) {
-
+    public TablaSimbolo(String ambito, String tipo) {
+        this.ambito = ambito;
     }
 
     public void insertar(String nombre, Simbolo simbolo) {
         //Ya que el resultado de las operaciones devuelve 0,0
-        if(simbolo.getTipo().equalsIgnoreCase("Decimal")){
-            if(simbolo.getValor() != null){
+        if (simbolo.getTipo().equalsIgnoreCase("Decimal")) {
+            if (simbolo.getValor() != null) {
                 simbolo.setValor(simbolo.getValor().replace(",", "."));
             }
         }
@@ -55,7 +55,7 @@ public class TablaSimbolo {
             clave = e.nextElement();
             valor = tabla.get(clave);
             System.out.println("Tipo: " + valor.getTipo() + " id: " + valor.getNombre() + " valor: " + valor.getValor()
-                              +" Fila: " + valor.getLinea() + " Columna: " + valor.getColumna());
+                    + " Fila: " + valor.getLinea() + " Columna: " + valor.getColumna());
         }
     }
 
