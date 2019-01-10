@@ -6,6 +6,9 @@
 package Ejecucion;
 
 import fuentes.Nodo;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Stack;
 
 /**
  *
@@ -32,46 +35,78 @@ public class DeclaracionVar {
         int linea = id.getFila();
         int columna = id.getColumna();
         String expresion = "";
+        String funcion = "";
+        String sentencia = "";
 
         if (tipoAmbito.equalsIgnoreCase("ambitoGlobal")) {
             ts = EjecucionLenguajeAsa.tsGlobal;
         } else if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
-            if (EjecucionLenguajeAsa.pilaSimbolos.empty()) {
-                TablaSimbolo tsMain = new TablaSimbolo("ambitoMain");
-                ts = tsMain;
-            } else if (EjecucionLenguajeAsa.pilaSimbolos.size() == 1) {
+            ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
+        } else {
+            String[] ambito = tipoAmbito.split("@");
+            if (tipoAmbito.contains("@")) {
+                funcion = ambito[0];
+                sentencia = ambito[1];
+            }
+            if (tipoAmbito.equalsIgnoreCase(EjecucionLenguajeAsa.pilaSimbolos.peek().ambito)) {
+                ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
+            } else {
+                TablaSimbolo tsTemp = new TablaSimbolo(tipoAmbito);
+                //Verifico si la sentencia que viene pertenece a la misma funcion,
+                if (EjecucionLenguajeAsa.pilaSimbolos.peek().ambito.equalsIgnoreCase(funcion)) {
+
+                    Hashtable<?, ?> tabla = EjecucionLenguajeAsa.pilaSimbolos.peek().tabla;
+
+                    Enumeration e = tabla.keys();
+                    Object clave;
+                    Simbolo valor;
+                    while (e.hasMoreElements()) {
+                        clave = e.nextElement();
+                        valor = (Simbolo) tabla.get(clave);
+                        String tipo1 = valor.getTipo();
+                        String nombre1 = valor.getNombre();
+                        String valor1 = valor.getValor();
+                        int linea1 = valor.getLinea();
+                        int columna1 = valor.getColumna();
+
+                        Simbolo newVar = new Simbolo(tipo1, nombre1, valor1, linea1, columna1, "");
+                        tsTemp.insertar(valor.getNombre(), newVar);
+                    }
+
+                }
+                EjecucionLenguajeAsa.pilaSimbolos.push(tsTemp);
                 ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
             }
-        } else {
-            ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
+            //ts = EjecucionLenguajeAsa.pilaSimbolos.peek();
         }
 
+        //Si la variable viene con expresion
         if (nodo.getHijos().get(0) != null) {
-            //Si la variable viene con expresiones en el valor = 10+10; 
-
-            if (nodo.getHijos().get(0).getHijos().size() > 0) {
-                if (!ts.existeSimbolo(nombre)) {
-                    expresion = EjecucionLenguajeAsa.evaluarExpresion(nodo.getHijos().get(0), tipoAmbito);
-                    AsignacionVars.agregarAsignacionAVars(expresion, tipo, nombre, linea, columna, tipoAmbito);
-                } else {
-                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
-                            + " linea:" + linea + " columna: " + columna);
-                }
-                //Si la variable viene solo con un terminal en la expresion en el valor = 10, valor = falso; 
+            if (!ts.existeSimbolo(nombre)) {
+                expresion = EjecucionLenguajeAsa.evaluarExpresion(nodo.getHijos().get(0), tipoAmbito);
+                AsignacionVars.agregarAsignacionAVars(expresion, tipo, nombre, linea, columna, tipoAmbito);
             } else {
-                if (!ts.existeSimbolo(nombre)) {
-                    expresion = EjecucionLenguajeAsa.evaluarExpresion(nodo.getHijos().get(0), tipoAmbito);
-                    AsignacionVars.agregarAsignacionAVars(expresion, tipo, nombre, linea, columna, tipoAmbito);
-                } else {
-                    System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
-                            + " linea:" + linea + " columna: " + columna);
-                }
+
+                System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
+                        + " linea:" + linea + " columna: " + columna);
             }
-            //Si la variable viene solo con un terminal como  valor Entero = a;
+
+            //Si la variable viene sin expresion
         } else {
             if (!ts.existeSimbolo(nombre)) {
                 Simbolo simb = new Simbolo(tipo, nombre, "", linea, columna, "");
-                ts.insertar(nombre, simb);
+
+                if (tipoAmbito.equalsIgnoreCase("ambitoGlobal") || tipoAmbito.equalsIgnoreCase("ambitoMain")) {
+                    ts.insertar(nombre, simb);
+                    //Insertando la variable en el ambito actual de la funcion
+                } else if (!EjecucionLenguajeAsa.tsVarsFuncion.existeSimbolo(nombre)) {
+                    ts.insertar(nombre, simb);
+                    EjecucionLenguajeAsa.tsVarsFuncion.insertar(nombre, simb);
+                } else {
+                    System.out.println("Variable ya declarada en esta funcion");
+                }
+
+                //EjecucionLenguajeAsa.pilaAuxVarsFuncion.push(ts);
             } else {
                 System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
                         + " linea:" + linea + " columna: " + columna);

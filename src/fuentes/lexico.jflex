@@ -67,8 +67,8 @@ caracter = "'" [^\'\n] "'"
 
     //Simbolos
     ","            { System.out.println("Reconocio "+yytext()+" coma"); return new Symbol(sym.coma, yycolumn, yyline, yytext()); }
-    "("            { System.out.println("Reconocio "+yytext()+" parentesis Ab"); return new Symbol(sym.parent_a, yycolumn, yyline, yytext()); }
-    ")"            { System.out.println("Reconocio "+yytext()+" parentesis Cerr"); return new Symbol(sym.parent_c, yycolumn, yyline, yytext()); }
+    "("            { return new Symbol(sym.parent_a, yycolumn, yyline, yytext()); }
+    ")"            { return new Symbol(sym.parent_c, yycolumn, yyline, yytext()); }
     "&&"           { System.out.println("Reconocio "+yytext()+" And"); return new Symbol(sym.and, yycolumn, yyline, yytext()); }
     "!"            { System.out.println("Reconocio "+yytext()+" not"); return new Symbol(sym.not, yycolumn, yyline, yytext()); }
     "||"           { System.out.println("Reconocio "+yytext()+" Or"); return new Symbol(sym.or, yycolumn, yyline, yytext()); }
@@ -88,8 +88,8 @@ caracter = "'" [^\'\n] "'"
     "%"            { System.out.println("Reconocio "+yytext()+" modo"); return new Symbol(sym.modular, yycolumn, yyline, yytext()); }
     "."            { System.out.println("Reconocio "+yytext()+" modo"); return new Symbol(sym.punto, yycolumn, yyline, yytext()); }
     ";"            { return new Symbol(sym.ptoYcoma, yycolumn, yyline, yytext()); }
-    "{"            { System.out.println("Reconocio "+yytext()+" llaveA"); return new Symbol(sym.llave_a, yycolumn, yyline, yytext()); }
-    "}"            { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.llave_c, yycolumn, yyline, yytext()); }
+    "{"            { return new Symbol(sym.llave_a, yycolumn, yyline, yytext()); }
+    "}"            { return new Symbol(sym.llave_c, yycolumn, yyline, yytext()); }
     ":"            { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.dosPtos, yycolumn, yyline, yytext()); }
     "--"           { System.out.println("Reconocio "+yytext()+" --"); return new Symbol(sym.decremento, yycolumn, yyline, yytext()); }
     "++"           { System.out.println("Reconocio "+yytext()+" --"); return new Symbol(sym.incremento, yycolumn, yyline, yytext()); }

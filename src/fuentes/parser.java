@@ -1130,8 +1130,11 @@ class CUP$parser$actions {
 		int n2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Nodo n2 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                Nodo n = new Nodo("LISTA_SENTENCIAS", n2.getFila(), n2.getColumna());
+                                n.setTipo("NoTerm");
                                 n.addHijo(n1);
+                                n1.setTipo("NoTerm");
+                                n2.setTipo("NoTerm");
                                 n.addHijo(n2);
                                 RESULT = n;
                             
@@ -1411,7 +1414,8 @@ class CUP$parser$actions {
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                Nodo n = new Nodo("LISTA_SENTENCIAS", n1.getFila(), n1.getColumna());
+                                n.setTipo("NoTerm");
                                 n.addHijo(n1);
                                 RESULT= n;
                             
@@ -1718,6 +1722,7 @@ class CUP$parser$actions {
 		
                               Nodo n = new Nodo("LLAMADA_FUNCION");
                               Nodo n1 = new Nodo(id, idleft, idright);
+                              n1.setTipoVar("ID_LLAMADA_FUN");
                               n.addHijo(n1);
                               n.addHijo(n2);
                               n.addHijo(n3);
@@ -2006,6 +2011,9 @@ class CUP$parser$actions {
 		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)).left;
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-7)).value;
+		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).left;
+		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
+		String a = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
 		int n2left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)).right;
 		Nodo n2 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-5)).value;
@@ -2016,7 +2024,8 @@ class CUP$parser$actions {
 		int n4right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Nodo n4 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                                Nodo n = new Nodo("ES_VERDADERO");
+                                Nodo n = new Nodo("ES_VERDADERO", idright, aleft);
+                                n.setTipo("NoTerm");
                                 n.addHijo(n2);
                                 n.addHijo(n3);
                                 if(n4 != null){
@@ -2421,6 +2430,7 @@ class CUP$parser$actions {
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
                               Nodo n = new Nodo("ROMPER", idleft, idright);
+                              n.setTipo("NoTerm");
                               RESULT = n;
                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ROMPER",39, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -2436,6 +2446,7 @@ class CUP$parser$actions {
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
                               Nodo n = new Nodo("CONTINUAR", idleft, idright);
+                              n.setTipo("NoTerm");
                               RESULT = n;
                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("CONTINUAR",40, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -2454,6 +2465,7 @@ class CUP$parser$actions {
 		Nodo exp = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		
                               Nodo n = new Nodo("MOSTRAR", idleft, idright);
+                              n.setTipo("NoTerm");
                               n.addHijo(exp);
                               RESULT = n;
                             
@@ -2470,6 +2482,7 @@ class CUP$parser$actions {
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 		
                               Nodo n = new Nodo("MOSTRAR", idleft, idright);
+                              n.setTipo("NoTerm");
                               RESULT = n;
                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("MOSTRAR",41, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

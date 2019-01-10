@@ -191,8 +191,11 @@ LISTA_SENTENCIAS::=  LISTA_SENTENCIAS:n1 ASIGNACIONES:n2
                             :}
                     |LISTA_SENTENCIAS:n1 SENT_ES_VERDADERO:n2
                             {:
-                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                Nodo n = new Nodo("LISTA_SENTENCIAS", n2.getFila(), n2.getColumna());
+                                n.setTipo("NoTerm");
                                 n.addHijo(n1);
+                                n1.setTipo("NoTerm");
+                                n2.setTipo("NoTerm");
                                 n.addHijo(n2);
                                 RESULT = n;
                             :}
@@ -292,7 +295,8 @@ LISTA_SENTENCIAS::=  LISTA_SENTENCIAS:n1 ASIGNACIONES:n2
                             :}
                     |SENT_ES_VERDADERO:n1
                             {:
-                                Nodo n = new Nodo("LISTA_SENTENCIAS");
+                                Nodo n = new Nodo("LISTA_SENTENCIAS", n1.getFila(), n1.getColumna());
+                                n.setTipo("NoTerm");
                                 n.addHijo(n1);
                                 RESULT= n;
                             :}
@@ -420,6 +424,7 @@ LLAMADAS_FUNC::= identificador:id LISTA_ID_LLAMADA_FUN:n2 parent_a LISTA_LLAMADA
                             {:
                               Nodo n = new Nodo("LLAMADA_FUNCION");
                               Nodo n1 = new Nodo(id, idleft, idright);
+                              n1.setTipoVar("ID_LLAMADA_FUN");
                               n.addHijo(n1);
                               n.addHijo(n2);
                               n.addHijo(n3);
@@ -543,9 +548,10 @@ RETORNO::= _retorno:id ptoYcoma
                             :}
 ;
 
-SENT_ES_VERDADERO::= _esVerdadero:id parent_a EXPR_LOGICA:n2 parent_c llave_a SENTENCIAS:n3 llave_c ES_VERD_CON_FALSO:n4
+SENT_ES_VERDADERO::= _esVerdadero:id parent_a:a EXPR_LOGICA:n2 parent_c llave_a SENTENCIAS:n3 llave_c ES_VERD_CON_FALSO:n4
                             {:
-                                Nodo n = new Nodo("ES_VERDADERO");
+                                Nodo n = new Nodo("ES_VERDADERO", idright, aleft);
+                                n.setTipo("NoTerm");
                                 n.addHijo(n2);
                                 n.addHijo(n3);
                                 if(n4 != null){
@@ -724,6 +730,7 @@ LISTA_PARAMETROS::= LISTA_PARAMETROS:n1 coma TIPO:n2 identificador:id
 ROMPER::= _romper:id ptoYcoma
                             {:
                               Nodo n = new Nodo("ROMPER", idleft, idright);
+                              n.setTipo("NoTerm");
                               RESULT = n;
                             :}
 ;
@@ -731,6 +738,7 @@ ROMPER::= _romper:id ptoYcoma
 CONTINUAR::=_continuar:id ptoYcoma
                             {:
                               Nodo n = new Nodo("CONTINUAR", idleft, idright);
+                              n.setTipo("NoTerm");
                               RESULT = n;
                             :}
 ;
@@ -738,12 +746,14 @@ CONTINUAR::=_continuar:id ptoYcoma
 MOSTRAR::= _mostrar:id parent_a EXPR_LOGICA:exp parent_c ptoYcoma
                             {:
                               Nodo n = new Nodo("MOSTRAR", idleft, idright);
+                              n.setTipo("NoTerm");
                               n.addHijo(exp);
                               RESULT = n;
                             :}
           |_mostrar:id parent_a parent_c ptoYcoma
                             {:
                               Nodo n = new Nodo("MOSTRAR", idleft, idright);
+                              n.setTipo("NoTerm");
                               RESULT = n;
                             :}
 ;

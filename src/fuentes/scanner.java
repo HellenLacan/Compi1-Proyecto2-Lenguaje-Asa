@@ -987,12 +987,12 @@ public class scanner implements java_cup.runtime.Scanner {
             // fall through
           case 70: break;
           case 7: 
-            { System.out.println("Reconocio "+yytext()+" parentesis Ab"); return new Symbol(sym.parent_a, yycolumn, yyline, yytext());
+            { return new Symbol(sym.parent_a, yycolumn, yyline, yytext());
             } 
             // fall through
           case 71: break;
           case 8: 
-            { System.out.println("Reconocio "+yytext()+" parentesis Cerr"); return new Symbol(sym.parent_c, yycolumn, yyline, yytext());
+            { return new Symbol(sym.parent_c, yycolumn, yyline, yytext());
             } 
             // fall through
           case 72: break;
@@ -1057,12 +1057,12 @@ public class scanner implements java_cup.runtime.Scanner {
             // fall through
           case 84: break;
           case 21: 
-            { System.out.println("Reconocio "+yytext()+" llaveA"); return new Symbol(sym.llave_a, yycolumn, yyline, yytext());
+            { return new Symbol(sym.llave_a, yycolumn, yyline, yytext());
             } 
             // fall through
           case 85: break;
           case 22: 
-            { System.out.println("Reconocio "+yytext()+" llaveC"); return new Symbol(sym.llave_c, yycolumn, yyline, yytext());
+            { return new Symbol(sym.llave_c, yycolumn, yyline, yytext());
             } 
             // fall through
           case 86: break;

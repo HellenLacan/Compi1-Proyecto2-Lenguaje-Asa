@@ -1,24 +1,43 @@
-Entero suEdad = 25;
+</Ejemplos de Variables globales/>
+Entero a = 5;
 
 Vacio Principal(){
-	Entero a = 10;
-	Entero b = 15;
-	Entero miEdad = 24;
-	sumita3(a, b);		-->Mando a llamar a la funcion sumita3 
-	mostrar("Hola tengo " + miEdad +" años y mi amor candi crush " + suEdad);
 	sumita4();
-}
+	mostrar(a);
+	a = a +5;
+	mostrar("Valorcin nuevo de a= " + a);
+	a= a +2;
+	mostrar("Valorcin nuevo de a= " + a);
 
-Vacio sumita3(Entero x, Entero y){
-	Entero b = 20;
-	Entero num1 = 15;
-	mostrar(b);
-	mostrar(c);			-->Tiene que mostrar error ya que no esta declarada
-	mostrar(num1);
 }
 
 Vacio sumita4(){
-	Texto m = "Hola mundo";
-	mostrar(m);
+	Entero i = 1;
+	Mientras_que(i < 10 ){
+			Es_verdadero(i>10){
+				i = i -1;
+				mostrar("Decrementando i=" + i);
+			}Es_falso{
+				i = i + 1;
+				mostrar("Incrementando i=" + i);
+			}
+
+	}
+
+	Entero x = 20;
+	
+	mostrar("SENTENCIA HASTA QUE");
+	Hasta_que(x == 10 ){
+			Es_verdadero(x>10){
+				x = x -1;
+				mostrar("Decrementando x=" + x);
+			}Es_falso{
+				x = x + 1;
+				mostrar("Incrementando x=" + x);
+			}
+
+	}
+
+
 }
 

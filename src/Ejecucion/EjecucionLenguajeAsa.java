@@ -5,11 +5,18 @@
  */
 package Ejecucion;
 
+import ControlDot.ControlDot;
+import static ControlDot.generarGrafica.generarGrafica;
 import static Ejecucion.AsignacionVars.actualizarVariableGlobal;
 import EjecucionExpresiones.ExpresionAritmetica;
 import Ejecucion.PalabraReservada.Reservada;
 import fuentes.Nodo;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
@@ -25,6 +32,8 @@ public class EjecucionLenguajeAsa {
     public static TablaSimbolo tsGlobal = new TablaSimbolo("ambitoGlobal");  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
     //public static TablaSimbolo tsMain = new TablaSimbolo("");  //Tabla de simbolos global donde iran variables globales, asignaciones, funciones, metodos y main
     public static TablaFunciones tsFunciones = new TablaFunciones(); //Tabla para almacenar funciones, metodos y principal
+    public static TablaSimbolo tsVarsFuncion = new TablaSimbolo("FuncActual"); //Tabla para almacenar funciones, metodos y principal
+
     public Nodo AST;
 
     public EjecucionLenguajeAsa() {
@@ -71,10 +80,12 @@ public class EjecucionLenguajeAsa {
         }
     }
 
-    public static String ejecutarMain() {
+    public static String ejecutarMain() throws FileNotFoundException, UnsupportedEncodingException {
         String consola = "";
 
         if (tsFunciones.existeFuncion("vacio_principal")) {
+            TablaSimbolo tsMain = new TablaSimbolo("ambitoMain");
+            pilaSimbolos.push(tsMain);
             Funcion sentencias = tsFunciones.retornarFuncion("vacio_principal");
             consola = ejecutarSentenciasMain(sentencias.getCuerpo(), consola, "ambitoMain");
             System.out.println("Consolita");
@@ -85,12 +96,12 @@ public class EjecucionLenguajeAsa {
         return consola;
     }
 
-    public static String ejecutarSentenciasMain(Nodo nodo, String consola, String ambito) {
+    public static String ejecutarSentenciasMain(Nodo nodo, String consola, String ambito) throws FileNotFoundException, UnsupportedEncodingException {
         switch (nodo.getEtiqueta()) {
             case "LISTA_SENTENCIAS":
                 switch (nodo.getHijos().size()) {
                     case 1:
-                        consola += ejecutarSentenciasMain(nodo.getHijos().get(0), consola, ambito);
+                        consola = ejecutarSentenciasMain(nodo.getHijos().get(0), consola, ambito);
                         return consola;
                     case 2:
                         consola = ejecutarSentenciasMain(nodo.getHijos().get(0), consola, ambito);
@@ -103,12 +114,13 @@ public class EjecucionLenguajeAsa {
                 Nodo tipo = nodo.getHijos().get(0);
                 Nodo exp = nodo.getHijos().get(2);
                 DeclaracionVar.recorrerListaVars(tipo, nodo.getHijos().get(1), exp, ambito);
-                break;
+
+                return consola;
 
             case "ASIGNACIONES":
                 AsignacionVars.asignacionAVariables(nodo, ambito);
+                return consola;
 
-                break;
             case "MOSTRAR":
                 String imprimir = "";
                 imprimir = evaluarExpresion(nodo.getHijos().get(0), ambito);
@@ -174,17 +186,162 @@ public class EjecucionLenguajeAsa {
                         pilaSimbolos.push(tsFuncion);
                         consola = ejecutarSentenciasMain(miFuncion.getCuerpo(), consola, nodo.getHijos().get(0).getEtiqueta());
                         //Quito el ambito de la funcion actual, quedandome solo el main
-                        pilaSimbolos.pop();
+                        if (pilaSimbolos.peek().ambito.equalsIgnoreCase(nodo.getHijos().get(0).getEtiqueta())) {
+                            pilaSimbolos.pop();
+                        }
+                        tsVarsFuncion = new TablaSimbolo("");
+                        return consola;
+                    } else {
                         return consola;
                     }
-
                 }
 
             case "ES_VERDADERO":
-                //String Condicion = evaluarExpresion(nodo.getHijos().get(1), "esVerdadero");
-                break;
+                //ambito
+                String condicion = evaluarExpresion(nodo.getHijos().get(0), "esVerdadero");
+                String[] condi = condicion.split("@");
+                String condEsVerdadera = condi[0];
+                String tipoCondIf = condi[1];
+                if (tipoCondIf.equalsIgnoreCase("booleano")) {
+                    if (condEsVerdadera.equalsIgnoreCase("verdadero") || condEsVerdadera.equalsIgnoreCase("1")) {
+                        consola = ejecutarSentenciasMain(nodo.getHijos().get(1), consola, ambito + "@" + "if");
+                    } else {
+                        //Si la condicion es falsa veo si el if contiene un ELSE
+                        if (nodo.getHijos().size() == 3) {
+                            consola = ejecutarSentenciasMain(nodo.getHijos().get(2).getHijos().get(0), consola, ambito + "@" + "if");
+
+                            System.out.println("Si tiene else");
+                        } else {
+                            System.out.println("no tiene else");
+                        }
+                    }
+                    if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "if")) {
+                        pilaSimbolos.pop();
+                    }
+                } else {
+                    System.out.println("Condicion del if invalida en fila: " + nodo.getFila());
+                }
+                //Limpio este ambito en la pila actuaol
+                return consola;
+
+            case "MIENTRAS_QUE":
+                //ambito
+                String condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue");
+                String[] condMientras = condicionMientrasQ.split("@");
+                System.out.println("m");
+                String condBoolMQ = condMientras[0];
+                String tipoCondMientras = condMientras[1];
+
+                if (tipoCondMientras.equalsIgnoreCase("booleano")) {
+                    if (condBoolMQ.equalsIgnoreCase("verdadero") || condBoolMQ.equalsIgnoreCase("1")) {
+                        consola = ejecutarSentenciasMain(nodo.getHijos().get(1), consola, ambito + "@" + "while");
+
+                        //iteracion del while
+                        while (true) {
+                            condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue");
+                            String[] condMientras2 = condicionMientrasQ.split("@");
+                            System.out.println("m");
+                            condBoolMQ = condMientras2[0];
+                            tipoCondMientras = condMientras2[1];
+
+                            if (condBoolMQ.equalsIgnoreCase("verdadero") || condBoolMQ.equalsIgnoreCase("1")) {
+                                consola = ejecutarSentenciasMain(nodo.getHijos().get(1), consola, ambito + "@" + "while");
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "while")) {
+                        //Limpio este ambito en la pila actual
+                        pilaSimbolos.pop();
+                    }
+                } else {
+                    System.out.println("Condicion del while invalida en fila:");
+                }
+                return consola;
+
+            case "HASTA_QUE":
+                                                                                        //ambito
+                String condicionHastaQue = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
+                String[] condHastaQue = condicionHastaQue.split("@");
+                System.out.println("m");
+                String condBoolHQ = condHastaQue[0];
+                String tipoCondHQ = condHastaQue[1];
+
+                if (tipoCondHQ.equalsIgnoreCase("booleano")) {
+                    if (condBoolHQ.equalsIgnoreCase("falso") || condBoolHQ.equalsIgnoreCase("0")) {
+                        consola = ejecutarSentenciasMain(nodo.getHijos().get(1), consola, ambito + "@" + "whileNeg");
+
+                        //iteracion del while
+                        while (true) {
+                            condBoolHQ = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
+                            String[] condHastaQue2 = condBoolHQ.split("@");
+                            System.out.println("m");
+                            condBoolHQ = condHastaQue2[0];
+                            tipoCondHQ = condHastaQue2[1];
+
+                            if (condBoolHQ.equalsIgnoreCase("falso") || condBoolHQ.equalsIgnoreCase("0")) {
+                                consola = ejecutarSentenciasMain(nodo.getHijos().get(1), consola, ambito + "@" + "whileNeg");
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "whileNeg")) {
+                        //Limpio este ambito en la pila actual
+                        pilaSimbolos.pop();
+                    }
+                } else {
+                    System.out.println("Condicion del while invalida en fila:");
+                }
+                return consola;
+
+            case "DIBUJAR_EXP":
+                dibujarEXP(nodo.getHijos().get(0));
+                return consola;
+
+            case "DIBUJAR_AST":
+                Enumeration e = tsFunciones.tabla.keys();
+                Object clave;
+                Funcion valor;
+                while (e.hasMoreElements()) {
+                    clave = e.nextElement();
+                    valor = tsFunciones.tabla.get(clave);
+                    System.out.println("Tipo: " + valor.getTipo() + " id: " + valor.getNombre()
+                            + " Fila: " + valor.getFila() + " Columna: " + valor.getColumna() + " No param: " + valor.getNoParametros());
+                    if (valor.getNombre().equalsIgnoreCase(nodo.getHijos().get(0).getEtiqueta())) {
+                        dibujarAST(valor.getCuerpo());
+                        return consola;
+                    }
+                }
+                System.out.println("No se puede generar el ast de la funcion, ya que no existe");
+                return consola;
         }
         return "";
+    }
+
+    private static void dibujarAST(Nodo raiz) throws FileNotFoundException, UnsupportedEncodingException {
+        String archivoTxT = "C:\\Users\\Hellen\\Desktop" + "\\DibujarAST.txt";
+        File file1 = new File(archivoTxT);
+
+        PrintWriter writer = new PrintWriter(file1, "UTF-8");
+
+        writer.println(ControlDot.getDotDibujarAST(raiz));
+        writer.close();
+        generarGrafica(archivoTxT, "DibujarAST");
+    }
+
+    public static void dibujarEXP(Nodo AST) throws FileNotFoundException, UnsupportedEncodingException {
+        String archivoTxT = "C:\\Users\\Hellen\\Desktop" + "\\DibujarEXP.txt";
+        File file1 = new File(archivoTxT);
+
+        PrintWriter writer = new PrintWriter(file1, "UTF-8");
+
+        writer.println(ControlDot.getDotDibujarEXP(AST));
+        writer.close();
+        generarGrafica(archivoTxT, "DibujarEXP");
     }
 
     public static Simbolo obtenerTipo(String tipoAmbito, String id) {
@@ -367,10 +524,9 @@ public class EjecucionLenguajeAsa {
                                 String res = evaluarExpresionRelacional(signo, n1Tipo, n1Val, n2Tipo, n2Val);
                                 return res + "@booleano";
                             } else {
-                                System.out.println("15@ERROR");
+                                return "@error";
                             }
 //                            Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
-                            break;
                     }
                     break;
                 default:
@@ -380,19 +536,6 @@ public class EjecucionLenguajeAsa {
             if (n.getTipoVar().equalsIgnoreCase("Identificador")) {
                 String id = n.getEtiqueta();
 
-//                if (tipoAmbito.equalsIgnoreCase("ambitoGlobal")) {
-//                    if (ts.existeSimbolo(id)) {
-//                        String val = ts.retornarSimbolo(id).getValor();
-//                        String tipo = ts.retornarSimbolo(id).getTipo();
-//                        String term = val + "@" + tipo;
-//                        return term;
-//                    } else {
-//                        System.out.println("Bitacora La variable " + id + " no esta declarada"
-//                                + "linea: " + n.getFila() + " columna: " + n.getColumna());
-//
-//                        return "error";
-//                    }
-//                }
                 if (tipoAmbito.equalsIgnoreCase("ambitoMain")) {
                     if (!pilaSimbolos.empty()) {
                         boolean cond = true;
@@ -432,10 +575,26 @@ public class EjecucionLenguajeAsa {
                             return "error";
                         }
                     }
-                    //Se va al ambito actual, la cima de la pila
+                } else if (tipoAmbito.equalsIgnoreCase("ambitoGlobal")) {
+                    ts = tsGlobal;
+                    if (ts.existeSimbolo(id)) {
+                        String val = ts.retornarSimbolo(id).getValor();
+                        String tipo = ts.retornarSimbolo(id).getTipo();
+                        String term = val + "@" + tipo;
+                        return term;
+                    } else {
+                        System.out.println("Bitacora La variable " + id + " no esta declarada"
+                                + "linea: " + n.getFila() + " columna: " + n.getColumna());
+
+                        return "error";
+                    }
                 } else {
                     //Si no esta en la cima, busca en las variables globales
-                    ts = pilaSimbolos.peek();
+                    if (!pilaSimbolos.peek().tabla.isEmpty()) {
+                        ts = pilaSimbolos.peek();
+                    } else {
+                        ts = tsVarsFuncion;
+                    }
                     if (ts.existeSimbolo(id)) {
                         String val = ts.retornarSimbolo(id).getValor();
                         String tipo = ts.retornarSimbolo(id).getTipo();
@@ -447,6 +606,9 @@ public class EjecucionLenguajeAsa {
                             String val = ts.retornarSimbolo(id).getValor();
                             String tipo = ts.retornarSimbolo(id).getTipo();
                             String term = val + "@" + tipo;
+                            //Si la variable no la encuentra en el ambito actual y si en la global, agrego esta al ambito actual
+                            Simbolo addVarFunctionActual = ts.retornarSimbolo(id);
+                            tsVarsFuncion.insertar(id, addVarFunctionActual);
                             return term;
                         } else {
                             System.out.println("Bitacora La variable " + id + " no esta declarada"
@@ -462,7 +624,6 @@ public class EjecucionLenguajeAsa {
                 String term = n.getEtiqueta() + "@" + n.getTipoVar();
                 return term;
             }
-
         }
         return null;
     }

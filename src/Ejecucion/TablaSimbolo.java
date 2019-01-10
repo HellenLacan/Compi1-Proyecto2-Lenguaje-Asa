@@ -7,6 +7,7 @@ package Ejecucion;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Stack;
 
 /**
  *
@@ -18,10 +19,17 @@ public class TablaSimbolo {
     public String tipo;
     Hashtable<String, Simbolo> tabla = new Hashtable<String, Simbolo>();
 
+    /*Esta la usare para cuando vengan declaraciones dentro de una funcion, 
+      esta sera mi pila de la sentencia en la funcion actual*/
+    public static Stack<TablaSimbolo> pilaInterna = new Stack<>();
+
     public TablaSimbolo(String ambito) {
         this.ambito = ambito;
     }
 
+    public TablaSimbolo( TablaSimbolo t) {
+    }
+    
     public TablaSimbolo(String ambito, String tipo) {
         this.ambito = ambito;
     }
@@ -36,6 +44,10 @@ public class TablaSimbolo {
         tabla.put(nombre, simbolo);
     }
 
+    public  TablaSimbolo(  Hashtable<String, Simbolo> t) {
+         Hashtable<String, Simbolo> tabla = new Hashtable<String, Simbolo>(t);
+    }
+    
     public Simbolo retornarSimbolo(String key) {
         return tabla.get(key);
     }
