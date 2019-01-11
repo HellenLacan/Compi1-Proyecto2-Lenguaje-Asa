@@ -88,6 +88,7 @@ public class EjecucionLenguajeAsa {
             pilaSimbolos.push(tsMain);
             Funcion sentencias = tsFunciones.retornarFuncion("vacio_principal");
             consola = ejecutarSentenciasMain(sentencias.getCuerpo(), consola, "ambitoMain");
+            tsFunciones = new TablaFunciones();
             System.out.println("Consolita");
             System.out.println(consola);
         } else {
@@ -210,7 +211,6 @@ public class EjecucionLenguajeAsa {
                         if (nodo.getHijos().size() == 3) {
                             consola = ejecutarSentenciasMain(nodo.getHijos().get(2).getHijos().get(0), consola, ambito + "@" + "if");
 
-                            System.out.println("Si tiene else");
                         } else {
                             System.out.println("no tiene else");
                         }
@@ -228,7 +228,6 @@ public class EjecucionLenguajeAsa {
                 //ambito
                 String condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue");
                 String[] condMientras = condicionMientrasQ.split("@");
-                System.out.println("m");
                 String condBoolMQ = condMientras[0];
                 String tipoCondMientras = condMientras[1];
 
@@ -240,7 +239,6 @@ public class EjecucionLenguajeAsa {
                         while (true) {
                             condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue");
                             String[] condMientras2 = condicionMientrasQ.split("@");
-                            System.out.println("m");
                             condBoolMQ = condMientras2[0];
                             tipoCondMientras = condMientras2[1];
 
@@ -262,10 +260,9 @@ public class EjecucionLenguajeAsa {
                 return consola;
 
             case "HASTA_QUE":
-                                                                                        //ambito
+                //ambito
                 String condicionHastaQue = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
                 String[] condHastaQue = condicionHastaQue.split("@");
-                System.out.println("m");
                 String condBoolHQ = condHastaQue[0];
                 String tipoCondHQ = condHastaQue[1];
 
@@ -277,7 +274,6 @@ public class EjecucionLenguajeAsa {
                         while (true) {
                             condBoolHQ = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
                             String[] condHastaQue2 = condBoolHQ.split("@");
-                            System.out.println("m");
                             condBoolHQ = condHastaQue2[0];
                             tipoCondHQ = condHastaQue2[1];
 
@@ -294,8 +290,88 @@ public class EjecucionLenguajeAsa {
                         pilaSimbolos.pop();
                     }
                 } else {
-                    System.out.println("Condicion del while invalida en fila:");
+                    System.out.println("Condicion del Hasta que no es de tipo boolean:");
                 }
+                return consola;
+
+            case "PARA":
+                String tipoP = nodo.getHijos().get(0).getHijos().get(0).getEtiqueta();
+                String idP = nodo.getHijos().get(0).getHijos().get(1).getEtiqueta();
+                int lineaP = nodo.getHijos().get(0).getHijos().get(1).getFila();
+                int colP = nodo.getHijos().get(0).getHijos().get(1).getColumna();
+                String valIniP = evaluarExpresion(nodo.getHijos().get(0).getHijos().get(2), ambito);
+                String inc_Dec = nodo.getHijos().get(2).getHijos().get(1).getEtiqueta();
+
+                String valP = "";
+                String tipoValP = "";
+                String[] condP = valIniP.split("@");
+                if (valIniP.contains("@")) {
+                    valP = condP[0];
+                    tipoValP = condP[1];
+                }
+
+                Simbolo simbP = new Simbolo(tipoP, idP, valP, lineaP, colP, ambito + "@para");
+                TablaSimbolo tsPara = new TablaSimbolo(ambito + "@" + "para");
+                tsPara.insertar(idP, simbP);
+                pilaSimbolos.push(tsPara);
+                tsVarsFuncion.insertar(idP, simbP);
+
+                String condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito);
+
+                String[] condPara = condFinP.split("@");
+                String condBoolP = condPara[0];
+                String tipoCondP = condPara[1];
+
+                if (tipoCondP.equalsIgnoreCase("booleano")) {
+                    if (condBoolP.equalsIgnoreCase("verdadero") || condBoolP.equalsIgnoreCase("1")) {
+                        consola = ejecutarSentenciasMain(nodo.getHijos().get(3), consola, ambito + "@" + "para");
+
+                        //Aqui realizo la iteracion del for
+                        while (true) {
+                            condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito);
+                            String[] condPara2 = condFinP.split("@");
+                            condBoolP = condPara2[0];
+                            tipoCondP = condPara2[1];
+
+                            Simbolo s = tsVarsFuncion.retornarSimbolo(idP);
+
+                            if (condBoolP.equalsIgnoreCase("verdadero") || condBoolP.equalsIgnoreCase("1")) {
+                                //Aqui realizo el incremento o decremento
+                                if (inc_Dec.equalsIgnoreCase("++")) {
+                                    if (s.getTipo().equalsIgnoreCase("entero")) {
+                                        Integer n = Integer.parseInt(s.getValor()) + 1;
+                                        s.setValor(String.valueOf(n));
+                                    } else {
+                                        double n = Double.parseDouble(s.getValor()) + 1;
+                                        s.setValor(String.valueOf(n));
+                                    }
+
+                                } else {
+                                    if (s.getTipo().equalsIgnoreCase("entero")) {
+                                        Integer n = Integer.parseInt(s.getValor()) + 1;
+                                        s.setValor(String.valueOf(n));
+                                    } else {
+                                        double n = Double.parseDouble(s.getValor()) + 1;
+                                        s.setValor(String.valueOf(n));
+                                    }
+                                }
+
+                                consola = ejecutarSentenciasMain(nodo.getHijos().get(3), consola, ambito + "@" + "para");
+
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "para")) {
+                        //Limpio este ambito en la pila actual
+                        pilaSimbolos.pop();
+                    }
+                } else {
+                    System.out.println("Condicion del para no es boolean en fila:");
+                }
+
                 return consola;
 
             case "DIBUJAR_EXP":

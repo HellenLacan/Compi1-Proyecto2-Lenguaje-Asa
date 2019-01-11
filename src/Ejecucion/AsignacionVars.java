@@ -95,7 +95,6 @@ public class AsignacionVars {
                             + "linea: " + linea + " columna: " + columna);
                 }
 
-                //ts.insertar(nombre, simb);
             } else {
                 if (verificarCasteo(tipo, tipoValor)) {
                     String nuevoValor = castearImplicitamente(tipo, tipoValor, valor);
@@ -136,6 +135,7 @@ public class AsignacionVars {
             //Si no esta en el main, esta en la global
             if (ts.existeSimbolo(nombre)) {
                 simb = ts.retornarSimbolo(nombre);
+
             } else {
                 ts = EjecucionLenguajeAsa.tsGlobal;
                 if (ts.existeSimbolo(nombre)) {
@@ -147,6 +147,16 @@ public class AsignacionVars {
 
             if (ts.existeSimbolo(nombre)) {
                 simb = ts.retornarSimbolo(nombre);
+                
+                //Si estoy en un sub ambito el main lo agrego a la lista actual de variables
+                if (EjecucionLenguajeAsa.tsVarsFuncion.tabla.size() != 0) {
+                    if (!EjecucionLenguajeAsa.tsVarsFuncion.existeSimbolo(simb.getNombre())) {
+                        EjecucionLenguajeAsa.tsVarsFuncion.insertar(nombre, simb);
+                    }
+                } else {
+                    EjecucionLenguajeAsa.tsVarsFuncion.insertar(nombre, simb);
+                }
+
             } else {
                 ts = EjecucionLenguajeAsa.tsVarsFuncion;
                 if (ts.existeSimbolo(nombre)) {
@@ -163,7 +173,7 @@ public class AsignacionVars {
                     Simbolo varModify = EjecucionLenguajeAsa.tsVarsFuncion.retornarSimbolo(nombre);
                     varModify.setValor(valor);
                 }
-                System.out.println("Variable -> " + simb.getNombre() + " actualizada");
+                //System.out.println(" Bitacora Variable -> " + simb.getNombre() + " actualizada");
             } else {
                 if (AsignacionVars.verificarCasteo(simb.getTipo(), tipoValor)) {
                     String nuevoValor = AsignacionVars.castearImplicitamente(simb.getTipo(), tipoValor, valor);

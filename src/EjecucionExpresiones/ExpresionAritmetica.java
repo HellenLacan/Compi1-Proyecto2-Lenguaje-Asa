@@ -64,7 +64,7 @@ public class ExpresionAritmetica {
             n2 = Integer.parseInt(num2);
 
             resultado = n1 + n2;
-            return resultado+ "@entero";
+            return resultado + "@entero";
 
         } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Booleano")) {
             double n1 = 0;
@@ -117,7 +117,7 @@ public class ExpresionAritmetica {
             if (num2.equalsIgnoreCase("verdadero")) {
                 n2 = 1;
             }
-            
+
             resultado = num1 + " " + n2;
             return resultado + "@texto";
 
@@ -171,7 +171,7 @@ public class ExpresionAritmetica {
             resultado = n1 + n2;
             return resultado + "@entero";
         }
-        
+
         return "error";
     }
 
@@ -287,7 +287,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 - n2;
-                return resultado+ "@entero";
+                return resultado + "@entero";
             }
         }
         return "error";
@@ -410,12 +410,12 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 * n2;
-                return resultado+ "@entero";
+                return resultado + "@entero";
             }
         }
         return "error";
     }
-    
+
     public Object dividir(String tipo1, String num1, String tipo2, String num2) {
         if (sonTiposIncompatibles(tipo1, tipo2)) {
             return "error tipos Incompatibles";
@@ -532,8 +532,13 @@ public class ExpresionAritmetica {
                 n1 = Integer.parseInt(num1);
                 n2 = Integer.parseInt(num2);
 
-                resultado = n1 / n2;
-                return resultado+ "@entero";
+                if (n2 != 0) {
+                    resultado = n1 / n2;
+                    return resultado + "@entero";
+                } else {
+                    System.out.println("No es posible dividir dentro de 0");
+                    return "error";
+                }
             }
         }
         return "error";
@@ -656,7 +661,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = n1 % n2;
-                return resultado+ "@entero";
+                return resultado + "@entero";
             }
         }
         return "error";
@@ -724,7 +729,7 @@ public class ExpresionAritmetica {
                 return res + "@decimal";
 
             } else if (tipo1.equalsIgnoreCase("Decimal") && tipo2.equalsIgnoreCase("Decimal")) {
-                    
+
                 double n1 = 0;
                 double n2 = 0;
                 double resultado = 0;
@@ -758,7 +763,7 @@ public class ExpresionAritmetica {
                 n1 = Integer.parseInt(num1);
                 resultado = (int) Math.pow(n1, n2);
                 return resultado + "@entero";
-                
+
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Decimal")) {
                 double n1 = 0;
                 double n2 = 0;
@@ -770,7 +775,7 @@ public class ExpresionAritmetica {
                 resultado = Math.pow(n1, n2);
                 String res = String.format("%.2f", resultado);
                 return res + "@decimal";
-                
+
             } else if (tipo1.equalsIgnoreCase("Entero") && tipo2.equalsIgnoreCase("Entero")) {
                 int n1 = 0;
                 int n2 = 0;
@@ -780,7 +785,7 @@ public class ExpresionAritmetica {
                 n2 = Integer.parseInt(num2);
 
                 resultado = (int) Math.pow(n1, n2);
-                return resultado+ "@entero";
+                return resultado + "@entero";
             }
         }
         return "error";
@@ -830,5 +835,4 @@ public class ExpresionAritmetica {
         }
     }
 
-    
 }
