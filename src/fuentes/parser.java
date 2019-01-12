@@ -1981,7 +1981,8 @@ class CUP$parser$actions {
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                                Nodo n = new Nodo("RETORNO");
+                                Nodo n = new Nodo("RETORNO", idright, idleft);
+                                n.setTipo("NoTerminal");
                                 RESULT = n;
                             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("RETORNO",25, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1992,11 +1993,15 @@ class CUP$parser$actions {
           case 69: // RETORNO ::= _retorno EXPR_ARIT ptoYcoma 
             {
               Nodo RESULT =null;
+		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int n1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                                Nodo n = new Nodo("RETORNO");
+                                Nodo n = new Nodo("RETORNO", idright, idleft);
+                                n.setTipo("NoTerminal");
                                 n.addHijo(n1);
                                 RESULT = n;
                             

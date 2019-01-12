@@ -21,14 +21,16 @@ public class Funcion {
     private ArrayList<Parametro> parametros =  new ArrayList<>();
     private Nodo cuerpo;
     private String key;
+    private String valorRetorno;
     int noParametros;
 
-    public Funcion(String nombre, String tipo, int fila, int columna, Nodo cuerpo) {
+    public Funcion(String nombre, String tipo, int fila, int columna, Nodo cuerpo, String valorRet) {
         this.nombre = nombre;
         this.tipo = tipo;
         this.fila = fila;
         this.columna = columna;
         this.cuerpo = cuerpo;
+        this.valorRetorno = valorRet;
     }
     
     public String crearLlave(){
@@ -101,6 +103,14 @@ public class Funcion {
 
     public void setParametros(ArrayList<Parametro> parametros) {
         this.parametros = parametros;
+    }
+
+    public String getValorRetorno() {
+        return valorRetorno;
+    }
+
+    public void setValorRetorno(String valorRetorno) {
+        this.valorRetorno = valorRetorno;
     }
     
     

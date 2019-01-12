@@ -537,12 +537,14 @@ METODO_PRINCIPAL::=_vacio:tipo _principal:id parent_a parent_c llave_a SENTENCIA
 
 RETORNO::= _retorno:id ptoYcoma
                             {:
-                                Nodo n = new Nodo("RETORNO");
+                                Nodo n = new Nodo("RETORNO", idright, idleft);
+                                n.setTipo("NoTerminal");
                                 RESULT = n;
                             :}
-          |_retorno EXPR_ARIT:n1 ptoYcoma
+          |_retorno:id EXPR_ARIT:n1 ptoYcoma
                             {:
-                                Nodo n = new Nodo("RETORNO");
+                                Nodo n = new Nodo("RETORNO", idright, idleft);
+                                n.setTipo("NoTerminal");
                                 n.addHijo(n1);
                                 RESULT = n;
                             :}
