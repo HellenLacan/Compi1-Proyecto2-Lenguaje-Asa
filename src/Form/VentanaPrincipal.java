@@ -45,6 +45,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     double b = 20;
 
     public void mostrar() {
+        String m = "s";
     }
 
     public VentanaPrincipal() {

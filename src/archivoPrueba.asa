@@ -1,29 +1,9 @@
 </Ejemplos de Variables globales/>
-Texto a = "ale";
+
 Vacio Principal(){
-	mostrar(5 + verdadero);
-   	sumita4(a, "ale1", verdadero);
-   	sumita5(a, "ale1", verdadero);
+   	mostrar(saludar("Compi1") + " " + " es hora de ir a dormir jajaja :D");
 }
 
-
-Vacio sumita4(Texto a,Texto b, Booleano c){
-	mostrar(a);
-	mostrar(b);
-	mostrar(c);
-	retorno 2+2;
+Texto saludar(Texto nombre){
+	retorno "Estoy en el curso de" + " " + nombre;
 }
-
-Entero sumita5(Texto a,Texto b, Booleano c){
-	mostrar("Sumita5");
-	mostrar(a);
-	mostrar(b);
-	mostrar(c);
-	retorno "";
-	mostrar(2+2);
-}
-
-
-
-
-

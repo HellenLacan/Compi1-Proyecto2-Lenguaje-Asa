@@ -7,6 +7,8 @@ package Ejecucion;
 
 import static Ejecucion.EjecucionLenguajeAsa.evaluarExpresion;
 import fuentes.Nodo;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 
 /**
  *
@@ -15,7 +17,7 @@ import fuentes.Nodo;
 public class AsignacionVars {
 
     //Metodo cuando viene una asignacion a variablesowe
-    public static void asignacionAVariables(Nodo nodo, String tipoAmbito) {
+    public static void asignacionAVariables(Nodo nodo, String tipoAmbito) throws FileNotFoundException, UnsupportedEncodingException {
         TablaSimbolo ts = null;
         String nombre = nodo.getHijos().get(0).getHijos().get(0).getEtiqueta();
         int linea = nodo.getHijos().get(0).getHijos().get(0).getFila();

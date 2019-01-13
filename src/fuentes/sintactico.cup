@@ -623,19 +623,20 @@ NO_CUMPLE::=_noCumple dosPtos SENTENCIAS:n1
                                 RESULT = null;
                             :};
 
-VALORES_CASE::= identificador:exp
+VALORES_CASE::= cadena:exp
                            {:
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expright, expleft);
+                             n.setTipoVar("Texto");
                              RESULT = n;
                            :}
                 |numEntero:exp
                            {:
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expright, expleft);
                              RESULT = n;
                            :}
                 |numDecimal:exp
                            {:
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expright, expleft);
                              RESULT = n;
                            :}
 ;

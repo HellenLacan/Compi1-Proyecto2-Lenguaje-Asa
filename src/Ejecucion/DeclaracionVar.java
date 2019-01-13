@@ -6,6 +6,8 @@
 package Ejecucion;
 
 import fuentes.Nodo;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -16,7 +18,7 @@ import java.util.Stack;
  */
 public class DeclaracionVar {
 
-    public static void recorrerListaVars(Nodo tipo, Nodo nodo, Nodo exp, String tipoAmbito) {
+    public static void recorrerListaVars(Nodo tipo, Nodo nodo, Nodo exp, String tipoAmbito) throws FileNotFoundException, UnsupportedEncodingException {
         switch (nodo.getHijos().size()) {
             case 1:
                 agregarVariables(tipo, nodo.getHijos().get(0), exp, tipoAmbito);
@@ -28,7 +30,7 @@ public class DeclaracionVar {
         }
     }
 
-    public static void agregarVariables(Nodo t, Nodo id, Nodo nodo, String tipoAmbito) {
+    public static void agregarVariables(Nodo t, Nodo id, Nodo nodo, String tipoAmbito) throws FileNotFoundException, UnsupportedEncodingException {
         TablaSimbolo ts = null;
         String tipo = t.getEtiqueta();
         String nombre = id.getEtiqueta();

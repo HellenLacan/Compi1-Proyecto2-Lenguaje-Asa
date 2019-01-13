@@ -286,8 +286,8 @@ public class parser extends java_cup.runtime.lr_parser {
     "\062\uff8a\063\uff8a\064\uff8a\066\uff8a\067\uff8a\072\uff8a\001" +
     "\002\000\004\073\164\001\002\000\004\027\167\001\002" +
     "\000\010\027\uffb6\030\uffb6\074\uffb6\001\002\000\010\027" +
-    "\167\030\200\074\uffb3\001\002\000\010\005\171\006\170" +
-    "\007\172\001\002\000\004\075\uffb0\001\002\000\004\075" +
+    "\167\030\200\074\uffb3\001\002\000\010\004\172\005\171" +
+    "\006\170\001\002\000\004\075\uffb0\001\002\000\004\075" +
     "\uffb1\001\002\000\004\075\uffb2\001\002\000\004\075\174" +
     "\001\002\000\052\007\042\013\020\014\017\015\022\017" +
     "\011\023\051\024\034\026\071\027\ufff0\030\ufff0\031\056" +
@@ -2179,14 +2179,15 @@ class CUP$parser$actions {
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 79: // VALORES_CASE ::= identificador 
+          case 79: // VALORES_CASE ::= cadena 
             {
               Nodo RESULT =null;
 		int expleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int expright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String exp = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expright, expleft);
+                             n.setTipoVar("Texto");
                              RESULT = n;
                            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("VALORES_CASE",32, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -2201,7 +2202,7 @@ class CUP$parser$actions {
 		int expright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String exp = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expright, expleft);
                              RESULT = n;
                            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("VALORES_CASE",32, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -2216,7 +2217,7 @@ class CUP$parser$actions {
 		int expright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String exp = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                             Nodo n = new Nodo(exp, expleft, expright);
+                             Nodo n = new Nodo(exp, expright, expleft);
                              RESULT = n;
                            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("VALORES_CASE",32, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

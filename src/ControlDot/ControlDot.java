@@ -29,11 +29,20 @@ public class ControlDot {
     private static void recorrerAST(String padre, Nodo raiz) {
         for (Nodo hijo : raiz.getHijos()) {
             if (hijo != null) {
-                String nombreHijo = "nodo" + contador;
-                grafo += nombreHijo + "[label=\"" + hijo.getEtiqueta() + "\"];\n";
-                grafo += padre + "->" + nombreHijo + ";\n";
-                contador++;
-                recorrerAST(nombreHijo, hijo);
+                if (hijo.getEtiqueta().contains("\"")) {
+                    String nombreHijo = "nodo" + contador;
+                    String etiqueta = hijo.getEtiqueta().replaceAll("\"", "");
+                    grafo += nombreHijo + "[label=\"" + "\\\"" + etiqueta + "\\\"" + "\"];\n";
+                    grafo += padre + "->" + nombreHijo + ";\n";
+                    contador++;
+                    recorrerAST(nombreHijo, hijo);
+                } else {
+                    String nombreHijo = "nodo" + contador;
+                    grafo += nombreHijo + "[label=\"" + hijo.getEtiqueta() + "\"];\n";
+                    grafo += padre + "->" + nombreHijo + ";\n";
+                    contador++;
+                    recorrerAST(nombreHijo, hijo);
+                }
             }
 
         }

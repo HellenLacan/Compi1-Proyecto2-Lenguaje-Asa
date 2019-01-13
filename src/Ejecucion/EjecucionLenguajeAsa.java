@@ -38,13 +38,14 @@ public class EjecucionLenguajeAsa {
     public static TablaSimbolo tsVarsFuncion = new TablaSimbolo("FuncActual"); //Tabla para almacenar funciones, metodos y principal
     public static String consola = "";
     public static ArrayList<Object> valRetorno = new ArrayList<Object>();
+    public static ArrayList<Nodo> cuerpoCase = new ArrayList<Nodo>();
 
     public Nodo AST;
 
     public EjecucionLenguajeAsa() {
     }
 
-    public void almacenarVariablesGlobales(Nodo nodo) {
+    public void almacenarVariablesGlobales(Nodo nodo) throws FileNotFoundException, UnsupportedEncodingException {
         switch (nodo.getEtiqueta()) {
             case "CUERPO_PRINCIPAL":
                 for (Nodo item : nodo.getHijos()) {
@@ -220,6 +221,7 @@ public class EjecucionLenguajeAsa {
                             //Aqui verifico si el valor de retorno le pertenece al tipo de la funcion
                             if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
                                 System.out.println("Error semantico, No se le puede asignar un valor a um metodo vacio" + " linea:" + linea + " columna: " + columna);
+                                valRetorno = new ArrayList<>();
                             } else if (funActual.getTipo().equalsIgnoreCase("Entero") && tipoRetorno.equalsIgnoreCase("Entero")) {
                                 System.out.println("Correcto el retorno");
                             } else if (funActual.getTipo().equalsIgnoreCase("Decimal") && tipoRetorno.equalsIgnoreCase("Decimal")) {
@@ -229,15 +231,12 @@ public class EjecucionLenguajeAsa {
                             } else if (funActual.getTipo().equalsIgnoreCase("Booleano") && tipoRetorno.equalsIgnoreCase("Booleano")) {
                                 System.out.println("Correcto el retorno");
                             } else {
-                                if (verificarCasteo(funActual.getTipo(), tipoRetorno)) {
-                                    String nuevoValor = castearImplicitamente(funActual.getTipo(), tipoRetorno, valorRetorno);
-                                } else {
-                                    System.out.println("Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoRetorno
-                                            + " y la funcion " + funActual.getNombre() + " es de tipo " + funActual.getTipo() + " linea:" + linea + " columna: " + columna);
-
-                                }
+                                valRetorno = new ArrayList<>();
+                                System.out.println("Error semantico, el valor de la expresion return es de tipo " + tipoRetorno
+                                        + " y la funcion " + funActual.getNombre() + " es de tipo " + funActual.getTipo() + " linea:" + linea + " columna: " + columna);
                             }
-                            valRetorno = new ArrayList<>();
+                            //Limpio donde eta almacenada el retorno de la funcion
+                            //valRetorno = new ArrayList<>();
                         } else {
                             if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
                                 System.out.println("Funcion de tipo vacio no retorna nada :D... Correcto");
@@ -248,7 +247,11 @@ public class EjecucionLenguajeAsa {
                             }
                         }
                         pilaSimbolos.pop();
-                        return "";
+                        if (valRetorno.size() > 0) {
+                            return (String) valRetorno.get(0);
+                        } else {
+                            return "error";
+                        }
                     } else {
                         System.out.println("Funcion o parametros invalidos");
                         return msj;
@@ -264,11 +267,59 @@ public class EjecucionLenguajeAsa {
                         pilaSimbolos.push(tsFuncion);
                         msj = ejecutarSentencias(miFuncion.getCuerpo(), msj, nodo.getHijos().get(0).getEtiqueta());
                         //Quito el ambito de la funcion actual, quedandome solo el main
+
+                        Funcion funActual = tsFunciones.retornarFuncion(key);
+
+                        if (valRetorno.size() > 0) {
+                            System.out.println();
+                            String retornoFun = valRetorno.get(0).toString();
+                            String[] valRet = retornoFun.split("@");
+                            String valorRetorno = valRet[0];
+                            String tipoRetorno = valRet[1];
+                            int linea = Integer.parseInt(valRet[2]);
+                            int columna = Integer.parseInt(valRet[3]);
+
+                            //Aqui verifico si el valor de retorno le pertenece al tipo de la funcion
+                            if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
+                                System.out.println("Error semantico, No se le puede asignar un valor a um metodo vacio" + " linea:" + linea + " columna: " + columna);
+                                valRetorno = new ArrayList<>();
+                            } else if (funActual.getTipo().equalsIgnoreCase("Entero") && tipoRetorno.equalsIgnoreCase("Entero")) {
+                                System.out.println("Correcto el retorno");
+                            } else if (funActual.getTipo().equalsIgnoreCase("Decimal") && tipoRetorno.equalsIgnoreCase("Decimal")) {
+                                System.out.println("Correcto el retorno");
+                            } else if (funActual.getTipo().equalsIgnoreCase("Texto") && tipoRetorno.equalsIgnoreCase("Texto")) {
+                                System.out.println("Correcto el retorno");
+                            } else if (funActual.getTipo().equalsIgnoreCase("Booleano") && tipoRetorno.equalsIgnoreCase("Booleano")) {
+                                System.out.println("Correcto el retorno");
+                            } else {
+                                valRetorno = new ArrayList<>();
+                                System.out.println("Error semantico, el valor de la expresion return es de tipo " + tipoRetorno
+                                        + " y la funcion " + funActual.getNombre() + " es de tipo " + funActual.getTipo() + " linea:" + linea + " columna: " + columna);
+                            }
+                            //Limpio donde eta almacenada el retorno de la funcion
+                            //valRetorno = new ArrayList<>();
+                        } else {
+                            if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
+                                System.out.println("Funcion de tipo vacio no retorna nada :D... Correcto");
+                            } else {
+                                if (funActual.getTipo().equalsIgnoreCase("Texto")) {
+                                    System.out.println("Valor de la funcion tipo Texto dio cadena vacia");
+                                }
+                            }
+                        }
+
                         if (pilaSimbolos.peek().ambito.equalsIgnoreCase(nodo.getHijos().get(0).getEtiqueta())) {
                             pilaSimbolos.pop();
                         }
+                        
                         tsVarsFuncion = new TablaSimbolo("");
-                        return msj;
+                        
+                        if (valRetorno.size() > 0) {
+                            return (String) valRetorno.get(0);
+                        } else {
+                            return "error";
+                        }
+
                     } else {
                         return msj;
                     }
@@ -337,36 +388,41 @@ public class EjecucionLenguajeAsa {
             case "HASTA_QUE":
                 //ambito
                 String condicionHastaQue = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
-                String[] condHastaQue = condicionHastaQue.split("@");
-                String condBoolHQ = condHastaQue[0];
-                String tipoCondHQ = condHastaQue[1];
+                if (condicionHastaQue.contains("@")) {
+                    String[] condHastaQue = condicionHastaQue.split("@");
+                    String condBoolHQ = condHastaQue[0];
+                    String tipoCondHQ = condHastaQue[1];
 
-                if (tipoCondHQ.equalsIgnoreCase("booleano")) {
-                    if (condBoolHQ.equalsIgnoreCase("falso") || condBoolHQ.equalsIgnoreCase("0")) {
-                        msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "whileNeg");
+                    if (tipoCondHQ.equalsIgnoreCase("booleano")) {
+                        if (condBoolHQ.equalsIgnoreCase("falso") || condBoolHQ.equalsIgnoreCase("0")) {
+                            msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "whileNeg");
 
-                        //iteracion del while
-                        while (true) {
-                            condBoolHQ = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
-                            String[] condHastaQue2 = condBoolHQ.split("@");
-                            condBoolHQ = condHastaQue2[0];
-                            tipoCondHQ = condHastaQue2[1];
+                            //iteracion del while
+                            while (true) {
+                                condBoolHQ = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
+                                String[] condHastaQue2 = condBoolHQ.split("@");
+                                condBoolHQ = condHastaQue2[0];
+                                tipoCondHQ = condHastaQue2[1];
 
-                            if (condBoolHQ.equalsIgnoreCase("falso") || condBoolHQ.equalsIgnoreCase("0")) {
-                                msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "whileNeg");
-                            } else {
-                                break;
+                                if (condBoolHQ.equalsIgnoreCase("falso") || condBoolHQ.equalsIgnoreCase("0")) {
+                                    msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "whileNeg");
+                                } else {
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "whileNeg")) {
-                        //Limpio este ambito en la pila actual
-                        pilaSimbolos.pop();
+                        if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "whileNeg")) {
+                            //Limpio este ambito en la pila actual
+                            pilaSimbolos.pop();
+                        }
+                    } else {
+                        System.out.println("Condicion del Hasta que no es de tipo boolean:");
                     }
                 } else {
-                    System.out.println("Condicion del Hasta que no es de tipo boolean:");
+                    System.out.println("Semantico Condicion invalida en hasta_que " + condicionHastaQue);
                 }
+
                 return msj;
 
             case "PARA":
@@ -379,75 +435,83 @@ public class EjecucionLenguajeAsa {
 
                 String valP = "";
                 String tipoValP = "";
-                String[] condP = valIniP.split("@");
+
                 if (valIniP.contains("@")) {
+                    String[] condP = valIniP.split("@");
                     valP = condP[0];
                     tipoValP = condP[1];
-                }
 
-                Simbolo simbP = new Simbolo(tipoP, idP, valP, lineaP, colP, ambito + "@para");
-                TablaSimbolo tsPara = new TablaSimbolo(ambito + "@" + "para");
-                tsPara.insertar(idP, simbP);
+                    Simbolo simbP = new Simbolo(tipoP, idP, valP, lineaP, colP, ambito + "@para");
+                    TablaSimbolo tsPara = new TablaSimbolo(ambito + "@" + "para");
+                    tsPara.insertar(idP, simbP);
 
-                pilaSimbolos.push(tsPara);
-                tsVarsFuncion.insertar(idP, simbP);
+                    pilaSimbolos.push(tsPara);
+                    tsVarsFuncion.insertar(idP, simbP);
 
-                String condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito);
+                    String condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito);
 
-                String[] condPara = condFinP.split("@");
-                String condBoolP = condPara[0];
-                String tipoCondP = condPara[1];
+                    if (condFinP.contains("@")) {
 
-                if (tipoCondP.equalsIgnoreCase("booleano")) {
-                    if (condBoolP.equalsIgnoreCase("verdadero") || condBoolP.equalsIgnoreCase("1")) {
-                        msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para");
+                        String[] condPara = condFinP.split("@");
+                        String condBoolP = condPara[0];
+                        String tipoCondP = condPara[1];
 
-                        //Aqui realizo la iteracion del for
-                        while (true) {
-                            condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito);
-                            String[] condPara2 = condFinP.split("@");
-                            condBoolP = condPara2[0];
-                            tipoCondP = condPara2[1];
-
-                            Simbolo s = tsVarsFuncion.retornarSimbolo(idP);
-
+                        if (tipoCondP.equalsIgnoreCase("booleano")) {
                             if (condBoolP.equalsIgnoreCase("verdadero") || condBoolP.equalsIgnoreCase("1")) {
-                                //Aqui realizo el incremento o decremento
-                                if (inc_Dec.equalsIgnoreCase("++")) {
-                                    if (s.getTipo().equalsIgnoreCase("entero")) {
-                                        Integer n = Integer.parseInt(s.getValor()) + 1;
-                                        s.setValor(String.valueOf(n));
-                                    } else {
-                                        double n = Double.parseDouble(s.getValor()) + 1;
-                                        s.setValor(String.valueOf(n));
-                                    }
-
-                                } else {
-                                    if (s.getTipo().equalsIgnoreCase("entero")) {
-                                        Integer n = Integer.parseInt(s.getValor()) + 1;
-                                        s.setValor(String.valueOf(n));
-                                    } else {
-                                        double n = Double.parseDouble(s.getValor()) + 1;
-                                        s.setValor(String.valueOf(n));
-                                    }
-                                }
-
                                 msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para");
 
-                            } else {
-                                break;
-                            }
-                        }
-                    }
+                                //Aqui realizo la iteracion del for
+                                while (true) {
+                                    condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito);
+                                    String[] condPara2 = condFinP.split("@");
+                                    condBoolP = condPara2[0];
+                                    tipoCondP = condPara2[1];
 
-                    if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "para")) {
-                        //Limpio este ambito en la pila actual
-                        pilaSimbolos.pop();
-                        //Como la variable del for no se puede utilizar fuera de ella, la elimino del ambito actual
-                        tsVarsFuncion.tabla.remove(idP);
+                                    Simbolo s = tsVarsFuncion.retornarSimbolo(idP);
+
+                                    if (condBoolP.equalsIgnoreCase("verdadero") || condBoolP.equalsIgnoreCase("1")) {
+                                        //Aqui realizo el incremento o decremento
+                                        if (inc_Dec.equalsIgnoreCase("++")) {
+                                            if (s.getTipo().equalsIgnoreCase("entero")) {
+                                                Integer n = Integer.parseInt(s.getValor()) + 1;
+                                                s.setValor(String.valueOf(n));
+                                            } else {
+                                                double n = Double.parseDouble(s.getValor()) + 1;
+                                                s.setValor(String.valueOf(n));
+                                            }
+
+                                        } else {
+                                            if (s.getTipo().equalsIgnoreCase("entero")) {
+                                                Integer n = Integer.parseInt(s.getValor()) + 1;
+                                                s.setValor(String.valueOf(n));
+                                            } else {
+                                                double n = Double.parseDouble(s.getValor()) + 1;
+                                                s.setValor(String.valueOf(n));
+                                            }
+                                        }
+
+                                        msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para");
+
+                                    } else {
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "para")) {
+                                //Limpio este ambito en la pila actual
+                                pilaSimbolos.pop();
+                                //Como la variable del for no se puede utilizar fuera de ella, la elimino del ambito actual
+                                tsVarsFuncion.tabla.remove(idP);
+                            }
+                        } else {
+                            System.out.println("Condicion del para no es boolean en fila:");
+                        }
+                    } else {
+                        System.out.println("Error semantico en la condicion para" + condFinP);
                     }
                 } else {
-                    System.out.println("Condicion del para no es boolean en fila:");
+                    System.out.println("Error semantico en la condicion inicial para" + valIniP);
                 }
 
                 return msj;
@@ -462,6 +526,47 @@ public class EjecucionLenguajeAsa {
                     valRetorno.add(valorR + "@" + nodo.getFila() + "@" + nodo.getColumna());
                     return "retorno";
                 }
+
+            case "CAMBIAR_A":
+                String condicionCambiarA = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
+                String valorCA = "";
+                String tipoCondCA = "";
+                String cuerpo = "";
+                if (condicionCambiarA.contains("@")) {
+                    String[] condCambiarA = condicionCambiarA.split("@");
+                    valorCA = condCambiarA[0];
+                    tipoCondCA = condCambiarA[1];
+
+                    if (tipoCondCA.equalsIgnoreCase("Texto") || tipoCondCA.equalsIgnoreCase("Entero") || tipoCondCA.equalsIgnoreCase("Decimal")) {
+                        System.out.println("Condicion buena");
+                        //Si llega un NO es que los tipos no son del mismo tipo
+                        cuerpo = verificarTiposSwitch(nodo.getHijos().get(1), tipoCondCA);
+                        if (!cuerpo.equalsIgnoreCase("@No")) {
+                            String valorS = verificarCasosSwitch(nodo.getHijos().get(1), tipoCondCA, valorCA);
+                            if (valorS.equalsIgnoreCase("@Yes")) {
+                                ejecutarSentencias(cuerpoCase.get(0), msj, ambito + "@" + "switch");
+                            } else if (nodo.getHijos().size() == 3) {
+                                ejecutarSentencias(nodo.getHijos().get(2).getHijos().get(0), msj, ambito + "@" + "switch");
+                            } else {
+                                System.out.println("Ninguna opcion es valida, y no contiene sentencia no_cumple");
+                            }
+                        }
+
+                        if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "switch")) {
+                            //Limpio este ambito en la pila actual
+                            pilaSimbolos.pop();
+                            cuerpoCase = new ArrayList<>();
+                        }
+
+                    } else {
+                        System.out.println("Error semantico condicion invalida en linea:");
+                    }
+
+                } else {
+                    System.out.println("Error semantico en la condicion " + condicionCambiarA);
+                }
+
+                return msj;
 
             case "DIBUJAR_EXP":
                 dibujarEXP(nodo.getHijos().get(0));
@@ -485,6 +590,127 @@ public class EjecucionLenguajeAsa {
                 return msj;
         }
         return msj;
+    }
+    public static String n = "";
+
+    private static String verificarTiposSwitch(Nodo nodo, String tipo) {
+        if (nodo.getTipo().equalsIgnoreCase("NoTerm")) {
+            switch (nodo.getHijos().size()) {
+                case 1:
+                    if (nodo.getEtiqueta().equalsIgnoreCase("LISTA_CASOS")) {
+                        n = verificarTiposSwitch(nodo.getHijos().get(0), tipo);
+                        if (n.contains("No")) {
+                            break;
+                        } else {
+                            return n;
+                        }
+                    }
+
+                case 2:
+                    if (nodo.getEtiqueta().equalsIgnoreCase("LISTA_CASOS")) {
+                        n = verificarTiposSwitch(nodo.getHijos().get(0), tipo);
+                        if (n.contains("Yes")) {
+                            cuerpoCase.add(nodo.getHijos().get(1));
+                        } else if (n.contains("No")) {
+                            break;
+                        }
+
+                        n = verificarTiposSwitch(nodo.getHijos().get(1), tipo);
+
+                        if (n.contains("No")) {
+                            break;
+                        } else {
+                            return n;
+                        }
+
+                    }
+                    return n;
+            }
+        } else {
+            String value = nodo.getEtiqueta();
+            String type = "";
+            try {
+                Double numero = Double.parseDouble(value);
+                if ((numero % 2) == 0) {
+                    type = "Entero";
+                } else {
+                    type = "Decimal";
+                }
+            } catch (Exception e) {
+                type = "Texto";
+            }
+            if (!type.equalsIgnoreCase(tipo)) {
+                System.out.println("Error semantico, valor debe de ser tipo " + tipo + " y se encontro uno de tipo " + type
+                        + " en linea: " + nodo.getFila() + " columna: " + nodo.getColumna());
+                return "@No";
+            }
+        }
+        return n;
+    }
+
+    private static String verificarCasosSwitch(Nodo nodo, String tipo, String valor) {
+        if (nodo.getTipo().equalsIgnoreCase("NoTerm")) {
+            switch (nodo.getHijos().size()) {
+                case 1:
+                    if (nodo.getEtiqueta().equalsIgnoreCase("LISTA_CASOS")) {
+                        n = verificarCasosSwitch(nodo.getHijos().get(0), tipo, valor);
+                        if (n.contains("Yes")) {
+                            break;
+                        } else {
+                            return n;
+                        }
+                    }
+
+                case 2:
+                    if (nodo.getEtiqueta().equalsIgnoreCase("LISTA_CASOS")) {
+                        n = verificarCasosSwitch(nodo.getHijos().get(0), tipo, valor);
+                        if (n.contains("Yes")) {
+                            cuerpoCase.add(nodo.getHijos().get(1));
+                            break;
+                        }
+
+                        n = verificarCasosSwitch(nodo.getHijos().get(1), tipo, valor);
+
+                        if (n.contains("Yes")) {
+                            cuerpoCase.add(nodo.getHijos().get(1));
+                            break;
+                        } else if (n.contains("No")) {
+                            return n;
+                        }
+
+                    }
+                    return n;
+
+            }
+        } else {
+            String value = nodo.getEtiqueta();
+            String type = "";
+            try {
+                Double numero = Double.parseDouble(value);
+                if ((numero % 2) == 0) {
+                    type = "Entero";
+                } else {
+                    type = "Decimal";
+                }
+            } catch (Exception e) {
+                type = "Texto";
+            }
+            if (type.equalsIgnoreCase(tipo)) {
+
+                if (type.equalsIgnoreCase("Texto")) {
+                    value = value.replaceAll("\"", "");
+                }
+
+                if (value.equalsIgnoreCase(valor) && type.equalsIgnoreCase(tipo)) {
+                    return "@Yes";
+                } else {
+                    return "@nop";
+                }
+            } else {
+                return "@No";
+            }
+        }
+        return n;
     }
 
     private static void dibujarAST(Nodo raiz) throws FileNotFoundException, UnsupportedEncodingException {
@@ -584,7 +810,7 @@ public class EjecucionLenguajeAsa {
     }
 
     //Tipo es para ver si esta con globales o locales
-    public static String evaluarExpresion(Nodo n, String tipoAmbito) {
+    public static String evaluarExpresion(Nodo n, String tipoAmbito) throws FileNotFoundException, UnsupportedEncodingException {
         TablaSimbolo ts = null;
         String n1 = "";
         String signo = "";
@@ -721,6 +947,36 @@ public class EjecucionLenguajeAsa {
 //                            Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
                     }
                     break;
+                case "LLAMADA_FUNCION":
+                    //ejecutarSentencias(Nodo nodo, String msj, String ambito
+                    String valor = ejecutarSentencias(n, "", tipoAmbito);
+                    int fila = 0;
+                    int columna = 0;
+                    String valorF = "";
+                    String tipoF = "";
+
+                    if (valor.contains("@")) {
+                        String[] valores = valor.split("@");
+                        valorF = valores[0];
+                        tipoF = valores[1];
+                        fila = Integer.parseInt(valores[2]);
+                        columna = Integer.parseInt(valores[3]);
+
+                        System.out.println("Bitacora El valor de retorno de la funcion " + n.getHijos().get(0).getEtiqueta() + " es: " + valorF
+                                + " en fila: " + fila + " columna: " + columna);
+                        System.out.println("m");
+                        return valorF + "@" + tipoF;
+
+                    } else {
+                        if (valor.equalsIgnoreCase("error")) {
+                            return "error";
+                        } else if (!valorF.equalsIgnoreCase("")) {
+                            return valorF + "@" + tipoF;
+                        } else {
+                            return "" + "@" + "Texto";
+                        }
+                    }
+
                 default:
                     break;
             }
@@ -994,30 +1250,38 @@ public class EjecucionLenguajeAsa {
         } else {
             if (!IdesPalabraReservada(id) && nodo.getHijos().size() > 3) {
                 if (!tsFunciones.existeFuncion(key)) {
+
                     String paramsFuncion = obtenerVarsParamDeFuncion(nodo.getHijos().get(2));
-                    String[] params = paramsFuncion.split(",");
+                    if (!paramsFuncion.equalsIgnoreCase("")) {
+                        String[] params = paramsFuncion.split(",");
 
-                    //Aqui verifico que los id no sean repetidos como (String a, String a)
-                    Hashtable<String, String> contVars = new Hashtable<String, String>();
-                    boolean idRepetido = false;
-                    for (String item : params) {
-                        String[] parametro = item.split("@");
-                        if (contVars.contains(parametro[1])) {
-                            idRepetido = true;
-                        } else {
-                            contVars.put(parametro[0], parametro[1]);
+                        //Aqui verifico que los id no sean repetidos como (String a, String a)
+                        Hashtable<String, String> contVars = new Hashtable<String, String>();
+                        boolean idRepetido = false;
+                        for (String item : params) {
+                            String[] parametro = item.split("@");
+                            if (contVars.contains(parametro[1])) {
+                                idRepetido = true;
+                            } else {
+                                contVars.put(parametro[0], parametro[1]);
+                            }
                         }
-                    }
 
-                    //Si no hay ninguna variable repetida agrego la funcion
-                    if (idRepetido == false) {
+                        //Si no hay ninguna variable repetida agrego la funcion
+                        if (idRepetido == false) {
+                            cuerpoFuncion = nodo.getHijos().get(3);
+                            Funcion miFuncion = new Funcion(id, tipo, fila, columna, cuerpoFuncion, "");
+                            agregarParametros(nodo.getHijos().get(2), miFuncion);
+                            tsFunciones.insertar(key, miFuncion);
+                        } else {
+                            System.out.println("Error semantico Funcion " + tipo + " " + id + " contiene variables repetidas en funcion"
+                                    + "fila: " + fila + "Columna: " + columna);
+                        }
+                    } else {
                         cuerpoFuncion = nodo.getHijos().get(3);
                         Funcion miFuncion = new Funcion(id, tipo, fila, columna, cuerpoFuncion, "");
                         agregarParametros(nodo.getHijos().get(2), miFuncion);
                         tsFunciones.insertar(key, miFuncion);
-                    } else {
-                        System.out.println("Error semantico Funcion " + tipo + " " + id + " contiene variables repetidas en funcion"
-                                + "fila: " + fila + "Columna: " + columna);
                     }
 
                 } else {
