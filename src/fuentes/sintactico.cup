@@ -422,8 +422,9 @@ LLAMADA_VARIABLES::= LISTA_ID_LLAMADA_FUN:n
 
 LLAMADAS_FUNC::= identificador:id LISTA_ID_LLAMADA_FUN:n2 parent_a LISTA_LLAMADA_FUNC:n3 parent_c
                             {:
-                              Nodo n = new Nodo("LLAMADA_FUNCION");
-                              Nodo n1 = new Nodo(id, idleft, idright);
+                              Nodo n = new Nodo("LLAMADA_FUNCION", idleft, idright );
+                              n.setTipo("NoTerm");
+                              Nodo n1 = new Nodo(id, idright, idleft);
                               n1.setTipoVar("ID_LLAMADA_FUN");
                               n.addHijo(n1);
                               n.addHijo(n2);
@@ -575,9 +576,10 @@ ES_VERD_CON_FALSO::= _esFalso llave_a SENTENCIAS:n1 llave_c
                             :}
 ;
 
-CAMBIAR_A::= _cambiarA parent_a EXPR_ARIT:n1 parent_c llave_a CASOS:n2 NO_CUMPLE:n3 llave_c
+CAMBIAR_A::= _cambiarA:c parent_a EXPR_ARIT:n1 parent_c llave_a CASOS:n2 NO_CUMPLE:n3 llave_c
                             {:
-                                Nodo n = new Nodo("CAMBIAR_A");
+                                Nodo n = new Nodo("CAMBIAR_A", cright, cleft );
+                                n.setTipo("NoTerm");
                                 n.addHijo(n1);
                                 n.addHijo(n2);
                                 if(n3 != null){
@@ -641,10 +643,11 @@ VALORES_CASE::= cadena:exp
                            :}
 ;
 
-PARA::=_para parent_a VALORES_PARA:tipo identificador:id asignacion EXPR_ARIT:valIni ptoYcoma EXPR_LOGICA:exp ptoYcoma 
+PARA::=_para:p parent_a VALORES_PARA:tipo identificador:id asignacion EXPR_ARIT:valIni ptoYcoma EXPR_LOGICA:exp ptoYcoma 
        ITERADOR:it parent_c llave_a LISTA_SENTENCIAS:sent llave_c
                             {:
-                              Nodo n = new Nodo("PARA");
+                              Nodo n = new Nodo("PARA", pright, pleft);
+                              n.setTipo("NoTerm");
                               Nodo nodoCondIni = new Nodo("COND_INI");
                               nodoCondIni.addHijo(tipo);
                               Nodo n2 = new Nodo(id, idleft, idright);
@@ -688,18 +691,20 @@ ITERADOR::= incremento:exp
                            :}
 ;
 
-HASTA_QUE::= _hastaQue parent_a EXPR_LOGICA:n1 parent_c llave_a SENTENCIAS:n2 llave_c
+HASTA_QUE::= _hastaQue:h parent_a EXPR_LOGICA:n1 parent_c llave_a SENTENCIAS:n2 llave_c
                             {:
-                              Nodo n = new Nodo("HASTA_QUE");
+                              Nodo n = new Nodo("HASTA_QUE", hright, hleft);
+                              n.setTipo("NoTerm");
                               n.addHijo(n1);
                               n.addHijo(n2);
                               RESULT = n;
                             :}
 ;
 
-MIENTRAS_QUE::= _mientrasQue parent_a EXPR_LOGICA:n1 parent_c llave_a SENTENCIAS:n2 llave_c
+MIENTRAS_QUE::= _mientrasQue:m parent_a EXPR_LOGICA:n1 parent_c llave_a SENTENCIAS:n2 llave_c
                             {:
-                              Nodo n = new Nodo("MIENTRAS_QUE");
+                              Nodo n = new Nodo("MIENTRAS_QUE", mright, mleft );
+                              n.setTipo("NoTerm");
                               n.addHijo(n1);
                               n.addHijo(n2);
                               RESULT = n;
@@ -740,7 +745,7 @@ ROMPER::= _romper:id ptoYcoma
 
 CONTINUAR::=_continuar:id ptoYcoma
                             {:
-                              Nodo n = new Nodo("CONTINUAR", idleft, idright);
+                              Nodo n = new Nodo("CONTINUAR", idright, idleft );
                               n.setTipo("NoTerm");
                               RESULT = n;
                             :}
@@ -748,14 +753,14 @@ CONTINUAR::=_continuar:id ptoYcoma
 
 MOSTRAR::= _mostrar:id parent_a EXPR_LOGICA:exp parent_c ptoYcoma
                             {:
-                              Nodo n = new Nodo("MOSTRAR", idleft, idright);
+                              Nodo n = new Nodo("MOSTRAR", idright, idleft);
                               n.setTipo("NoTerm");
                               n.addHijo(exp);
                               RESULT = n;
                             :}
           |_mostrar:id parent_a parent_c ptoYcoma
                             {:
-                              Nodo n = new Nodo("MOSTRAR", idleft, idright);
+                              Nodo n = new Nodo("MOSTRAR", idright, idleft);
                               n.setTipo("NoTerm");
                               RESULT = n;
                             :}
@@ -763,7 +768,7 @@ MOSTRAR::= _mostrar:id parent_a EXPR_LOGICA:exp parent_c ptoYcoma
 
 DIBUJAR_AST::= _dibujarAst:dib parent_a identificador:id parent_c ptoYcoma
                             {:
-                              Nodo n = new Nodo("DIBUJAR_AST", dibleft, dibright);
+                              Nodo n = new Nodo("DIBUJAR_AST", dibright, dibleft);
                               Nodo n1 = new Nodo(id, idleft, idright);
                               n.addHijo(n1);
                               RESULT = n;
@@ -806,7 +811,7 @@ EXPR_LOGICA::= EXPR_LOGICA:n1 or:signo EXPR_LOGICA:n3
               |not:exp EXPR_LOGICA:n2
                            {:
                              Nodo n = new Nodo("NEG");
-                             Nodo n1 = new Nodo(exp, expleft, expright);
+                             Nodo n1 = new Nodo(exp, expright, expleft);
                              n.addHijo(n1);
                              n.addHijo(n2);
                              RESULT = n;

@@ -6,6 +6,7 @@
 package Ejecucion;
 
 import static Ejecucion.EjecucionLenguajeAsa.evaluarExpresion;
+import static Ejecucion.EjecucionLenguajeAsa.listaErrores;
 import fuentes.Nodo;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
@@ -50,8 +51,8 @@ public class AsignacionVars {
                         expresion = evaluarExpresion(nodo.getHijos().get(1), tipoAmbito, nombreArchivo);
                         actualizarVariableGlobal(nombre, expresion, linea, columna, tipoAmbito, nombreArchivo);
                     } else {
-                        System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada "
-                                + " linea:" + linea + " columna: " + columna);
+                        EjecucionLenguajeAsa.listaErrores.add(new Error("Semantico", "no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada", nombreArchivo, linea, columna));
+
                     }
                 }
 
@@ -62,8 +63,7 @@ public class AsignacionVars {
                 expresion = evaluarExpresion(nodo.getHijos().get(1), tipoAmbito, nombreArchivo);
                 actualizarVariableGlobal(nombre, expresion, linea, columna, tipoAmbito, nombreArchivo);
             } else {
-                System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada "
-                        + " linea:" + linea + " columna: " + columna);
+                EjecucionLenguajeAsa.listaErrores.add(new Error("Semantico", "no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada", nombreArchivo, linea, columna));
             }
         }
     }
@@ -93,8 +93,7 @@ public class AsignacionVars {
                     ts.insertar(nombre, simb);
                     EjecucionLenguajeAsa.tsVarsFuncion.insertar(nombre, simb);
                 } else {
-                    System.out.println("Variable " + nombre + " ya esta declarada en esta funcion "
-                            + "linea: " + linea + " columna: " + columna);
+                    EjecucionLenguajeAsa.listaErrores.add(new Error("Semantico", "Variable " + nombre + " ya esta declarada en esta funcion", nombreArchivo, linea, columna));
                 }
 
             } else {
@@ -106,12 +105,12 @@ public class AsignacionVars {
                     System.out.println("casteada, implicitamente el valor de la expresion es de tipo " + tipoValor
                             + " y la variable destino " + nombre + " es de tipo " + tipo + " linea:" + linea + " columna: " + columna);
                 } else {
-                    System.out.println("Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoValor
-                            + " y la variable destino " + nombre + " es de tipo " + tipo + " linea:" + linea + " columna: " + columna);
+                    EjecucionLenguajeAsa.listaErrores.add(new Error("Semantico", "No puede ser casteada, el valor de la expresion es de tipo " + tipoValor
+                            + " y la variable destino " + nombre + " es de tipo " + tipo, nombreArchivo, linea, columna));
                 }
             }
         } else {
-            System.out.println("Error semantico al operar expresion" + " linea:" + linea + " columna: " + columna);
+            EjecucionLenguajeAsa.listaErrores.add(new Error("Semantico", "Error semantico al operar expresion", nombreArchivo, linea, columna));
         }
 
         if (EjecucionLenguajeAsa.pilaSimbolos.empty() && !ambito.equalsIgnoreCase("ambitoGlobal")) {
@@ -149,7 +148,7 @@ public class AsignacionVars {
 
             if (ts.existeSimbolo(nombre)) {
                 simb = ts.retornarSimbolo(nombre);
-                
+
                 //Si estoy en un sub ambito el main lo agrego a la lista actual de variables
                 if (EjecucionLenguajeAsa.tsVarsFuncion.tabla.size() != 0) {
                     if (!EjecucionLenguajeAsa.tsVarsFuncion.existeSimbolo(simb.getNombre())) {
@@ -183,12 +182,12 @@ public class AsignacionVars {
                     System.out.println("casteada, implicitamente el valor de la expresion es de tipo " + tipoValor
                             + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
                 } else {
-                    System.out.println("Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoValor
-                            + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
+                    EjecucionLenguajeAsa.listaErrores.add(new Error("Semantico", "Error semantico no puede ser casteada, el valor de la expresion es de tipo " + tipoValor
+                            + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + nombre + "\" ya que no esta declarada", nombreArchivo, linea, columna));
                 }
             }
         } else {
-            System.out.println("Error semantico al operar expresion" + " linea:" + linea + " columna: " + columna);
+            EjecucionLenguajeAsa.listaErrores.add(new Error("Semantico", "Error semantico al operar expresion", nombreArchivo, linea, columna));
         }
     }
 

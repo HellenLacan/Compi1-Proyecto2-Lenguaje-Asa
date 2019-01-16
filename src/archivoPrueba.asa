@@ -1,18 +1,13 @@
 </Ejemplos de Variables globales/>
 importar misPruebas.asa;
-importar misPruebas10.asa;
-
-Definir "C:\Users\Hellen\Desktop\ruta";
+Definir "mm";
 
 Entero a = 20;
 Vacio Principal(){
-mostrar(verdadero + 5.90);
-mostrar(1 + verdadero);
-mostrar("hola mundo " + verdadero);
 
 }
 
 Decimal factor(DEcimal n){
 	Decimal a = 15;
-	retorno n;
+	retorno xD;
 }

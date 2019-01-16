@@ -24,7 +24,7 @@ public class DeclaracionVar {
                 agregarVariables(tipo, nodo.getHijos().get(0), exp, tipoAmbito, nombreArchivo);
                 break;
             case 2:
-                recorrerListaVars(tipo, nodo.getHijos().get(0), exp, tipoAmbito , nombreArchivo);
+                recorrerListaVars(tipo, nodo.getHijos().get(0), exp, tipoAmbito, nombreArchivo);
                 agregarVariables(tipo, nodo.getHijos().get(1), exp, tipoAmbito, nombreArchivo);
                 break;
         }
@@ -88,9 +88,8 @@ public class DeclaracionVar {
                 expresion = EjecucionLenguajeAsa.evaluarExpresion(nodo.getHijos().get(0), tipoAmbito, nombreArchivo);
                 AsignacionVars.agregarAsignacionAVars(expresion, tipo, nombre, linea, columna, tipoAmbito, nombreArchivo);
             } else {
+                EjecucionLenguajeAsa.listaErrores.add(new Error("Semantico", "variable\" " + nombre + " \" ya fue declarada anteriormente", nombreArchivo, linea, columna));
 
-                System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
-                        + " linea:" + linea + " columna: " + columna);
             }
 
             //Si la variable viene sin expresion
@@ -105,13 +104,12 @@ public class DeclaracionVar {
                     ts.insertar(nombre, simb);
                     EjecucionLenguajeAsa.tsVarsFuncion.insertar(nombre, simb);
                 } else {
-                    System.out.println("Variable ya declarada en esta funcion");
+                    EjecucionLenguajeAsa.listaErrores.add(new Error("Semantico", "Variable ya declarada en esta funcion", nombreArchivo, linea, columna));
                 }
 
                 //EjecucionLenguajeAsa.pilaAuxVarsFuncion.push(ts);
             } else {
-                System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"
-                        + " linea:" + linea + " columna: " + columna);
+                EjecucionLenguajeAsa.listaErrores.add(new Error("Semantico", "variable\" " + nombre + " \" ya fue declarada anteriormente", nombreArchivo, linea, columna));
             }
         }
 

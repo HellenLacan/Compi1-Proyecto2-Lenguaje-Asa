@@ -100,11 +100,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         Image imgAnalizar = ImageIO.read(getClass().getResource("analizar.png"));
         ImageIcon iconoEscalaAnalizar = new ImageIcon(imgAnalizar.getScaledInstance(25, 25, java.awt.Image.SCALE_SMOOTH));
-        btnAnalizar.setIcon((iconoEscalaAnalizar));
+        jMenuEjecutar.setIcon((iconoEscalaAnalizar));
 
         Image imgReportes = ImageIO.read(getClass().getResource("reporte.png"));
         ImageIcon iconoEscalaReportes = new ImageIcon(imgReportes.getScaledInstance(25, 25, java.awt.Image.SCALE_SMOOTH));
-        btnReportes.setIcon((iconoEscalaReportes));
+        jMenuItemReportes.setIcon((iconoEscalaReportes));
 
         Image imgSave = ImageIO.read(getClass().getResource("save.png"));
         ImageIcon iconoEscalaSave = new ImageIcon(imgSave.getScaledInstance(25, 25, java.awt.Image.SCALE_SMOOTH));
@@ -149,12 +149,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
                 EjecucionLenguajeAsa leng = new EjecucionLenguajeAsa();
                 leng.almacenarImportsYRutas(AST.getHijos().get(0), "archivoOriginal.asa");
-
-//                for (Nodo item : AST.getHijos()) {
-//                    EjecucionLenguajeAsa ejecucion = new EjecucionLenguajeAsa();
-//                    ejecucion.almacenarFunciones(item, "archivoOriginal.asa");
-//                    break;
-//                }
 
                 leng.almacenarVariablesGlobales(AST.getHijos().get(0), "archivoOriginal.asa");
                 leng.almacenarFunciones(AST.getHijos().get(0), "archivoOriginal.asa");
@@ -335,8 +329,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         txtConsola = new javax.swing.JTextArea();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        btnReportes = new javax.swing.JButton();
-        btnAnalizar = new javax.swing.JButton();
         jPanelImage = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
@@ -344,11 +336,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jMenuItemOpen = new javax.swing.JMenuItem();
         jMenuItemSave = new javax.swing.JMenuItem();
         jMenuItemSaveAs = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
+        jMenuEjecutar = new javax.swing.JMenu();
         jMenuItemCloseTab = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItemReportes = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -356,18 +348,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         txtConsola.setColumns(20);
         txtConsola.setRows(5);
         jScrollPane2.setViewportView(txtConsola);
-
-        btnReportes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesActionPerformed(evt);
-            }
-        });
-
-        btnAnalizar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAnalizarActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanelImageLayout = new javax.swing.GroupLayout(jPanelImage);
         jPanelImage.setLayout(jPanelImageLayout);
@@ -377,7 +357,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         );
         jPanelImageLayout.setVerticalGroup(
             jPanelImageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 458, Short.MAX_VALUE)
         );
 
         jMenu2.setText("Archivo");
@@ -416,7 +396,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu2);
 
-        jMenu3.setText("Herramientas");
+        jMenuEjecutar.setText("Herramientas");
 
         jMenuItemCloseTab.setText("Cerrar pestaña");
         jMenuItemCloseTab.addActionListener(new java.awt.event.ActionListener() {
@@ -424,22 +404,22 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 jMenuItemCloseTabActionPerformed(evt);
             }
         });
-        jMenu3.add(jMenuItemCloseTab);
+        jMenuEjecutar.add(jMenuItemCloseTab);
 
         jMenuItem1.setText("Ejecutar archivo");
-        jMenu3.add(jMenuItem1);
+        jMenuEjecutar.add(jMenuItem1);
 
-        jMenuBar1.add(jMenu3);
+        jMenuBar1.add(jMenuEjecutar);
 
         jMenu1.setText("Reportes");
 
-        jMenuItem2.setText("Reporte Errores");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemReportes.setText("Reporte Errores");
+        jMenuItemReportes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                jMenuItemReportesActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem2);
+        jMenu1.add(jMenuItemReportes);
 
         jMenuItem3.setText("Abrir Album");
         jMenu1.add(jMenuItem3);
@@ -454,47 +434,30 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 587, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 587, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(394, 394, 394)
-                                .addComponent(btnAnalizar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnReportes))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(588, 588, 588)
-                                .addComponent(jPanelImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2)
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE))
+                .addGap(588, 588, 588)
+                .addComponent(jPanelImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnAnalizar)
-                    .addComponent(btnReportes))
-                .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanelImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE))
-                .addGap(23, 23, 23)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(jPanelImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 458, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
-        //Desktop.getDesktop().open(file);
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnReportesActionPerformed
-
-    private void btnAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalizarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnAnalizarActionPerformed
 
     private void jMenuItemNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNewActionPerformed
         addTabsInPanel();
@@ -534,7 +497,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         cerrarPestania();
     }//GEN-LAST:event_jMenuItemCloseTabActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void jMenuItemReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemReportesActionPerformed
         File file = new File(EjecucionLenguajeAsa.ruta);
 
         if (!file.getName().toLowerCase().endsWith(".html")) {
@@ -548,7 +511,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_jMenuItemReportesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -597,18 +560,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAnalizar;
-    private javax.swing.JButton btnReportes;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu jMenuEjecutar;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItemCloseTab;
     private javax.swing.JMenuItem jMenuItemNew;
     private javax.swing.JMenuItem jMenuItemOpen;
+    private javax.swing.JMenuItem jMenuItemReportes;
     private javax.swing.JMenuItem jMenuItemSave;
     private javax.swing.JMenuItem jMenuItemSaveAs;
     private javax.swing.JPanel jPanelImage;

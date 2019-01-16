@@ -23,14 +23,16 @@ public class Funcion {
     private String key;
     private String valorRetorno;
     int noParametros;
+    private String nombreArchivo; //Para ver en que archivo se encuentra la funcion
 
-    public Funcion(String nombre, String tipo, int fila, int columna, Nodo cuerpo, String valorRet) {
+    public Funcion(String nombre, String tipo, int fila, int columna, Nodo cuerpo, String valorRet, String nombreArchivo) {
         this.nombre = nombre;
         this.tipo = tipo;
         this.fila = fila;
         this.columna = columna;
         this.cuerpo = cuerpo;
         this.valorRetorno = valorRet;
+        this.nombreArchivo = nombreArchivo;
     }
     
     public String crearLlave(){
@@ -111,6 +113,14 @@ public class Funcion {
 
     public void setValorRetorno(String valorRetorno) {
         this.valorRetorno = valorRetorno;
+    }
+
+    public String getNombreArchivo() {
+        return nombreArchivo;
+    }
+
+    public void setNombreArchivo(String nombreArchivo) {
+        this.nombreArchivo = nombreArchivo;
     }
     
     

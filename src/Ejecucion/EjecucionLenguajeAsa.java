@@ -72,7 +72,7 @@ public class EjecucionLenguajeAsa {
                 if (af.exists()) {
                     ruta = af.toString();
                 } else {
-                    listaErrores.add(new Error("General", "Archivo " + af + ".asa no existe", nombreArchivo, nodo.getFila(), nodo.getColumna()));
+                    listaErrores.add(new Error("General", "Archivo " + af + ".asa no existe", nombreArchivo, nodo.getHijos().get(0).getFila(), nodo.getHijos().get(0).getColumna()));
                     ruta = "C:\\Users\\Hellen\\Desktop\\ruta";
                 }
                 break;
@@ -130,7 +130,6 @@ public class EjecucionLenguajeAsa {
                     buscarArchivo(argFichero, elemento);
                 } else if (argFichero.equalsIgnoreCase(elemento.getName())) {
                     imports.add(elemento.getAbsolutePath());
-                    //System.out.println(elemento.getParentFile());
                     return elemento.getAbsolutePath();
                 }
             }
@@ -187,12 +186,18 @@ public class EjecucionLenguajeAsa {
             TablaSimbolo tsMain = new TablaSimbolo("ambitoMain");
             pilaSimbolos.push(tsMain);
             Funcion sentencias = tsFunciones.retornarFuncion("vacio_principal");
-            ejecutarSentencias(sentencias.getCuerpo(), msj, "ambitoMain", nombreArchivo);
+            ejecutarSentencias(sentencias.getCuerpo(), msj, "ambitoMain", sentencias.getNombreArchivo());
             tsFunciones = new TablaFunciones();
             System.out.println("Consolita");
             System.out.println(String.valueOf(consola));
+
+            for (Error item : listaErrores) {
+                consola += "> Error " + item.getTipo() + "  Linea: " + item.getFila()+ "  Columna: " + item.getColumna() + ":  Descripcion: " + item.getDescripcion() + " Archivo: " + item.getArchivo()
+                         + "\n";
+            }
         } else {
-            System.out.println("El metodo principal no esta declarado aun");
+            listaErrores.add(new Error("Semantico", "El metodo principal no esta declarado aun para iniciar a ejecutar", nombreArchivo, 0, 0));
+
         }
         return consola;
     }
@@ -236,10 +241,15 @@ public class EjecucionLenguajeAsa {
             case "MOSTRAR":
                 String imprimir = "";
                 imprimir = evaluarExpresion(nodo.getHijos().get(0), ambito, nombreArchivo);
+                int linea = nodo.getFila();
                 String[] num1 = imprimir.split("@");
                 String val = num1[0];
-                consola += "> " + val + "\n";
                 //System.out.println(consola);
+                if (val.contains("error")) {
+                    consola += "> error  en sentencia mostrar Fila: " + linea + "\n";
+                } else {
+                    consola += "> " + val + "\n";
+                }
                 return consola;
 
             case "LLAMADA_FUNCION":
@@ -277,7 +287,11 @@ public class EjecucionLenguajeAsa {
 
                     //Generando la llave de los parametros
                     for (Simbolo item : vars) {
-                        paramsEnviadosOrigin += item.getTipo().toLowerCase();
+                        if (item != null) {
+                            paramsEnviadosOrigin += item.getTipo().toLowerCase();
+                        } else {
+                            paramsEnviadosOrigin += "@error";
+                        }
                     }
 
                     key = nodo.getHijos().get(0).getEtiqueta() + "_" + paramsEnviadosOrigin;
@@ -304,41 +318,48 @@ public class EjecucionLenguajeAsa {
                         Funcion funActual = tsFunciones.retornarFuncion(key);
 
                         if (valRetorno.size() > 0) {
-                            System.out.println();
                             String retornoFun = valRetorno.get(0).toString();
                             String[] valRet = retornoFun.split("@");
-                            String valorRetorno = valRet[0];
-                            String tipoRetorno = valRet[1];
-                            int linea = Integer.parseInt(valRet[2]);
-                            int columna = Integer.parseInt(valRet[3]);
+                            String valorRetorno = "";
+                            String tipoRetorno = "";
+                            linea = 0;
+                            int columna = 0;
+                            //Si es igual a 3 es un error
+                            if (valRet.length != 3) {
+                                valorRetorno = valRet[0];
+                                tipoRetorno = valRet[1];
+                                linea = Integer.parseInt(valRet[2]);
+                                columna = Integer.parseInt(valRet[3]);
 
-                            //Aqui verifico si el valor de retorno le pertenece al tipo de la funcion
-                            if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
-                                System.out.println("Error semantico, No se le puede asignar un valor a um metodo vacio" + " linea:" + linea + " columna: " + columna);
-                                valRetorno = new ArrayList<>();
-                            } else if (funActual.getTipo().equalsIgnoreCase("Entero") && tipoRetorno.equalsIgnoreCase("Entero")) {
-                                System.out.println("Correcto el retorno");
-                            } else if (funActual.getTipo().equalsIgnoreCase("Decimal") && tipoRetorno.equalsIgnoreCase("Decimal")) {
-                                System.out.println("Correcto el retorno");
-                            } else if (funActual.getTipo().equalsIgnoreCase("Texto") && tipoRetorno.equalsIgnoreCase("Texto")) {
-                                System.out.println("Correcto el retorno");
-                            } else if (funActual.getTipo().equalsIgnoreCase("Booleano") && tipoRetorno.equalsIgnoreCase("Booleano")) {
-                                System.out.println("Correcto el retorno");
+                                //Aqui verifico si el valor de retorno le pertenece al tipo de la funcion
+                                if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
+                                    listaErrores.add(new Error("Semantico", "No se le puede asignar un valor a um metodo vacio", nombreArchivo, linea, columna));
+                                    valRetorno = new ArrayList<>();
+                                } else if (funActual.getTipo().equalsIgnoreCase("Entero") && tipoRetorno.equalsIgnoreCase("Entero")) {
+                                } else if (funActual.getTipo().equalsIgnoreCase("Decimal") && tipoRetorno.equalsIgnoreCase("Decimal")) {
+                                } else if (funActual.getTipo().equalsIgnoreCase("Texto") && tipoRetorno.equalsIgnoreCase("Texto")) {
+                                } else if (funActual.getTipo().equalsIgnoreCase("Booleano") && tipoRetorno.equalsIgnoreCase("Booleano")) {
+                                } else {
+                                    valRetorno = new ArrayList<>();
+                                    listaErrores.add(new Error("Semantico", "el valor de la expresion return es de tipo " + tipoRetorno
+                                            + " y la funcion " + funActual.getNombre() + " es de tipo " + funActual.getTipo(), nombreArchivo, linea, columna));
+                                }
+
                             } else {
-                                valRetorno = new ArrayList<>();
-                                System.out.println("Error semantico, el valor de la expresion return es de tipo " + tipoRetorno
-                                        + " y la funcion " + funActual.getNombre() + " es de tipo " + funActual.getTipo() + " linea:" + linea + " columna: " + columna);
+                                linea = Integer.parseInt(valRet[1]);
+                                columna = Integer.parseInt(valRet[2]);
                             }
+
                             //Limpio donde eta almacenada el retorno de la funcion
                             //valRetorno = new ArrayList<>();
                         } else {
                             if (msj.equalsIgnoreCase("")) {
                                 if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
-                                    System.out.println("Funcion de tipo vacio no retorna nada :D... Correcto");
+                                    //System.out.println("Funcion de tipo vacio no retorna nada :D... Correcto");
                                 } else {
                                     if ((funActual.getTipo().equalsIgnoreCase("Entero") || (funActual.getTipo().equalsIgnoreCase("Decimal")
                                             || (funActual.getTipo().equalsIgnoreCase("booleano") || (funActual.getTipo().equalsIgnoreCase("Texto")) && (msj.equalsIgnoreCase("")))))) {
-                                        System.out.println("Error semantico, funcion " + funActual.getNombre() + " no devuelve nada de tipo " + funActual.getTipo() + " en linea " + funActual.getFila());
+                                        listaErrores.add(new Error("Semantico", "funcion " + funActual.getNombre() + " no devuelve nada de tipo " + funActual.getTipo(), nombreArchivo, funActual.getFila(), 0));
                                     } else {
                                     }
                                 }
@@ -352,8 +373,8 @@ public class EjecucionLenguajeAsa {
                             return "error";
                         }
                     } else {
-                        System.out.println("Funcion o parametros invalidos");
-                        return msj;
+                        listaErrores.add(new Error("Semantico", "llamada a funcion o parametros invalidos", nombreArchivo, nodo.getFila(), nodo.getColumna()));
+                        return "error";
 
                     }
                 } else {
@@ -370,39 +391,34 @@ public class EjecucionLenguajeAsa {
                         Funcion funActual = tsFunciones.retornarFuncion(key);
 
                         if (valRetorno.size() > 0) {
-                            System.out.println();
                             String retornoFun = valRetorno.get(0).toString();
                             String[] valRet = retornoFun.split("@");
                             String valorRetorno = valRet[0];
                             String tipoRetorno = valRet[1];
-                            int linea = Integer.parseInt(valRet[2]);
+                            linea = Integer.parseInt(valRet[2]);
                             int columna = Integer.parseInt(valRet[3]);
 
                             //Aqui verifico si el valor de retorno le pertenece al tipo de la funcion
                             if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
-                                System.out.println("Error semantico, No se le puede asignar un valor a um metodo vacio" + " linea:" + linea + " columna: " + columna);
+                                listaErrores.add(new Error("Semantico", "No se le puede asignar un valor a um metodo vacio", nombreArchivo, linea, columna));
                                 valRetorno = new ArrayList<>();
                             } else if (funActual.getTipo().equalsIgnoreCase("Entero") && tipoRetorno.equalsIgnoreCase("Entero")) {
-                                System.out.println("Correcto el retorno");
                             } else if (funActual.getTipo().equalsIgnoreCase("Decimal") && tipoRetorno.equalsIgnoreCase("Decimal")) {
-                                System.out.println("Correcto el retorno");
                             } else if (funActual.getTipo().equalsIgnoreCase("Texto") && tipoRetorno.equalsIgnoreCase("Texto")) {
-                                System.out.println("Correcto el retorno");
                             } else if (funActual.getTipo().equalsIgnoreCase("Booleano") && tipoRetorno.equalsIgnoreCase("Booleano")) {
-                                System.out.println("Correcto el retorno");
                             } else {
                                 valRetorno = new ArrayList<>();
-                                System.out.println("Error semantico, el valor de la expresion return es de tipo " + tipoRetorno
-                                        + " y la funcion " + funActual.getNombre() + " es de tipo " + funActual.getTipo() + " linea:" + linea + " columna: " + columna);
+                                listaErrores.add(new Error("Semantico", "el valor de la expresion return es de tipo " + tipoRetorno
+                                        + " y la funcion " + funActual.getNombre() + " es de tipo " + funActual.getTipo(), nombreArchivo, linea, columna));
                             }
                             //Limpio donde eta almacenada el retorno de la funcion
                             //valRetorno = new ArrayList<>();
                         } else {
                             if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
-                                System.out.println("Funcion de tipo vacio no retorna nada :D... Correcto");
+                                //System.out.println("Funcion de tipo vacio no retorna nada :D... Correcto");
                             } else {
                                 if (funActual.getTipo().equalsIgnoreCase("Texto")) {
-                                    System.out.println("Valor de la funcion tipo Texto dio cadena vacia");
+                                    //System.out.println("Valor de la funcion tipo Texto dio cadena vacia");
                                 }
                             }
                         }
@@ -427,67 +443,75 @@ public class EjecucionLenguajeAsa {
             case "ES_VERDADERO":
                 //ambito
                 String condicion = evaluarExpresion(nodo.getHijos().get(0), "esVerdadero", nombreArchivo);
-                String[] condi = condicion.split("@");
-                String condEsVerdadera = condi[0];
-                String tipoCondIf = condi[1];
-                if (tipoCondIf.equalsIgnoreCase("booleano")) {
-                    if (condEsVerdadera.equalsIgnoreCase("verdadero") || condEsVerdadera.equalsIgnoreCase("1")) {
-                        msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "if", nombreArchivo);
-                    } else {
-                        //Si la condicion es falsa veo si el if contiene un ELSE
-                        if (nodo.getHijos().size() == 3) {
-                            msj = ejecutarSentencias(nodo.getHijos().get(2).getHijos().get(0), msj, ambito + "@" + "if", nombreArchivo);
-
+                if (!condicion.contains("error")) {
+                    String[] condi = condicion.split("@");
+                    String condEsVerdadera = condi[0];
+                    String tipoCondIf = condi[1];
+                    if (tipoCondIf.equalsIgnoreCase("booleano")) {
+                        if (condEsVerdadera.equalsIgnoreCase("verdadero") || condEsVerdadera.equalsIgnoreCase("1")) {
+                            msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "if", nombreArchivo);
                         } else {
-                            //System.out.println("no tiene else");
+                            //Si la condicion es falsa veo si el if contiene un ELSE
+                            if (nodo.getHijos().size() == 3) {
+                                msj = ejecutarSentencias(nodo.getHijos().get(2).getHijos().get(0), msj, ambito + "@" + "if", nombreArchivo);
+                            } else {
+                                //System.out.println("no tiene else");
+                            }
                         }
+                        if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "if")) {
+                            pilaSimbolos.pop();
+                        }
+                    } else {
+                        listaErrores.add(new Error("Semantico", "Condicion del if invalida en fila:", nombreArchivo, nodo.getFila(), 0));
                     }
-                    if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "if")) {
-                        pilaSimbolos.pop();
-                    }
+                    //Limpio este ambito en la pila actuaol
                 } else {
-                    System.out.println("Condicion del if invalida en fila: " + nodo.getFila());
+                    listaErrores.add(new Error("Semantico", "Condicion del if invalida en fila:", nombreArchivo, nodo.getFila(), 0));
                 }
-                //Limpio este ambito en la pila actuaol
                 return msj;
 
             case "MIENTRAS_QUE":
                 //ambito
                 String condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue", nombreArchivo);
-                String[] condMientras = condicionMientrasQ.split("@");
-                String condBoolMQ = condMientras[0];
-                String tipoCondMientras = condMientras[1];
+                if (!condicionMientrasQ.contains("error")) {
+                    String[] condMientras = condicionMientrasQ.split("@");
+                    String condBoolMQ = condMientras[0];
+                    String tipoCondMientras = condMientras[1];
 
-                if (tipoCondMientras.equalsIgnoreCase("booleano")) {
-                    if (condBoolMQ.equalsIgnoreCase("verdadero") || condBoolMQ.equalsIgnoreCase("1")) {
-                        //iteracion del while
-                        while (true) {
-                            condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue", nombreArchivo);
-                            String[] condMientras2 = condicionMientrasQ.split("@");
-                            condBoolMQ = condMientras2[0];
-                            tipoCondMientras = condMientras2[1];
+                    if (tipoCondMientras.equalsIgnoreCase("booleano")) {
+                        if (condBoolMQ.equalsIgnoreCase("verdadero") || condBoolMQ.equalsIgnoreCase("1")) {
+                            //iteracion del while
+                            while (true) {
+                                condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue", nombreArchivo);
+                                String[] condMientras2 = condicionMientrasQ.split("@");
+                                condBoolMQ = condMientras2[0];
+                                tipoCondMientras = condMientras2[1];
 
-                            if (condBoolMQ.equalsIgnoreCase("verdadero") || condBoolMQ.equalsIgnoreCase("1")) {
-                                msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "while", nombreArchivo);
-                            } else {
-                                break;
+                                if (condBoolMQ.equalsIgnoreCase("verdadero") || condBoolMQ.equalsIgnoreCase("1")) {
+                                    msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "while", nombreArchivo);
+                                } else {
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "while")) {
-                        //Limpio este ambito en la pila actual
-                        pilaSimbolos.pop();
+                        if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "while")) {
+                            //Limpio este ambito en la pila actual
+                            pilaSimbolos.pop();
+                        }
+                    } else {
+                        listaErrores.add(new Error("Semantico", "Condicion del Mientras_que invalida", nombreArchivo, nodo.getFila(), 0));
                     }
                 } else {
-                    System.out.println("Condicion del while invalida en fila:");
+                    listaErrores.add(new Error("Semantico", "Condicion del Mientras_que invalida", nombreArchivo, nodo.getFila(), 0));
                 }
+
                 return msj;
 
             case "HASTA_QUE":
                 //ambito
                 String condicionHastaQue = evaluarExpresion(nodo.getHijos().get(0), "hastaQue", nombreArchivo);
-                if (condicionHastaQue.contains("@")) {
+                if (!condicionHastaQue.contains("error")) {
                     String[] condHastaQue = condicionHastaQue.split("@");
                     String condBoolHQ = condHastaQue[0];
                     String tipoCondHQ = condHastaQue[1];
@@ -516,10 +540,10 @@ public class EjecucionLenguajeAsa {
                             pilaSimbolos.pop();
                         }
                     } else {
-                        System.out.println("Condicion del Hasta que no es de tipo boolean:");
+                        listaErrores.add(new Error("Semantico", "Condicion del Hasta_que no es de tipo booleano:", nombreArchivo, nodo.getFila(), 0));
                     }
                 } else {
-                    System.out.println("Semantico Condicion invalida en hasta_que " + condicionHastaQue);
+                    listaErrores.add(new Error("Semantico", "Condicion invalida de sentencia hasta_que:", nombreArchivo, nodo.getFila(), 0));
                 }
 
                 return msj;
@@ -540,77 +564,82 @@ public class EjecucionLenguajeAsa {
                     valP = condP[0];
                     tipoValP = condP[1];
 
-                    Simbolo simbP = new Simbolo(tipoP, idP, valP, lineaP, colP, ambito + "@para");
-                    TablaSimbolo tsPara = new TablaSimbolo(ambito + "@" + "para");
-                    tsPara.insertar(idP, simbP);
+                    if (tipoValP.equalsIgnoreCase("Entero") || tipoValP.equalsIgnoreCase("Decimal")) {
+                        Simbolo simbP = new Simbolo(tipoP, idP, valP, lineaP, colP, ambito + "@para");
+                        TablaSimbolo tsPara = new TablaSimbolo(ambito + "@" + "para");
+                        tsPara.insertar(idP, simbP);
 
-                    pilaSimbolos.push(tsPara);
-                    tsVarsFuncion.insertar(idP, simbP);
+                        pilaSimbolos.push(tsPara);
+                        tsVarsFuncion.insertar(idP, simbP);
 
-                    String condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito, nombreArchivo);
+                        String condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito, nombreArchivo);
 
-                    if (condFinP.contains("@")) {
+                        if (condFinP.contains("@")) {
 
-                        String[] condPara = condFinP.split("@");
-                        String condBoolP = condPara[0];
-                        String tipoCondP = condPara[1];
+                            String[] condPara = condFinP.split("@");
+                            String condBoolP = condPara[0];
+                            String tipoCondP = condPara[1];
 
-                        if (tipoCondP.equalsIgnoreCase("booleano")) {
-                            if (condBoolP.equalsIgnoreCase("verdadero") || condBoolP.equalsIgnoreCase("1")) {
-                                msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para", nombreArchivo);
+                            if (tipoCondP.equalsIgnoreCase("booleano")) {
+                                if (condBoolP.equalsIgnoreCase("verdadero") || condBoolP.equalsIgnoreCase("1")) {
+                                    msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para", nombreArchivo);
 
-                                //Aqui realizo la iteracion del for
-                                while (true) {
-                                    condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito, nombreArchivo);
-                                    String[] condPara2 = condFinP.split("@");
-                                    condBoolP = condPara2[0];
-                                    tipoCondP = condPara2[1];
+                                    //Aqui realizo la iteracion del for
+                                    while (true) {
+                                        condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito, nombreArchivo);
+                                        String[] condPara2 = condFinP.split("@");
+                                        condBoolP = condPara2[0];
+                                        tipoCondP = condPara2[1];
 
-                                    Simbolo s = tsVarsFuncion.retornarSimbolo(idP);
+                                        Simbolo s = tsVarsFuncion.retornarSimbolo(idP);
 
-                                    if (condBoolP.equalsIgnoreCase("verdadero") || condBoolP.equalsIgnoreCase("1")) {
-                                        //Aqui realizo el incremento o decremento
-                                        if (inc_Dec.equalsIgnoreCase("++")) {
-                                            if (s.getTipo().equalsIgnoreCase("entero")) {
-                                                Integer n = Integer.parseInt(s.getValor()) + 1;
-                                                s.setValor(String.valueOf(n));
+                                        if (condBoolP.equalsIgnoreCase("verdadero") || condBoolP.equalsIgnoreCase("1")) {
+                                            //Aqui realizo el incremento o decremento
+                                            if (inc_Dec.equalsIgnoreCase("++")) {
+                                                if (s.getTipo().equalsIgnoreCase("entero")) {
+                                                    Integer n = Integer.parseInt(s.getValor()) + 1;
+                                                    s.setValor(String.valueOf(n));
+                                                } else {
+                                                    double n = Double.parseDouble(s.getValor()) + 1;
+                                                    s.setValor(String.valueOf(n));
+                                                }
+
                                             } else {
-                                                double n = Double.parseDouble(s.getValor()) + 1;
-                                                s.setValor(String.valueOf(n));
+                                                if (s.getTipo().equalsIgnoreCase("entero")) {
+                                                    Integer n = Integer.parseInt(s.getValor()) + 1;
+                                                    s.setValor(String.valueOf(n));
+                                                } else {
+                                                    double n = Double.parseDouble(s.getValor()) + 1;
+                                                    s.setValor(String.valueOf(n));
+                                                }
                                             }
+
+                                            msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para", nombreArchivo);
 
                                         } else {
-                                            if (s.getTipo().equalsIgnoreCase("entero")) {
-                                                Integer n = Integer.parseInt(s.getValor()) + 1;
-                                                s.setValor(String.valueOf(n));
-                                            } else {
-                                                double n = Double.parseDouble(s.getValor()) + 1;
-                                                s.setValor(String.valueOf(n));
-                                            }
+                                            break;
                                         }
-
-                                        msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para", nombreArchivo);
-
-                                    } else {
-                                        break;
                                     }
                                 }
-                            }
 
-                            if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "para")) {
-                                //Limpio este ambito en la pila actual
-                                pilaSimbolos.pop();
-                                //Como la variable del for no se puede utilizar fuera de ella, la elimino del ambito actual
-                                tsVarsFuncion.tabla.remove(idP);
+                                if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "para")) {
+                                    //Limpio este ambito en la pila actual
+                                    pilaSimbolos.pop();
+                                    //Como la variable del for no se puede utilizar fuera de ella, la elimino del ambito actual
+                                    tsVarsFuncion.tabla.remove(idP);
+                                }
+                            } else {
+                                listaErrores.add(new Error("Semantico", "Condicion Final de sentencia Para no es de tipo booleano", nombreArchivo, nodo.getFila(), 0));
                             }
                         } else {
-                            System.out.println("Condicion del para no es boolean en fila:");
+                            listaErrores.add(new Error("Semantico", "Error en Condicion inicial de sentencia Para " + condFinP, nombreArchivo, nodo.getFila(), 0));
                         }
                     } else {
-                        System.out.println("Error semantico en la condicion para" + condFinP);
+                        listaErrores.add(new Error("Semantico", "Error en condicion inicial de la sentencia para, es de tipo" + tipoValP, nombreArchivo, nodo.getFila(), 0));
                     }
+
                 } else {
-                    System.out.println("Error semantico en la condicion inicial para" + valIniP);
+                    listaErrores.add(new Error("Semantico", "Error semantico en la condicion inicial Para " + valIniP, nombreArchivo, nodo.getFila(), 0));
                 }
 
                 return msj;
@@ -619,7 +648,7 @@ public class EjecucionLenguajeAsa {
                 String valorR = "";
                 Nodo n = nodo;
                 if (ambito.equalsIgnoreCase("ambitoMain")) {
-                    System.out.println("Semantico, no se puede declarar un retorno en metodo principal");
+                    listaErrores.add(new Error("Semantico", "Error no se puede declarar un retorno en metodo principal", nombreArchivo, nodo.getFila(), 0));
                 }
                 if (nodo.getHijos().size() == 0) {
                     return "retorno" + "@" + nodo.getFila() + "@" + nodo.getColumna();
@@ -633,7 +662,7 @@ public class EjecucionLenguajeAsa {
                 valorR = "";
                 n = nodo;
                 if (ambito.equalsIgnoreCase("ambitoMain")) {
-                    System.out.println("Semantico, no se puede declarar un Continuar en metodo principal");
+                    listaErrores.add(new Error("Semantico", "Error no se puede declarar un Continuar en metodo principal", nombreArchivo, nodo.getFila(), 0));
                 }
                 return "continuar" + "@" + nodo.getFila() + "@" + nodo.getColumna();
 
@@ -641,7 +670,7 @@ public class EjecucionLenguajeAsa {
                 valorR = "";
                 n = nodo;
                 if (ambito.equalsIgnoreCase("ambitoMain")) {
-                    System.out.println("Semantico, no se puede declarar un Romper en metodo principal");
+                    listaErrores.add(new Error("Semantico", "no se puede declarar un Romper en metodo principal", nombreArchivo, nodo.getFila(), nodo.getColumna()));
                 }
                 return "romper" + "@" + nodo.getFila() + "@" + nodo.getColumna();
 
@@ -656,9 +685,9 @@ public class EjecucionLenguajeAsa {
                     tipoCondCA = condCambiarA[1];
 
                     if (tipoCondCA.equalsIgnoreCase("Texto") || tipoCondCA.equalsIgnoreCase("Entero") || tipoCondCA.equalsIgnoreCase("Decimal")) {
-                        System.out.println("Condicion buena");
+                        //System.out.println("Condicion buena");
                         //Si llega un NO es que los tipos no son del mismo tipo
-                        cuerpo = verificarTiposSwitch(nodo.getHijos().get(1), tipoCondCA);
+                        cuerpo = verificarTiposSwitch(nodo.getHijos().get(1), tipoCondCA, nombreArchivo);
                         if (!cuerpo.equalsIgnoreCase("@No")) {
                             String valorS = verificarCasosSwitch(nodo.getHijos().get(1), tipoCondCA, valorCA);
                             if (valorS.equalsIgnoreCase("@Yes")) {
@@ -677,11 +706,11 @@ public class EjecucionLenguajeAsa {
                         }
 
                     } else {
-                        System.out.println("Error semantico condicion invalida en linea:");
+                        listaErrores.add(new Error("Semantico", "condicion invalida en sentencia Cambiar_A", nombreArchivo, nodo.getFila(), nodo.getColumna()));
                     }
 
                 } else {
-                    System.out.println("Error semantico en la condicion " + condicionCambiarA);
+                    listaErrores.add(new Error("Semantico", "condicion invalida en sentencia Cambiar_A", nombreArchivo, nodo.getFila(), nodo.getColumna()));
                 }
 
                 return msj;
@@ -697,26 +726,26 @@ public class EjecucionLenguajeAsa {
                 while (e.hasMoreElements()) {
                     clave = e.nextElement();
                     valor = tsFunciones.tabla.get(clave);
-                    System.out.println("Tipo: " + valor.getTipo() + " id: " + valor.getNombre()
-                            + " Fila: " + valor.getFila() + " Columna: " + valor.getColumna() + " No param: " + valor.getNoParametros());
+                    //System.out.println("Tipo: " + valor.getTipo() + " id: " + valor.getNombre()
+                    //        + " Fila: " + valor.getFila() + " Columna: " + valor.getColumna() + " No param: " + valor.getNoParametros());
                     if (valor.getNombre().equalsIgnoreCase(nodo.getHijos().get(0).getEtiqueta())) {
                         dibujarAST(valor.getCuerpo());
                         return msj;
                     }
                 }
-                System.out.println("No se puede generar el ast de la funcion, ya que no existe");
+                listaErrores.add(new Error("Semantico", "No se puede generar el ast de la funcion, ya que no existe", nombreArchivo, nodo.getFila(), nodo.getColumna()));
                 return msj;
         }
         return msj;
     }
     public static String n = "";
 
-    private static String verificarTiposSwitch(Nodo nodo, String tipo) {
+    private static String verificarTiposSwitch(Nodo nodo, String tipo, String nombreArchivo) {
         if (nodo.getTipo().equalsIgnoreCase("NoTerm")) {
             switch (nodo.getHijos().size()) {
                 case 1:
                     if (nodo.getEtiqueta().equalsIgnoreCase("LISTA_CASOS")) {
-                        n = verificarTiposSwitch(nodo.getHijos().get(0), tipo);
+                        n = verificarTiposSwitch(nodo.getHijos().get(0), tipo, nombreArchivo);
                         if (n.contains("No")) {
                             break;
                         } else {
@@ -726,14 +755,14 @@ public class EjecucionLenguajeAsa {
 
                 case 2:
                     if (nodo.getEtiqueta().equalsIgnoreCase("LISTA_CASOS")) {
-                        n = verificarTiposSwitch(nodo.getHijos().get(0), tipo);
+                        n = verificarTiposSwitch(nodo.getHijos().get(0), tipo, nombreArchivo);
                         if (n.contains("Yes")) {
                             cuerpoCase.add(nodo.getHijos().get(1));
                         } else if (n.contains("No")) {
                             break;
                         }
 
-                        n = verificarTiposSwitch(nodo.getHijos().get(1), tipo);
+                        n = verificarTiposSwitch(nodo.getHijos().get(1), tipo, nombreArchivo);
 
                         if (n.contains("No")) {
                             break;
@@ -758,8 +787,7 @@ public class EjecucionLenguajeAsa {
                 type = "Texto";
             }
             if (!type.equalsIgnoreCase(tipo)) {
-                System.out.println("Error semantico, valor debe de ser tipo " + tipo + " y se encontro uno de tipo " + type
-                        + " en linea: " + nodo.getFila() + " columna: " + nodo.getColumna());
+                listaErrores.add(new Error("Semantico", "El valor en la sentencia Cambiar_A debe de ser tipo " + tipo + " y se encontro uno de tipo " + type, nombreArchivo, nodo.getFila(), nodo.getColumna()));
                 return "@No";
             }
         }
@@ -967,8 +995,7 @@ public class EjecucionLenguajeAsa {
                                         n1Val = val;
                                         n1Tipo = tipo;
                                     } else {
-                                        System.out.println("Bitacora La variable " + n1Val + " no esta declarada"
-                                                + "linea: " + n.getHijos().get(0).getFila() + " columna:" + n.getHijos().get(0).getColumna());
+                                        listaErrores.add(new Error("Semantico", "Variable " + n1Val + " no esta declarada", nombreArchivo, n.getHijos().get(0).getFila(), n.getHijos().get(0).getColumna()));
                                         return "error";
                                     }
 
@@ -978,8 +1005,7 @@ public class EjecucionLenguajeAsa {
                                         n2Val = val;
                                         n2Tipo = tipo;
                                     } else {
-                                        System.out.println("Bitacora La variable " + n2Val + " no esta declarada"
-                                                + "linea: " + n.getHijos().get(2).getFila() + " columna:" + n.getHijos().get(2).getColumna());
+                                        listaErrores.add(new Error("Semantico", "Variable " + n2Val + " no esta declarada", nombreArchivo, n.getHijos().get(2).getFila(), n.getHijos().get(2).getColumna()));
                                         return "error";
                                     }
                                 }
@@ -1050,19 +1076,24 @@ public class EjecucionLenguajeAsa {
                             signo += n.getHijos().get(1).getEtiqueta();
                             n3 += evaluarExpresion(n.getHijos().get(2), tipoAmbito, nombreArchivo);
 
-                            String[] num1 = n1.split("@");
-                            String n1Val = num1[0];
-                            String n1Tipo = num1[1];
+                            if (!n1.equals("error") & !n3.equalsIgnoreCase("error")) {
+                                String[] num1 = n1.split("@");
+                                String n1Val = num1[0];
+                                String n1Tipo = num1[1];
 
-                            String[] num2 = n3.split("@");
-                            String n2Val = num2[0];
-                            String n2Tipo = num2[1];
-                            if (verificarExprLogicaValida(n1Tipo, n2Tipo)) {
-                                String res = evaluarExpresionRelacional(signo, n1Tipo, n1Val, n2Tipo, n2Val);
-                                return res + "@booleano";
+                                String[] num2 = n3.split("@");
+                                String n2Val = num2[0];
+                                String n2Tipo = num2[1];
+                                if (verificarExprLogicaValida(n1Tipo, n2Tipo)) {
+                                    String res = evaluarExpresionRelacional(signo, n1Tipo, n1Val, n2Tipo, n2Val);
+                                    return res + "@booleano";
+                                } else {
+                                    return "@error";
+                                }
                             } else {
                                 return "@error";
                             }
+
 //                            Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
                     }
                     break;
@@ -1078,12 +1109,11 @@ public class EjecucionLenguajeAsa {
                                 return "verdadero@" + tipoN[1];
                             }
                         } else {
-                            System.out.println("Semantico, No se puede negar una condicion que no sea de tipo booleano ");
+                            listaErrores.add(new Error("Semantico", "No se puede negar una condicion que no sea de tipo booleano", nombreArchivo, n.getHijos().get(0).getFila(), n.getHijos().get(0).getColumna()));
                             return "error";
                         }
 
                     }
-                    System.out.println("es neg");
                     break;
 
                 case "LLAMADA_FUNCION":
@@ -1094,7 +1124,7 @@ public class EjecucionLenguajeAsa {
                     String valorF = "";
                     String tipoF = "";
 
-                    if (valor.contains("@")) {
+                    if (!valor.contains("error")) {
                         String[] valores = valor.split("@");
                         valorF = valores[0];
                         tipoF = valores[1];
@@ -1103,11 +1133,11 @@ public class EjecucionLenguajeAsa {
 
                         System.out.println("Bitacora El valor de retorno de la funcion " + n.getHijos().get(0).getEtiqueta() + " es: " + valorF
                                 + " en fila: " + fila + " columna: " + columna);
-                        System.out.println("m");
+
                         return valorF + "@" + tipoF;
 
                     } else {
-                        if (valor.equalsIgnoreCase("error")) {
+                        if (valor.contains("error")) {
                             return "error";
                         } else if (!valorF.equalsIgnoreCase("")) {
                             return valorF + "@" + tipoF;
@@ -1140,8 +1170,7 @@ public class EjecucionLenguajeAsa {
                             String term = val + "@" + tipo;
                             return term;
                         } else {
-                            System.out.println("Bitacora La variable " + id + " no esta declarada"
-                                    + "linea: " + n.getFila() + " columna: " + n.getColumna());
+                            listaErrores.add(new Error("Semantico", "Variable " + id + " no esta declarada", nombreArchivo, n.getFila(), n.getColumna()));
 
                             return "error";
                         }
@@ -1154,8 +1183,7 @@ public class EjecucionLenguajeAsa {
                             String term = val + "@" + tipo;
                             return term;
                         } else {
-                            System.out.println("Bitacora La variable " + id + " no esta declarada"
-                                    + "linea: " + n.getFila() + " columna: " + n.getColumna());
+                            listaErrores.add(new Error("Semantico", "Variable " + id + " no esta declarada", nombreArchivo, n.getFila(), n.getColumna()));
 
                             return "error";
                         }
@@ -1168,8 +1196,7 @@ public class EjecucionLenguajeAsa {
                         String term = val + "@" + tipo;
                         return term;
                     } else {
-                        System.out.println("Bitacora La variable " + id + " no esta declarada"
-                                + "linea: " + n.getFila() + " columna: " + n.getColumna());
+                        listaErrores.add(new Error("Semantico", "Variable " + id + " no esta declarada", nombreArchivo, n.getFila(), n.getColumna()));
 
                         return "error";
                     }
@@ -1203,9 +1230,7 @@ public class EjecucionLenguajeAsa {
                             tsVarsFuncion.insertar(id, addVarFunctionActual);
                             return term;
                         } else {
-                            System.out.println("Bitacora La variable " + id + " no esta declarada"
-                                    + "linea: " + n.getFila() + " columna: " + n.getColumna());
-
+                            listaErrores.add(new Error("Semantico", "Variable " + id + " no esta declarada", nombreArchivo, n.getFila(), n.getColumna()));
                             return "error";
                         }
 
@@ -1341,8 +1366,8 @@ public class EjecucionLenguajeAsa {
     }
 
     public static boolean verificarExprLogicaValida(String tipo1, String tipo2) {
-        if (tipo1.equalsIgnoreCase("Decimal") || tipo1.equalsIgnoreCase("Entero")
-                && tipo2.equalsIgnoreCase("Decimal") || tipo2.equalsIgnoreCase("Entero")) {
+        if ((tipo1.equalsIgnoreCase("Decimal") || tipo1.equalsIgnoreCase("Entero"))
+                && (tipo2.equalsIgnoreCase("Decimal") || tipo2.equalsIgnoreCase("Entero"))) {
             return true;
         } else if (tipo1.equalsIgnoreCase("Texto") && tipo2.equalsIgnoreCase("Texto")) {
             return true;
@@ -1409,18 +1434,15 @@ public class EjecucionLenguajeAsa {
                         //Si no hay ninguna variable repetida agrego la funcion
                         if (idRepetido == false) {
                             cuerpoFuncion = nodo.getHijos().get(3);
-                            Funcion miFuncion = new Funcion(id, tipo, fila, columna, cuerpoFuncion, "");
+                            Funcion miFuncion = new Funcion(id, tipo, fila, columna, cuerpoFuncion, "", nombreArchivo);
                             agregarParametros(nodo.getHijos().get(2), miFuncion);
                             tsFunciones.insertar(key, miFuncion);
                         } else {
                             listaErrores.add(new Error("Semantico", "Funcion " + tipo + " " + id + " contiene variables repetidas en parametros", nombreArchivo, fila, columna));
-
-                            //System.out.println("Error semantico Funcion " + tipo + " " + id + " contiene variables repetidas en funcion"
-                            //        + "fila: " + fila + "Columna: " + columna);
                         }
                     } else {
                         cuerpoFuncion = nodo.getHijos().get(3);
-                        Funcion miFuncion = new Funcion(id, tipo, fila, columna, cuerpoFuncion, "");
+                        Funcion miFuncion = new Funcion(id, tipo, fila, columna, cuerpoFuncion, "", nombreArchivo);
                         agregarParametros(nodo.getHijos().get(2), miFuncion);
                         tsFunciones.insertar(key, miFuncion);
                     }
@@ -1444,7 +1466,7 @@ public class EjecucionLenguajeAsa {
 
         //Verificando si el id es una palabra reservada
         if (!tsFunciones.existeFuncion(key)) {
-            Funcion miFuncion = new Funcion(id, tipo, fila, columna, cuerpoFuncion, "");
+            Funcion miFuncion = new Funcion(id, tipo, fila, columna, cuerpoFuncion, "", nombreArchivo);
             agregarParametros(nodo.getHijos().get(2), miFuncion);
             tsFunciones.insertar(key, miFuncion);
         } else {

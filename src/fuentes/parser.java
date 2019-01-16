@@ -1720,8 +1720,9 @@ class CUP$parser$actions {
 		int n3right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo n3 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                              Nodo n = new Nodo("LLAMADA_FUNCION");
-                              Nodo n1 = new Nodo(id, idleft, idright);
+                              Nodo n = new Nodo("LLAMADA_FUNCION", idleft, idright );
+                              n.setTipo("NoTerm");
+                              Nodo n1 = new Nodo(id, idright, idleft);
                               n1.setTipoVar("ID_LLAMADA_FUN");
                               n.addHijo(n1);
                               n.addHijo(n2);
@@ -2073,6 +2074,9 @@ class CUP$parser$actions {
           case 73: // CAMBIAR_A ::= _cambiarA parent_a EXPR_ARIT parent_c llave_a CASOS NO_CUMPLE llave_c 
             {
               Nodo RESULT =null;
+		int cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)).left;
+		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)).right;
+		String c = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-7)).value;
 		int n1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-5)).value;
@@ -2083,7 +2087,8 @@ class CUP$parser$actions {
 		int n3right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo n3 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                                Nodo n = new Nodo("CAMBIAR_A");
+                                Nodo n = new Nodo("CAMBIAR_A", cright, cleft );
+                                n.setTipo("NoTerm");
                                 n.addHijo(n1);
                                 n.addHijo(n2);
                                 if(n3 != null){
@@ -2228,6 +2233,9 @@ class CUP$parser$actions {
           case 82: // PARA ::= _para parent_a VALORES_PARA identificador asignacion EXPR_ARIT ptoYcoma EXPR_LOGICA ptoYcoma ITERADOR parent_c llave_a LISTA_SENTENCIAS llave_c 
             {
               Nodo RESULT =null;
+		int pleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-13)).left;
+		int pright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-13)).right;
+		String p = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-13)).value;
 		int tipoleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-11)).left;
 		int tiporight = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-11)).right;
 		Nodo tipo = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-11)).value;
@@ -2247,7 +2255,8 @@ class CUP$parser$actions {
 		int sentright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo sent = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                              Nodo n = new Nodo("PARA");
+                              Nodo n = new Nodo("PARA", pright, pleft);
+                              n.setTipo("NoTerm");
                               Nodo nodoCondIni = new Nodo("COND_INI");
                               nodoCondIni.addHijo(tipo);
                               Nodo n2 = new Nodo(id, idleft, idright);
@@ -2333,6 +2342,9 @@ class CUP$parser$actions {
           case 87: // HASTA_QUE ::= _hastaQue parent_a EXPR_LOGICA parent_c llave_a SENTENCIAS llave_c 
             {
               Nodo RESULT =null;
+		int hleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).left;
+		int hright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
+		String h = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
 		int n1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
@@ -2340,7 +2352,8 @@ class CUP$parser$actions {
 		int n2right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo n2 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                              Nodo n = new Nodo("HASTA_QUE");
+                              Nodo n = new Nodo("HASTA_QUE", hright, hleft);
+                              n.setTipo("NoTerm");
                               n.addHijo(n1);
                               n.addHijo(n2);
                               RESULT = n;
@@ -2353,6 +2366,9 @@ class CUP$parser$actions {
           case 88: // MIENTRAS_QUE ::= _mientrasQue parent_a EXPR_LOGICA parent_c llave_a SENTENCIAS llave_c 
             {
               Nodo RESULT =null;
+		int mleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).left;
+		int mright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
+		String m = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
 		int n1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
@@ -2360,7 +2376,8 @@ class CUP$parser$actions {
 		int n2right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo n2 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                              Nodo n = new Nodo("MIENTRAS_QUE");
+                              Nodo n = new Nodo("MIENTRAS_QUE", mright, mleft );
+                              n.setTipo("NoTerm");
                               n.addHijo(n1);
                               n.addHijo(n2);
                               RESULT = n;
@@ -2451,7 +2468,7 @@ class CUP$parser$actions {
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                              Nodo n = new Nodo("CONTINUAR", idleft, idright);
+                              Nodo n = new Nodo("CONTINUAR", idright, idleft );
                               n.setTipo("NoTerm");
                               RESULT = n;
                             
@@ -2470,7 +2487,7 @@ class CUP$parser$actions {
 		int expright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		Nodo exp = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		
-                              Nodo n = new Nodo("MOSTRAR", idleft, idright);
+                              Nodo n = new Nodo("MOSTRAR", idright, idleft);
                               n.setTipo("NoTerm");
                               n.addHijo(exp);
                               RESULT = n;
@@ -2487,7 +2504,7 @@ class CUP$parser$actions {
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 		
-                              Nodo n = new Nodo("MOSTRAR", idleft, idright);
+                              Nodo n = new Nodo("MOSTRAR", idright, idleft);
                               n.setTipo("NoTerm");
                               RESULT = n;
                             
@@ -2506,7 +2523,7 @@ class CUP$parser$actions {
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		
-                              Nodo n = new Nodo("DIBUJAR_AST", dibleft, dibright);
+                              Nodo n = new Nodo("DIBUJAR_AST", dibright, dibleft);
                               Nodo n1 = new Nodo(id, idleft, idright);
                               n.addHijo(n1);
                               RESULT = n;
@@ -2611,7 +2628,7 @@ class CUP$parser$actions {
 		Nodo n2 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
                              Nodo n = new Nodo("NEG");
-                             Nodo n1 = new Nodo(exp, expleft, expright);
+                             Nodo n1 = new Nodo(exp, expright, expleft);
                              n.addHijo(n1);
                              n.addHijo(n2);
                              RESULT = n;
