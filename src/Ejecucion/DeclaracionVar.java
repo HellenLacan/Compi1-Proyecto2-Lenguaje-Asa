@@ -18,19 +18,19 @@ import java.util.Stack;
  */
 public class DeclaracionVar {
 
-    public static void recorrerListaVars(Nodo tipo, Nodo nodo, Nodo exp, String tipoAmbito) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void recorrerListaVars(Nodo tipo, Nodo nodo, Nodo exp, String tipoAmbito, String nombreArchivo) throws FileNotFoundException, UnsupportedEncodingException {
         switch (nodo.getHijos().size()) {
             case 1:
-                agregarVariables(tipo, nodo.getHijos().get(0), exp, tipoAmbito);
+                agregarVariables(tipo, nodo.getHijos().get(0), exp, tipoAmbito, nombreArchivo);
                 break;
             case 2:
-                recorrerListaVars(tipo, nodo.getHijos().get(0), exp, tipoAmbito);
-                agregarVariables(tipo, nodo.getHijos().get(1), exp, tipoAmbito);
+                recorrerListaVars(tipo, nodo.getHijos().get(0), exp, tipoAmbito , nombreArchivo);
+                agregarVariables(tipo, nodo.getHijos().get(1), exp, tipoAmbito, nombreArchivo);
                 break;
         }
     }
 
-    public static void agregarVariables(Nodo t, Nodo id, Nodo nodo, String tipoAmbito) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void agregarVariables(Nodo t, Nodo id, Nodo nodo, String tipoAmbito, String nombreArchivo) throws FileNotFoundException, UnsupportedEncodingException {
         TablaSimbolo ts = null;
         String tipo = t.getEtiqueta();
         String nombre = id.getEtiqueta();
@@ -85,8 +85,8 @@ public class DeclaracionVar {
         //Si la variable viene con expresion
         if (nodo.getHijos().get(0) != null) {
             if (!ts.existeSimbolo(nombre)) {
-                expresion = EjecucionLenguajeAsa.evaluarExpresion(nodo.getHijos().get(0), tipoAmbito);
-                AsignacionVars.agregarAsignacionAVars(expresion, tipo, nombre, linea, columna, tipoAmbito);
+                expresion = EjecucionLenguajeAsa.evaluarExpresion(nodo.getHijos().get(0), tipoAmbito, nombreArchivo);
+                AsignacionVars.agregarAsignacionAVars(expresion, tipo, nombre, linea, columna, tipoAmbito, nombreArchivo);
             } else {
 
                 System.out.println("Error semantico variable\" " + nombre + " \" ya fue declarada anteriormente"

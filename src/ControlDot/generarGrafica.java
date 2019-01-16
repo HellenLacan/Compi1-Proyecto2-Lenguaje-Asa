@@ -13,13 +13,13 @@ import java.io.File;
  */
 public class generarGrafica {
     
-    public static void generarGrafica(String Archivo, String img) {
+    public static void generarGrafica(String Archivo, String img, String ruta) {
         try {
 
             String dotPath = "C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe";
 
             String fileInputPath = Archivo;
-            String fileOutputPath = "C:\\Users\\Hellen\\Desktop\\" + img + ".jpg";
+            String fileOutputPath = ruta + "\\"+img + ".jpg";
 
             File file = new File(fileOutputPath);
 

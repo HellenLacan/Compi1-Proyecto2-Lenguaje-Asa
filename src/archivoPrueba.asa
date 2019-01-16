@@ -1,9 +1,18 @@
 </Ejemplos de Variables globales/>
+importar misPruebas.asa;
+importar misPruebas10.asa;
 
+Definir "C:\Users\Hellen\Desktop\ruta";
+
+Entero a = 20;
 Vacio Principal(){
-   	mostrar(saludar("Compi1") + " " + " es hora de ir a dormir jajaja :D");
+mostrar(verdadero + 5.90);
+mostrar(1 + verdadero);
+mostrar("hola mundo " + verdadero);
+
 }
 
-Texto saludar(Texto nombre){
-	retorno "Estoy en el curso de" + " " + nombre;
+Decimal factor(DEcimal n){
+	Decimal a = 15;
+	retorno n;
 }

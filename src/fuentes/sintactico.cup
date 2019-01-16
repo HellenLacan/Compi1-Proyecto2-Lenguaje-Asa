@@ -365,8 +365,8 @@ LISTA_SENTENCIAS::=  LISTA_SENTENCIAS:n1 ASIGNACIONES:n2
 IMPORTAR::=_importar:imp identificador:id punto _asa ptoYcoma
                            {:
                              Nodo n = new Nodo("IMPORTAR");
-                             Nodo n1 = new Nodo(imp, impleft, impright);
-                             Nodo n2 = new Nodo(id, idleft, idright);
+                             Nodo n1 = new Nodo(imp, impright, impleft);
+                             Nodo n2 = new Nodo(id, idright, idleft);
                              n.addHijo(n1);
                              n.addHijo(n2);
                              RESULT = n;
@@ -377,7 +377,7 @@ DEFINIR::= _definir:def cadena:cad ptoYcoma
                            {:
                              Nodo n = new Nodo("DEFINIR");
                              String cadena = cad.replace("\"", "");
-                             Nodo n1 = new Nodo(def, defleft, defright);
+                             Nodo n1 = new Nodo(def, defright, defleft);
                              Nodo n2 = new Nodo(cadena, cadleft, cadright);
                              n.addHijo(n1);
                              n.addHijo(n2);
@@ -502,7 +502,7 @@ FUNCIONES::= TIPO:n1 identificador:id parent_a LISTA_PARAMETROS:n3 parent_c llav
                             {: 
                               Nodo n = new Nodo("FUNCION");
                               n.addHijo(n1);
-                              Nodo n2 = new Nodo(id, idleft, idright);
+                              Nodo n2 = new Nodo(id, idright, idleft);
                               n.addHijo(n2);
                               n.addHijo(n3);
                               n.addHijo(n4);
@@ -513,7 +513,7 @@ FUNCIONES::= TIPO:n1 identificador:id parent_a LISTA_PARAMETROS:n3 parent_c llav
 METODOS::= _vacio:tipo identificador:id parent_a LISTA_PARAMETROS:n3 parent_c llave_a SENTENCIAS:n4 llave_c
                             {: 
                               Nodo n = new Nodo("METODO");
-                              Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
+                              Nodo n1 = new Nodo(tipo, tiporight, tipoleft);
                               n.addHijo(n1);
                               Nodo n2 = new Nodo(id, idleft, idright);
                               n.addHijo(n2);
@@ -526,7 +526,7 @@ METODOS::= _vacio:tipo identificador:id parent_a LISTA_PARAMETROS:n3 parent_c ll
 METODO_PRINCIPAL::=_vacio:tipo _principal:id parent_a parent_c llave_a SENTENCIAS:n3 llave_c
                             {: 
                               Nodo n = new Nodo("METODO_PRINCIPAL");
-                              Nodo n1 = new Nodo(tipo, tipoleft, tiporight);
+                              Nodo n1 = new Nodo(tipo, tiporight, tipoleft);
                               n.addHijo(n1);
                               Nodo n2 = new Nodo(id, idright, idleft);
                               n.addHijo(n2);
@@ -538,13 +538,13 @@ METODO_PRINCIPAL::=_vacio:tipo _principal:id parent_a parent_c llave_a SENTENCIA
 RETORNO::= _retorno:id ptoYcoma
                             {:
                                 Nodo n = new Nodo("RETORNO", idright, idleft);
-                                n.setTipo("NoTerminal");
+                                n.setTipo("NoTerm");
                                 RESULT = n;
                             :}
           |_retorno:id EXPR_ARIT:n1 ptoYcoma
                             {:
                                 Nodo n = new Nodo("RETORNO", idright, idleft);
-                                n.setTipo("NoTerminal");
+                                n.setTipo("NoTerm");
                                 n.addHijo(n1);
                                 RESULT = n;
                             :}

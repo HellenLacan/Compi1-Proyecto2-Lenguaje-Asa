@@ -12,17 +12,27 @@ import static Ejecucion.AsignacionVars.castearImplicitamente;
 import static Ejecucion.AsignacionVars.verificarCasteo;
 import EjecucionExpresiones.ExpresionAritmetica;
 import Ejecucion.PalabraReservada.Reservada;
+import Form.VentanaPrincipal;
 import fuentes.Nodo;
+import fuentes.parser;
+import fuentes.scanner;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -39,61 +49,145 @@ public class EjecucionLenguajeAsa {
     public static String consola = "";
     public static ArrayList<Object> valRetorno = new ArrayList<Object>();
     public static ArrayList<Nodo> cuerpoCase = new ArrayList<Nodo>();
+    public static String ruta = "";
+    public static ArrayList<String> imagen = new ArrayList<String>();
+    public static ArrayList<String> imports = new ArrayList<String>();
+    public static ArrayList<Error> listaErrores = new ArrayList<Error>();
 
     public Nodo AST;
 
     public EjecucionLenguajeAsa() {
     }
 
-    public void almacenarVariablesGlobales(Nodo nodo) throws FileNotFoundException, UnsupportedEncodingException {
+    public void almacenarImportsYRutas(Nodo nodo, String nombreArchivo) throws FileNotFoundException, UnsupportedEncodingException, Exception {
         switch (nodo.getEtiqueta()) {
             case "CUERPO_PRINCIPAL":
                 for (Nodo item : nodo.getHijos()) {
-                    almacenarVariablesGlobales(item);
+                    almacenarImportsYRutas(item, nombreArchivo);
+                }
+                break;
+
+            case "DEFINIR":
+                File af = new File(nodo.getHijos().get(1).getEtiqueta());
+                if (af.exists()) {
+                    ruta = af.toString();
+                } else {
+                    listaErrores.add(new Error("General", "Archivo " + af + ".asa no existe", nombreArchivo, nodo.getFila(), nodo.getColumna()));
+                    ruta = "C:\\Users\\Hellen\\Desktop\\ruta";
+                }
+                break;
+
+            case "IMPORTAR":
+                File files = new File("C:\\Users\\Hellen\\Desktop\\dot");
+                String nombre = nodo.getHijos().get(1).getEtiqueta() + ".asa";
+                Object rutaAbsoluta = buscarArchivo(nombre, files);
+                if (rutaAbsoluta != null) {
+                    analizarImport((String) rutaAbsoluta, nombre);
+                } else {
+                    listaErrores.add(new Error("General", "Archivo " + nombre + " no existe", nombreArchivo, nodo.getHijos().get(0).getFila(), nodo.getHijos().get(0).getColumna()));
+                }
+                break;
+            default:
+        }
+    }
+
+    public void analizarImport(String ruta, String nombreArchivo) throws Exception {
+        try {
+            String contenido = new String(Files.readAllBytes(Paths.get(ruta)));
+            System.out.println("Inicia analisis...");
+            if (!"".equals(contenido)) {
+                scanner scan = new scanner(new BufferedReader(new StringReader(contenido)));
+                parser parser = new parser(scan);
+                parser.parse();
+                Nodo AST = parser.padre;
+
+                String archivoTxT = "C:\\Users\\Hellen\\Desktop" + "\\GrafoApila.txt";
+                File file1 = new File(archivoTxT);
+
+                PrintWriter writer = new PrintWriter(file1, "UTF-8");
+
+                writer.println(ControlDot.getDot(AST));
+                writer.close();
+                generarGrafica(archivoTxT, "AST", "C:\\Users\\Hellen\\Desktop");
+                System.out.println("Finaliza analisis...");
+
+                almacenarImportsYRutas(AST.getHijos().get(0), nombreArchivo);
+                almacenarVariablesGlobales(AST.getHijos().get(0), nombreArchivo);
+                almacenarFunciones(AST.getHijos().get(0), nombreArchivo);
+
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public Object buscarArchivo(String argFichero, File argFile) {
+        File[] lista = argFile.listFiles();
+        if (lista != null) {
+            for (File elemento : lista) {
+                if (elemento.isDirectory()) {
+                    buscarArchivo(argFichero, elemento);
+                } else if (argFichero.equalsIgnoreCase(elemento.getName())) {
+                    imports.add(elemento.getAbsolutePath());
+                    //System.out.println(elemento.getParentFile());
+                    return elemento.getAbsolutePath();
+                }
+            }
+        }
+        return null;
+    }
+
+    public void almacenarVariablesGlobales(Nodo nodo, String nombreArchivo) throws FileNotFoundException, UnsupportedEncodingException {
+        switch (nodo.getEtiqueta()) {
+            case "CUERPO_PRINCIPAL":
+                for (Nodo item : nodo.getHijos()) {
+                    almacenarVariablesGlobales(item, nombreArchivo);
                 }
                 break;
             case "DECLARACION_VARIABLES":
                 if (nodo.getHijos().get(1).getEtiqueta().equalsIgnoreCase("LISTA_VARIABLES")) {
                     Nodo tipo = nodo.getHijos().get(0);
                     Nodo exp = nodo.getHijos().get(2);
-                    DeclaracionVar.recorrerListaVars(tipo, nodo.getHijos().get(1), exp, "ambitoGlobal");
+                    DeclaracionVar.recorrerListaVars(tipo, nodo.getHijos().get(1), exp, "ambitoGlobal", nombreArchivo);
                 }
                 break;
             case "ASIGNACIONES":
-                AsignacionVars.asignacionAVariables(nodo, "ambitoGlobal");
+                AsignacionVars.asignacionAVariables(nodo, "ambitoGlobal", nombreArchivo);
                 break;
+
             default:
         }
     }
 
-    public void almacenarFunciones(Nodo nodo) {
+    public void almacenarFunciones(Nodo nodo, String nombreArchivo) {
         switch (nodo.getEtiqueta()) {
             case "CUERPO_PRINCIPAL":
                 for (Nodo item : nodo.getHijos()) {
-                    almacenarFunciones(item);
+                    almacenarFunciones(item, nombreArchivo);
                 }
                 break;
             case "FUNCION":
-                agregarFunciones(nodo);
+                agregarFunciones(nodo, nombreArchivo);
                 break;
             case "METODO":
-                agregarFunciones(nodo);
+                agregarFunciones(nodo, nombreArchivo);
                 break;
             case "METODO_PRINCIPAL":
-                agregarFunciones(nodo);
+                agregarFunciones(nodo, nombreArchivo);
                 break;
             default:
         }
     }
 
-    public static String ejecutarMain() throws FileNotFoundException, UnsupportedEncodingException {
+    public static String ejecutarMain(String nombreArchivo) throws FileNotFoundException, UnsupportedEncodingException {
         String msj = "";
 
         if (tsFunciones.existeFuncion("vacio_principal")) {
             TablaSimbolo tsMain = new TablaSimbolo("ambitoMain");
             pilaSimbolos.push(tsMain);
             Funcion sentencias = tsFunciones.retornarFuncion("vacio_principal");
-            ejecutarSentencias(sentencias.getCuerpo(), msj, "ambitoMain");
+            ejecutarSentencias(sentencias.getCuerpo(), msj, "ambitoMain", nombreArchivo);
             tsFunciones = new TablaFunciones();
             System.out.println("Consolita");
             System.out.println(String.valueOf(consola));
@@ -103,24 +197,24 @@ public class EjecucionLenguajeAsa {
         return consola;
     }
 
-    public static String ejecutarSentencias(Nodo nodo, String msj, String ambito) throws FileNotFoundException, UnsupportedEncodingException {
+    public static String ejecutarSentencias(Nodo nodo, String msj, String ambito, String nombreArchivo) throws FileNotFoundException, UnsupportedEncodingException {
         switch (nodo.getEtiqueta()) {
             case "LISTA_SENTENCIAS":
                 switch (nodo.getHijos().size()) {
                     case 1:
-                        msj = ejecutarSentencias(nodo.getHijos().get(0), msj, ambito);
-                        if (msj.contains("retorno")) {
+                        msj = ejecutarSentencias(nodo.getHijos().get(0), msj, ambito, nombreArchivo);
+                        if (msj.contains("retorno") || msj.contains("romper")) {
                             break;
                         } else {
                             return msj;
                         }
                     case 2:
-                        msj = ejecutarSentencias(nodo.getHijos().get(0), msj, ambito);
-                        if (msj.contains("retorno")) {
+                        msj = ejecutarSentencias(nodo.getHijos().get(0), msj, ambito, nombreArchivo);
+                        if (msj.contains("retorno") || msj.contains("romper")) {
                             break;
                         }
-                        msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito);
-                        if (msj.contains("retorno")) {
+                        msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito, nombreArchivo);
+                        if (msj.contains("retorno") || msj.contains("romper")) {
                             break;
                         } else {
                             return msj;
@@ -131,17 +225,17 @@ public class EjecucionLenguajeAsa {
             case "DECLARACION_VARIABLES":
                 Nodo tipo = nodo.getHijos().get(0);
                 Nodo exp = nodo.getHijos().get(2);
-                DeclaracionVar.recorrerListaVars(tipo, nodo.getHijos().get(1), exp, ambito);
+                DeclaracionVar.recorrerListaVars(tipo, nodo.getHijos().get(1), exp, ambito, nombreArchivo);
 
                 return msj;
 
             case "ASIGNACIONES":
-                AsignacionVars.asignacionAVariables(nodo, ambito);
+                AsignacionVars.asignacionAVariables(nodo, ambito, nombreArchivo);
                 return msj;
 
             case "MOSTRAR":
                 String imprimir = "";
-                imprimir = evaluarExpresion(nodo.getHijos().get(0), ambito);
+                imprimir = evaluarExpresion(nodo.getHijos().get(0), ambito, nombreArchivo);
                 String[] num1 = imprimir.split("@");
                 String val = num1[0];
                 consola += "> " + val + "\n";
@@ -204,7 +298,7 @@ public class EjecucionLenguajeAsa {
 
                         //La cima de la pila sera ahora mi funcion actual
                         pilaSimbolos.push(tsFuncion);
-                        msj = ejecutarSentencias(miFuncion.getCuerpo(), msj, nodo.getHijos().get(0).getEtiqueta());
+                        msj = ejecutarSentencias(miFuncion.getCuerpo(), msj, nodo.getHijos().get(0).getEtiqueta(), nombreArchivo);
                         //Quito el ambito de la funcion actual, quedandome solo el main
 
                         Funcion funActual = tsFunciones.retornarFuncion(key);
@@ -238,16 +332,21 @@ public class EjecucionLenguajeAsa {
                             //Limpio donde eta almacenada el retorno de la funcion
                             //valRetorno = new ArrayList<>();
                         } else {
-                            if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
-                                System.out.println("Funcion de tipo vacio no retorna nada :D... Correcto");
-                            } else {
-                                if (funActual.getTipo().equalsIgnoreCase("Texto")) {
-                                    System.out.println("Valor de la funcion tipo Texto dio cadena vacia");
+                            if (msj.equalsIgnoreCase("")) {
+                                if (funActual.getTipo().equalsIgnoreCase("Vacio")) {
+                                    System.out.println("Funcion de tipo vacio no retorna nada :D... Correcto");
+                                } else {
+                                    if ((funActual.getTipo().equalsIgnoreCase("Entero") || (funActual.getTipo().equalsIgnoreCase("Decimal")
+                                            || (funActual.getTipo().equalsIgnoreCase("booleano") || (funActual.getTipo().equalsIgnoreCase("Texto")) && (msj.equalsIgnoreCase("")))))) {
+                                        System.out.println("Error semantico, funcion " + funActual.getNombre() + " no devuelve nada de tipo " + funActual.getTipo() + " en linea " + funActual.getFila());
+                                    } else {
+                                    }
                                 }
                             }
                         }
                         pilaSimbolos.pop();
                         if (valRetorno.size() > 0) {
+                            tsVarsFuncion = new TablaSimbolo("");
                             return (String) valRetorno.get(0);
                         } else {
                             return "error";
@@ -265,7 +364,7 @@ public class EjecucionLenguajeAsa {
                         //La cima de la pila sera ahora mi funcion actual
                         TablaSimbolo tsFuncion = new TablaSimbolo(nodo.getHijos().get(0).getEtiqueta(), "");
                         pilaSimbolos.push(tsFuncion);
-                        msj = ejecutarSentencias(miFuncion.getCuerpo(), msj, nodo.getHijos().get(0).getEtiqueta());
+                        msj = ejecutarSentencias(miFuncion.getCuerpo(), msj, nodo.getHijos().get(0).getEtiqueta(), nombreArchivo);
                         //Quito el ambito de la funcion actual, quedandome solo el main
 
                         Funcion funActual = tsFunciones.retornarFuncion(key);
@@ -311,9 +410,9 @@ public class EjecucionLenguajeAsa {
                         if (pilaSimbolos.peek().ambito.equalsIgnoreCase(nodo.getHijos().get(0).getEtiqueta())) {
                             pilaSimbolos.pop();
                         }
-                        
+
                         tsVarsFuncion = new TablaSimbolo("");
-                        
+
                         if (valRetorno.size() > 0) {
                             return (String) valRetorno.get(0);
                         } else {
@@ -327,20 +426,20 @@ public class EjecucionLenguajeAsa {
 
             case "ES_VERDADERO":
                 //ambito
-                String condicion = evaluarExpresion(nodo.getHijos().get(0), "esVerdadero");
+                String condicion = evaluarExpresion(nodo.getHijos().get(0), "esVerdadero", nombreArchivo);
                 String[] condi = condicion.split("@");
                 String condEsVerdadera = condi[0];
                 String tipoCondIf = condi[1];
                 if (tipoCondIf.equalsIgnoreCase("booleano")) {
                     if (condEsVerdadera.equalsIgnoreCase("verdadero") || condEsVerdadera.equalsIgnoreCase("1")) {
-                        msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "if");
+                        msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "if", nombreArchivo);
                     } else {
                         //Si la condicion es falsa veo si el if contiene un ELSE
                         if (nodo.getHijos().size() == 3) {
-                            msj = ejecutarSentencias(nodo.getHijos().get(2).getHijos().get(0), msj, ambito + "@" + "if");
+                            msj = ejecutarSentencias(nodo.getHijos().get(2).getHijos().get(0), msj, ambito + "@" + "if", nombreArchivo);
 
                         } else {
-                            System.out.println("no tiene else");
+                            //System.out.println("no tiene else");
                         }
                     }
                     if (pilaSimbolos.peek().ambito.equalsIgnoreCase(ambito + "@" + "if")) {
@@ -354,7 +453,7 @@ public class EjecucionLenguajeAsa {
 
             case "MIENTRAS_QUE":
                 //ambito
-                String condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue");
+                String condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue", nombreArchivo);
                 String[] condMientras = condicionMientrasQ.split("@");
                 String condBoolMQ = condMientras[0];
                 String tipoCondMientras = condMientras[1];
@@ -363,13 +462,13 @@ public class EjecucionLenguajeAsa {
                     if (condBoolMQ.equalsIgnoreCase("verdadero") || condBoolMQ.equalsIgnoreCase("1")) {
                         //iteracion del while
                         while (true) {
-                            condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue");
+                            condicionMientrasQ = evaluarExpresion(nodo.getHijos().get(0), "mientrasQue", nombreArchivo);
                             String[] condMientras2 = condicionMientrasQ.split("@");
                             condBoolMQ = condMientras2[0];
                             tipoCondMientras = condMientras2[1];
 
                             if (condBoolMQ.equalsIgnoreCase("verdadero") || condBoolMQ.equalsIgnoreCase("1")) {
-                                msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "while");
+                                msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "while", nombreArchivo);
                             } else {
                                 break;
                             }
@@ -387,7 +486,7 @@ public class EjecucionLenguajeAsa {
 
             case "HASTA_QUE":
                 //ambito
-                String condicionHastaQue = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
+                String condicionHastaQue = evaluarExpresion(nodo.getHijos().get(0), "hastaQue", nombreArchivo);
                 if (condicionHastaQue.contains("@")) {
                     String[] condHastaQue = condicionHastaQue.split("@");
                     String condBoolHQ = condHastaQue[0];
@@ -395,17 +494,17 @@ public class EjecucionLenguajeAsa {
 
                     if (tipoCondHQ.equalsIgnoreCase("booleano")) {
                         if (condBoolHQ.equalsIgnoreCase("falso") || condBoolHQ.equalsIgnoreCase("0")) {
-                            msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "whileNeg");
+                            msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "whileNeg", nombreArchivo);
 
                             //iteracion del while
                             while (true) {
-                                condBoolHQ = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
+                                condBoolHQ = evaluarExpresion(nodo.getHijos().get(0), "hastaQue", nombreArchivo);
                                 String[] condHastaQue2 = condBoolHQ.split("@");
                                 condBoolHQ = condHastaQue2[0];
                                 tipoCondHQ = condHastaQue2[1];
 
                                 if (condBoolHQ.equalsIgnoreCase("falso") || condBoolHQ.equalsIgnoreCase("0")) {
-                                    msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "whileNeg");
+                                    msj = ejecutarSentencias(nodo.getHijos().get(1), msj, ambito + "@" + "whileNeg", nombreArchivo);
                                 } else {
                                     break;
                                 }
@@ -430,7 +529,7 @@ public class EjecucionLenguajeAsa {
                 String idP = nodo.getHijos().get(0).getHijos().get(1).getEtiqueta();
                 int lineaP = nodo.getHijos().get(0).getHijos().get(1).getFila();
                 int colP = nodo.getHijos().get(0).getHijos().get(1).getColumna();
-                String valIniP = evaluarExpresion(nodo.getHijos().get(0).getHijos().get(2), ambito);
+                String valIniP = evaluarExpresion(nodo.getHijos().get(0).getHijos().get(2), ambito, nombreArchivo);
                 String inc_Dec = nodo.getHijos().get(2).getHijos().get(1).getEtiqueta();
 
                 String valP = "";
@@ -448,7 +547,7 @@ public class EjecucionLenguajeAsa {
                     pilaSimbolos.push(tsPara);
                     tsVarsFuncion.insertar(idP, simbP);
 
-                    String condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito);
+                    String condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito, nombreArchivo);
 
                     if (condFinP.contains("@")) {
 
@@ -458,11 +557,11 @@ public class EjecucionLenguajeAsa {
 
                         if (tipoCondP.equalsIgnoreCase("booleano")) {
                             if (condBoolP.equalsIgnoreCase("verdadero") || condBoolP.equalsIgnoreCase("1")) {
-                                msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para");
+                                msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para", nombreArchivo);
 
                                 //Aqui realizo la iteracion del for
                                 while (true) {
-                                    condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito);
+                                    condFinP = evaluarExpresion(nodo.getHijos().get(1).getHijos().get(0), ambito, nombreArchivo);
                                     String[] condPara2 = condFinP.split("@");
                                     condBoolP = condPara2[0];
                                     tipoCondP = condPara2[1];
@@ -490,7 +589,7 @@ public class EjecucionLenguajeAsa {
                                             }
                                         }
 
-                                        msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para");
+                                        msj = ejecutarSentencias(nodo.getHijos().get(3), msj, ambito + "@" + "para", nombreArchivo);
 
                                     } else {
                                         break;
@@ -519,16 +618,35 @@ public class EjecucionLenguajeAsa {
             case "RETORNO":
                 String valorR = "";
                 Nodo n = nodo;
+                if (ambito.equalsIgnoreCase("ambitoMain")) {
+                    System.out.println("Semantico, no se puede declarar un retorno en metodo principal");
+                }
                 if (nodo.getHijos().size() == 0) {
                     return "retorno" + "@" + nodo.getFila() + "@" + nodo.getColumna();
                 } else {
-                    valorR = evaluarExpresion(nodo.getHijos().get(0), ambito);
+                    valorR = evaluarExpresion(nodo.getHijos().get(0), ambito, nombreArchivo);
                     valRetorno.add(valorR + "@" + nodo.getFila() + "@" + nodo.getColumna());
                     return "retorno";
                 }
 
+            case "CONTINUAR":
+                valorR = "";
+                n = nodo;
+                if (ambito.equalsIgnoreCase("ambitoMain")) {
+                    System.out.println("Semantico, no se puede declarar un Continuar en metodo principal");
+                }
+                return "continuar" + "@" + nodo.getFila() + "@" + nodo.getColumna();
+
+            case "ROMPER":
+                valorR = "";
+                n = nodo;
+                if (ambito.equalsIgnoreCase("ambitoMain")) {
+                    System.out.println("Semantico, no se puede declarar un Romper en metodo principal");
+                }
+                return "romper" + "@" + nodo.getFila() + "@" + nodo.getColumna();
+
             case "CAMBIAR_A":
-                String condicionCambiarA = evaluarExpresion(nodo.getHijos().get(0), "hastaQue");
+                String condicionCambiarA = evaluarExpresion(nodo.getHijos().get(0), "hastaQue", nombreArchivo);
                 String valorCA = "";
                 String tipoCondCA = "";
                 String cuerpo = "";
@@ -544,9 +662,9 @@ public class EjecucionLenguajeAsa {
                         if (!cuerpo.equalsIgnoreCase("@No")) {
                             String valorS = verificarCasosSwitch(nodo.getHijos().get(1), tipoCondCA, valorCA);
                             if (valorS.equalsIgnoreCase("@Yes")) {
-                                ejecutarSentencias(cuerpoCase.get(0), msj, ambito + "@" + "switch");
+                                ejecutarSentencias(cuerpoCase.get(0), msj, ambito + "@" + "switch", nombreArchivo);
                             } else if (nodo.getHijos().size() == 3) {
-                                ejecutarSentencias(nodo.getHijos().get(2).getHijos().get(0), msj, ambito + "@" + "switch");
+                                ejecutarSentencias(nodo.getHijos().get(2).getHijos().get(0), msj, ambito + "@" + "switch", nombreArchivo);
                             } else {
                                 System.out.println("Ninguna opcion es valida, y no contiene sentencia no_cumple");
                             }
@@ -714,25 +832,25 @@ public class EjecucionLenguajeAsa {
     }
 
     private static void dibujarAST(Nodo raiz) throws FileNotFoundException, UnsupportedEncodingException {
-        String archivoTxT = "C:\\Users\\Hellen\\Desktop" + "\\DibujarAST.txt";
+        String archivoTxT = ruta + "\\DibujarAST.txt";
         File file1 = new File(archivoTxT);
 
         PrintWriter writer = new PrintWriter(file1, "UTF-8");
 
         writer.println(ControlDot.getDotDibujarAST(raiz));
         writer.close();
-        generarGrafica(archivoTxT, "DibujarAST");
+        generarGrafica(archivoTxT, "DibujarAST", ruta);
     }
 
     public static void dibujarEXP(Nodo AST) throws FileNotFoundException, UnsupportedEncodingException {
-        String archivoTxT = "C:\\Users\\Hellen\\Desktop" + "\\DibujarEXP.txt";
+        String archivoTxT = "C:\\Users\\Hellen\\Desktop\\dot" + "\\DibujarEXP1.txt";
         File file1 = new File(archivoTxT);
 
         PrintWriter writer = new PrintWriter(file1, "UTF-8");
 
         writer.println(ControlDot.getDotDibujarEXP(AST));
         writer.close();
-        generarGrafica(archivoTxT, "DibujarEXP");
+        generarGrafica(archivoTxT, "EXP" + imagen.size() + 1, ruta);
     }
 
     public static Simbolo obtenerTipo(String tipoAmbito, String id) {
@@ -810,7 +928,8 @@ public class EjecucionLenguajeAsa {
     }
 
     //Tipo es para ver si esta con globales o locales
-    public static String evaluarExpresion(Nodo n, String tipoAmbito) throws FileNotFoundException, UnsupportedEncodingException {
+    public static String evaluarExpresion(Nodo n, String tipoAmbito, String nombreArchivo) throws FileNotFoundException, UnsupportedEncodingException {
+
         TablaSimbolo ts = null;
         String n1 = "";
         String signo = "";
@@ -826,9 +945,9 @@ public class EjecucionLenguajeAsa {
                     switch (n.getHijos().size()) {
                         case 3:
 
-                            n1 += evaluarExpresion(n.getHijos().get(0), tipoAmbito);
+                            n1 += evaluarExpresion(n.getHijos().get(0), tipoAmbito, nombreArchivo);
                             signo += n.getHijos().get(1).getEtiqueta();
-                            n3 += evaluarExpresion(n.getHijos().get(2), tipoAmbito);
+                            n3 += evaluarExpresion(n.getHijos().get(2), tipoAmbito, nombreArchivo);
 
                             if (!n1.equalsIgnoreCase("error") && !n3.equalsIgnoreCase("error")) {
                                 String[] num1 = n1.split("@");
@@ -874,7 +993,7 @@ public class EjecucionLenguajeAsa {
                     }
                     break;
                 case "NUM_NEG":
-                    n1 += evaluarExpresion(n.getHijos().get(1), tipoAmbito);
+                    n1 += evaluarExpresion(n.getHijos().get(1), tipoAmbito, nombreArchivo);
                     String[] num = n1.split("@");
                     String val = num[0];
                     String tipo = num[1];
@@ -896,9 +1015,9 @@ public class EjecucionLenguajeAsa {
 
                             break;
                         case 3:
-                            n1 += evaluarExpresion(n.getHijos().get(0), tipoAmbito);
+                            n1 += evaluarExpresion(n.getHijos().get(0), tipoAmbito, nombreArchivo);
                             signo += n.getHijos().get(1).getEtiqueta();
-                            n3 += evaluarExpresion(n.getHijos().get(2), tipoAmbito);
+                            n3 += evaluarExpresion(n.getHijos().get(2), tipoAmbito, nombreArchivo);
 
                             String[] num1 = n1.split("@");
                             String n1Val = num1[0];
@@ -927,9 +1046,9 @@ public class EjecucionLenguajeAsa {
                             break;
                         case 3:
 
-                            n1 += evaluarExpresion(n.getHijos().get(0), tipoAmbito);
+                            n1 += evaluarExpresion(n.getHijos().get(0), tipoAmbito, nombreArchivo);
                             signo += n.getHijos().get(1).getEtiqueta();
-                            n3 += evaluarExpresion(n.getHijos().get(2), tipoAmbito);
+                            n3 += evaluarExpresion(n.getHijos().get(2), tipoAmbito, nombreArchivo);
 
                             String[] num1 = n1.split("@");
                             String n1Val = num1[0];
@@ -947,9 +1066,29 @@ public class EjecucionLenguajeAsa {
 //                            Object resultado = realizarOperacionAritmeticas(signo, n1Tipo, n1Val, n2Tipo, n2Val);
                     }
                     break;
+
+                case "NEG":
+                    n1 = evaluarExpresion(n.getHijos().get(1), tipoAmbito, nombreArchivo);
+                    if (n1.contains("@")) {
+                        String[] tipoN = n1.split("@");
+                        if (tipoN[1].equalsIgnoreCase("booleano")) {
+                            if (tipoN[0].equalsIgnoreCase("verdadero") || tipoN[0].equalsIgnoreCase("1")) {
+                                return "falso@" + tipoN[1];
+                            } else if (tipoN[0].equalsIgnoreCase("falso") || tipoN[0].equalsIgnoreCase("0")) {
+                                return "verdadero@" + tipoN[1];
+                            }
+                        } else {
+                            System.out.println("Semantico, No se puede negar una condicion que no sea de tipo booleano ");
+                            return "error";
+                        }
+
+                    }
+                    System.out.println("es neg");
+                    break;
+
                 case "LLAMADA_FUNCION":
                     //ejecutarSentencias(Nodo nodo, String msj, String ambito
-                    String valor = ejecutarSentencias(n, "", tipoAmbito);
+                    String valor = ejecutarSentencias(n, "", tipoAmbito, nombreArchivo);
                     int fila = 0;
                     int columna = 0;
                     String valorF = "";
@@ -1229,7 +1368,7 @@ public class EjecucionLenguajeAsa {
         return null;
     }
 
-    public void agregarFunciones(Nodo nodo) {
+    public void agregarFunciones(Nodo nodo, String nombreArchivo) {
         String tipo = nodo.getHijos().get(0).getEtiqueta();
         String id = nodo.getHijos().get(1).getEtiqueta();
         int fila = nodo.getHijos().get(1).getFila();
@@ -1246,7 +1385,7 @@ public class EjecucionLenguajeAsa {
         key = id.toLowerCase() + "_" + parametros;
 
         if (id.equalsIgnoreCase("Principal")) {
-            agregarMetodoPrincipal(nodo);
+            agregarMetodoPrincipal(nodo, nombreArchivo);
         } else {
             if (!IdesPalabraReservada(id) && nodo.getHijos().size() > 3) {
                 if (!tsFunciones.existeFuncion(key)) {
@@ -1274,8 +1413,10 @@ public class EjecucionLenguajeAsa {
                             agregarParametros(nodo.getHijos().get(2), miFuncion);
                             tsFunciones.insertar(key, miFuncion);
                         } else {
-                            System.out.println("Error semantico Funcion " + tipo + " " + id + " contiene variables repetidas en funcion"
-                                    + "fila: " + fila + "Columna: " + columna);
+                            listaErrores.add(new Error("Semantico", "Funcion " + tipo + " " + id + " contiene variables repetidas en parametros", nombreArchivo, fila, columna));
+
+                            //System.out.println("Error semantico Funcion " + tipo + " " + id + " contiene variables repetidas en funcion"
+                            //        + "fila: " + fila + "Columna: " + columna);
                         }
                     } else {
                         cuerpoFuncion = nodo.getHijos().get(3);
@@ -1285,8 +1426,7 @@ public class EjecucionLenguajeAsa {
                     }
 
                 } else {
-                    System.out.println("Error semantico Funcion " + tipo + " " + id + " ya fue declara anteriormente"
-                            + "fila: " + fila + "Columna: " + columna);
+                    listaErrores.add(new Error("Semantico", "Funcion " + tipo + " " + id + " ya fue declara anteriormente", nombreArchivo, fila, columna));
                 }
             } else {
                 System.out.println("Error semantico Funcion no puede ser llamada como una palabra reservada");
@@ -1294,7 +1434,7 @@ public class EjecucionLenguajeAsa {
         }
     }
 
-    public void agregarMetodoPrincipal(Nodo nodo) {
+    public void agregarMetodoPrincipal(Nodo nodo, String nombreArchivo) {
         String tipo = nodo.getHijos().get(0).getEtiqueta();
         String id = nodo.getHijos().get(1).getEtiqueta();
         String key = tipo.toLowerCase() + "_" + id.toLowerCase();
@@ -1308,8 +1448,7 @@ public class EjecucionLenguajeAsa {
             agregarParametros(nodo.getHijos().get(2), miFuncion);
             tsFunciones.insertar(key, miFuncion);
         } else {
-            System.out.println("Error semantico Metodo principal ya fue declarado anteriormente"
-                    + " fila: " + fila + " columna: " + columna);
+            listaErrores.add(new Error("Semantico", "Metodo principal ya fue declarado anteriormente", nombreArchivo, fila, columna));
         }
     }
 

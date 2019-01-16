@@ -132,13 +132,13 @@ public class ControlDot {
 
                         if (hijo.getHijos().size() != 0) {
                             nombreHijo = "nodo" + contador;
-                            grafo += nombreHijo + "[label=\"" + "EXPR" + "\"];\n";
+                            grafo += nombreHijo + "[label=\"" + "EXPRESION" + "\"];\n";
                             grafo += "nodo" + (contador - 1) + "->" + nombreHijo + ";\n";
                             contador++;
                         }
-                    } else if (hijo.getEtiqueta().equalsIgnoreCase("EXPR")) {
+                    } else if (hijo.getEtiqueta().equalsIgnoreCase("EXPR") || hijo.getEtiqueta().equalsIgnoreCase("EXPR_REL")) {
                         nombreHijo = "nodo" + contador;
-                        grafo += nombreHijo + "[label=\"" + hijo.getEtiqueta() + "\"];\n";
+                        grafo += nombreHijo + "[label=\"" + "EXPRESION" + "\"];\n";
                         grafo += padre + "->" + nombreHijo + ";\n";
                         contador++;
                     } else {
@@ -148,8 +148,43 @@ public class ControlDot {
                         contador++;
                         dibujarAST(nombreHijo, hijo);
                     }
+
                 }
             }
         }
     }
 }
+
+//    private static void dibujarAST(String padre, Nodo raiz) {
+//        String nombreHijo = "";
+//        for (Nodo hijo : raiz.getHijos()) {
+//            if (hijo != null) {
+//                if (hijo.getTipo().equalsIgnoreCase("NoTerm")) {
+//                    if (hijo.getEtiqueta().equalsIgnoreCase("RETORNO")) {
+//                        nombreHijo = "nodo" + contador;
+//                        grafo += nombreHijo + "[label=\"" + hijo.getEtiqueta() + "\"];\n";
+//                        grafo += padre + "->" + nombreHijo + ";\n";
+//                        contador++;
+//
+//                        if (hijo.getHijos().size() != 0) {
+//                            nombreHijo = "nodo" + contador;
+//                            grafo += nombreHijo + "[label=\"" + "EXPR" + "\"];\n";
+//                            grafo += "nodo" + (contador - 1) + "->" + nombreHijo + ";\n";
+//                            contador++;
+//                        }
+//                    } else if (hijo.getEtiqueta().equalsIgnoreCase("EXPR")) {
+//                        nombreHijo = "nodo" + contador;
+//                        grafo += nombreHijo + "[label=\"" + hijo.getEtiqueta() + "\"];\n";
+//                        grafo += padre + "->" + nombreHijo + ";\n";
+//                        contador++;
+//                    } else {
+//                        nombreHijo = "nodo" + contador;
+//                        grafo += nombreHijo + "[label=\"" + hijo.getEtiqueta() + "\"];\n";
+//                        grafo += padre + "->" + nombreHijo + ";\n";
+//                        contador++;
+//                        dibujarAST(nombreHijo, hijo);
+//                    }
+//                }
+//            }
+//        }
+//    }

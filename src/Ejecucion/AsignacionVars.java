@@ -17,7 +17,7 @@ import java.io.UnsupportedEncodingException;
 public class AsignacionVars {
 
     //Metodo cuando viene una asignacion a variablesowe
-    public static void asignacionAVariables(Nodo nodo, String tipoAmbito) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void asignacionAVariables(Nodo nodo, String tipoAmbito, String nombreArchivo) throws FileNotFoundException, UnsupportedEncodingException {
         TablaSimbolo ts = null;
         String nombre = nodo.getHijos().get(0).getHijos().get(0).getEtiqueta();
         int linea = nodo.getHijos().get(0).getHijos().get(0).getFila();
@@ -36,19 +36,19 @@ public class AsignacionVars {
         if (nodo.getHijos().get(1).getHijos().size() > 0) {
             //Si la variable no existe la agrega, sino error semantico por repetida
             if (ts.existeSimbolo(nombre)) {
-                expresion = evaluarExpresion(nodo.getHijos().get(1), tipoAmbito);
-                actualizarVariableGlobal(nombre, expresion, linea, columna, tipoAmbito);
+                expresion = evaluarExpresion(nodo.getHijos().get(1), tipoAmbito, nombreArchivo);
+                actualizarVariableGlobal(nombre, expresion, linea, columna, tipoAmbito, nombreArchivo);
                 //agregarAsignacionAVars(expresion, tipo, nombre, linea, columna);
             } else {
                 ts = EjecucionLenguajeAsa.tsVarsFuncion;
                 if (ts.existeSimbolo(nombre)) {
-                    expresion = evaluarExpresion(nodo.getHijos().get(1), tipoAmbito);
-                    actualizarVariableGlobal(nombre, expresion, linea, columna, tipoAmbito);
+                    expresion = evaluarExpresion(nodo.getHijos().get(1), tipoAmbito, nombreArchivo);
+                    actualizarVariableGlobal(nombre, expresion, linea, columna, tipoAmbito, nombreArchivo);
                 } else {
                     ts = EjecucionLenguajeAsa.tsGlobal;
                     if (ts.existeSimbolo(nombre)) {
-                        expresion = evaluarExpresion(nodo.getHijos().get(1), tipoAmbito);
-                        actualizarVariableGlobal(nombre, expresion, linea, columna, tipoAmbito);
+                        expresion = evaluarExpresion(nodo.getHijos().get(1), tipoAmbito, nombreArchivo);
+                        actualizarVariableGlobal(nombre, expresion, linea, columna, tipoAmbito, nombreArchivo);
                     } else {
                         System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada "
                                 + " linea:" + linea + " columna: " + columna);
@@ -59,8 +59,8 @@ public class AsignacionVars {
             //Si la variable viene solo con un terminal como  valor Entero = a;
         } else {
             if (ts.existeSimbolo(nombre)) {
-                expresion = evaluarExpresion(nodo.getHijos().get(1), tipoAmbito);
-                actualizarVariableGlobal(nombre, expresion, linea, columna, tipoAmbito);
+                expresion = evaluarExpresion(nodo.getHijos().get(1), tipoAmbito, nombreArchivo);
+                actualizarVariableGlobal(nombre, expresion, linea, columna, tipoAmbito, nombreArchivo);
             } else {
                 System.out.println("Error semantico no se puede asignar en la variable \"" + nombre + "\" ya que no esta declarada "
                         + " linea:" + linea + " columna: " + columna);
@@ -69,7 +69,7 @@ public class AsignacionVars {
     }
 
     //Este metodo asigna expresion a una declaracion de variable global
-    public static void agregarAsignacionAVars(String expresion, String tipo, String nombre, int linea, int columna, String ambito) {
+    public static void agregarAsignacionAVars(String expresion, String tipo, String nombre, int linea, int columna, String ambito, String nombreArchivo) {
         TablaSimbolo ts = null;
         if (ambito.equalsIgnoreCase("ambitoGlobal")) {
             ts = EjecucionLenguajeAsa.tsGlobal;
@@ -98,8 +98,8 @@ public class AsignacionVars {
                 }
 
             } else {
-                if (verificarCasteo(tipo, tipoValor)) {
-                    String nuevoValor = castearImplicitamente(tipo, tipoValor, valor);
+                if (verificarCasteo(tipo, tipoValor, nombreArchivo)) {
+                    String nuevoValor = castearImplicitamente(tipo, tipoValor, valor, nombreArchivo);
                     Simbolo simb = new Simbolo(tipo, nombre, nuevoValor, linea, columna, "ambitoGlobal");
                     //Como key de una variable tomo el Tipo+id
                     ts.insertar(nombre, simb);
@@ -120,7 +120,7 @@ public class AsignacionVars {
 
     }
 
-    public static void actualizarVariableGlobal(String nombre, String expresion, int linea, int columna, String tipoAmbito) {
+    public static void actualizarVariableGlobal(String nombre, String expresion, int linea, int columna, String tipoAmbito, String nombreArchivo) {
         String[] num1 = expresion.split("@");
         String valor = num1[0];
         String tipoValor = num1[1];
@@ -177,8 +177,8 @@ public class AsignacionVars {
                 }
                 //System.out.println(" Bitacora Variable -> " + simb.getNombre() + " actualizada");
             } else {
-                if (AsignacionVars.verificarCasteo(simb.getTipo(), tipoValor)) {
-                    String nuevoValor = AsignacionVars.castearImplicitamente(simb.getTipo(), tipoValor, valor);
+                if (AsignacionVars.verificarCasteo(simb.getTipo(), tipoValor, nombreArchivo)) {
+                    String nuevoValor = AsignacionVars.castearImplicitamente(simb.getTipo(), tipoValor, valor, nombreArchivo);
                     simb.setValor(nuevoValor);
                     System.out.println("casteada, implicitamente el valor de la expresion es de tipo " + tipoValor
                             + " y la variable destino " + nombre + " es de tipo " + simb.getTipo() + " linea:" + linea + " columna: " + columna);
@@ -192,7 +192,7 @@ public class AsignacionVars {
         }
     }
 
-    public static boolean verificarCasteo(String varTipoDestino, String varTipoResult) {
+    public static boolean verificarCasteo(String varTipoDestino, String varTipoResult, String nombreArchivo) {
         if (varTipoDestino.equalsIgnoreCase("Texto")
                 && (varTipoResult.equalsIgnoreCase("Decimal") || (varTipoResult.equalsIgnoreCase("Booleano")) || (varTipoResult.equalsIgnoreCase("Entero")))) {
             return true;
@@ -206,7 +206,7 @@ public class AsignacionVars {
         return false;
     }
 
-    public static String castearImplicitamente(String varTipoDestino, String varTipoResult, String valor) {
+    public static String castearImplicitamente(String varTipoDestino, String varTipoResult, String valor, String nombreArchivo) {
         if (varTipoDestino.equalsIgnoreCase("Texto")) {
             if ((varTipoResult.equalsIgnoreCase("Decimal") || varTipoResult.equalsIgnoreCase("Entero"))) {
                 return valor;
